@@ -1,6 +1,10 @@
 export { TOOLS } from './registry';
 export { CATEGORIES, categoryLabel } from './categories';
 export { filterTools } from './filter';
+export { groupByCategory, flattenGroups } from './group';
+export type { ToolGroup } from './group';
+export { keyAction } from './keyboard';
+export type { KeyAction, KeyContext } from './keyboard';
 export { resolveTool, resolveTools, validateTool } from './resolve';
 export type { ResolvedTool, SkippedTool, ResolutionResult, ResolveOptions } from './resolve';
 export { renderTemplate, templatePlaceholders, TemplateError } from './template';

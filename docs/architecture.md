@@ -9,6 +9,16 @@ presents the results as a keyboard-navigable deck.
 The value is **aggregation, discovery and UX**. GitDeck deliberately reimplements none of the
 services it links to.
 
+### Stack, and why
+
+| Choice                               | Reason                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[WXT](https://wxt.dev)**           | Generates a correct MV3 manifest per browser from one config, and ships dev-mode hot reload. The alternative is hand-maintaining divergent Chrome and Firefox manifests, which is exactly the kind of busywork that kills small extension projects.                                                        |
+| **Svelte 5**                         | The popup is a list that reacts to one piece of state. Svelte compiles to direct DOM updates with no runtime framework shipped, which keeps the whole extension around 72 KB and opening instantly. React would add roughly 45 KB of runtime for a UI this small; the choice is about weight, not fashion. |
+| **TypeScript (strict)**              | The registry is the product. Strict types plus `validateTool` mean a malformed tool entry fails CI rather than the popup. Pinned to 5.9 because `typescript-eslint` does not yet support TypeScript 7.                                                                                                     |
+| **Vitest**                           | The URL logic is pure functions with no DOM. Vitest runs them in milliseconds and shares Vite's config with the build.                                                                                                                                                                                     |
+| **No backend, storage or analytics** | Every feature in scope is a string transformation. Adding infrastructure would add privacy obligations and maintenance cost for no user benefit.                                                                                                                                                           |
+
 ### Non-goals
 
 No backend. No accounts. No database. No authentication. No analytics. No repository content
@@ -83,6 +93,8 @@ src/
 │       ├── categories.ts       category labels and deck order
 │       ├── template.ts         URL template engine
 │       ├── filter.ts           free-text search over resolved tools
+│       ├── group.ts            deck sections and on-screen ordering
+│       ├── keyboard.ts         keypress → deck action
 │       ├── resolve.ts          registry + RepoRef → deck, plus validateTool
 │       └── index.ts            public surface of the tools module
 ├── styles/theme.css            design tokens, light and dark
@@ -118,9 +130,12 @@ resolved entries it is handed, so the UI cannot develop tool-specific behaviour 
 header and footer stay fixed. All colour is CSS custom properties in `styles/theme.css` with a
 `prefers-color-scheme` dark variant — no theme toggle, no JavaScript involved in theming.
 
-**Keyboard model.** `/` focuses the filter, `↑`/`↓` move the selection with wraparound, `Enter`
-opens, `Escape` clears the filter. The selected card scrolls into view. Every card is a real
-`<button>`, so tab order and screen readers work without ARIA patching.
+**Keyboard model.** `/` focuses the filter, `↑`/`↓` move the selection with wraparound, `1`–`9`
+open a card directly, `Enter` opens the selection, `Escape` clears the filter. The mapping lives
+in `lib/tools/keyboard.ts` as a pure function so the whole model is tested without a DOM. Keys
+with a modifier are never intercepted, and while the filter has focus the number keys yield to
+plain typing. The selected card scrolls into view. Every card is a real `<button>`, so tab order
+and screen readers work without ARIA patching.
 
 ## 6. Tool registry architecture
 
@@ -233,7 +248,7 @@ Svelte-compiled output reaches the published bundle.
 | Component behaviour | _not yet_         | Planned for Phase 5 (`vitest-browser-svelte`)                                                                                        |
 | End to end          | _not yet_         | Planned for Phase 5 (Playwright, loading the built extension)                                                                        |
 
-Current suite: 125 tests over five files, running in well under a second. The deliberate
+Current suite: 150 tests over seven files, running in well under a second. The deliberate
 consequence of keeping all logic in pure functions is that the valuable tests need no DOM and no
 browser.
 

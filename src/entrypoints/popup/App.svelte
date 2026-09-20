@@ -5,7 +5,14 @@
   import { getActiveTabUrl, openUrl } from '../../lib/browser/active-tab';
   import { parseGitHubRepo } from '../../lib/github/parse-repo';
   import type { RepoRef } from '../../lib/github/types';
-  import { TOOLS, filterTools, resolveTools } from '../../lib/tools';
+  import {
+    TOOLS,
+    filterTools,
+    flattenGroups,
+    groupByCategory,
+    keyAction,
+    resolveTools,
+  } from '../../lib/tools';
   import type { ToolStatus } from '../../lib/tools';
 
   type View =
@@ -28,8 +35,10 @@
   );
 
   const visible = $derived(filterTools(resolution.resolved, filter));
+  const groups = $derived(groupByCategory(visible));
+  const ordered = $derived(flattenGroups(groups));
 
-  const selected = $derived(visible[Math.min(selectedIndex, visible.length - 1)]);
+  const selected = $derived(ordered[Math.min(selectedIndex, ordered.length - 1)]);
   const unavailable = $derived(
     resolution.skipped.filter((entry) => entry.tool.status === 'verified').length,
   );
@@ -61,7 +70,7 @@
   }
 
   function scrollSelectedIntoView() {
-    const id = visible[selectedIndex]?.tool.id;
+    const id = ordered[selectedIndex]?.tool.id;
     if (id === undefined) return;
     queueMicrotask(() => {
       document.querySelector(`[data-tool-id="${id}"]`)?.scrollIntoView({ block: 'nearest' });
@@ -71,29 +80,35 @@
   function onkeydown(event: KeyboardEvent) {
     if (view.kind !== 'repo') return;
 
-    if (event.key === '/' && document.activeElement !== filterInput) {
-      event.preventDefault();
-      filterInput?.focus();
-      return;
-    }
-    if (event.key === 'Escape') {
-      if (filter !== '') {
-        event.preventDefault();
+    const action = keyAction({
+      key: event.key,
+      modified: event.ctrlKey || event.metaKey || event.altKey,
+      typing: document.activeElement === filterInput,
+      filterEmpty: filter === '',
+      hasResults: ordered.length > 0,
+    });
+    if (action.type === 'none') return;
+
+    event.preventDefault();
+    switch (action.type) {
+      case 'focus-filter':
+        filterInput?.focus();
+        break;
+      case 'clear-filter':
         filter = '';
+        break;
+      case 'move':
+        selectedIndex = (selectedIndex + action.delta + ordered.length) % ordered.length;
+        scrollSelectedIntoView();
+        break;
+      case 'open-selected':
+        if (selected !== undefined) open(selected.url);
+        break;
+      case 'open-index': {
+        const entry = ordered[action.index];
+        if (entry !== undefined) open(entry.url);
+        break;
       }
-      return;
-    }
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-      if (visible.length === 0) return;
-      event.preventDefault();
-      const step = event.key === 'ArrowDown' ? 1 : -1;
-      selectedIndex = (selectedIndex + step + visible.length) % visible.length;
-      scrollSelectedIntoView();
-      return;
-    }
-    if (event.key === 'Enter' && selected !== undefined) {
-      event.preventDefault();
-      open(selected.url);
     }
   }
 </script>
@@ -124,15 +139,26 @@
     </div>
 
     <div class="deck">
-      {#if visible.length === 0}
-        <p class="status">No tool matches “{filter}”.</p>
+      {#if resolution.resolved.length === 0}
+        <div class="empty">
+          <p>No tools available for this page.</p>
+          <p class="hint">
+            Every tool was skipped. This usually means the registry needs a look — see
+            docs/tools.md.
+          </p>
+        </div>
+      {:else if ordered.length === 0}
+        <div class="empty">
+          <p>Nothing matches “{filter}”.</p>
+          <button type="button" onclick={() => (filter = '')}>Clear filter</button>
+        </div>
       {:else}
-        <ToolDeck entries={visible} selectedId={selected?.tool.id} onopen={open} />
+        <ToolDeck {groups} {ordered} selectedId={selected?.tool.id} onopen={open} />
       {/if}
     </div>
 
     <footer>
-      <span>{visible.length} of {resolution.resolved.length} tools</span>
+      <span>{ordered.length} of {resolution.resolved.length} tools</span>
       <label>
         <input type="checkbox" bind:checked={includeUnverified} />
         Show unverified
@@ -177,6 +203,38 @@
     margin: 0;
     padding: var(--space-4);
     color: var(--text-muted);
+  }
+
+  .empty {
+    padding: var(--space-4);
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .empty p {
+    margin: 0;
+  }
+
+  .empty .hint {
+    margin-top: var(--space-1);
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+
+  .empty button {
+    margin-top: var(--space-3);
+    padding: 4px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .empty button:hover {
+    background: var(--bg-hover);
   }
 
   .status.muted {

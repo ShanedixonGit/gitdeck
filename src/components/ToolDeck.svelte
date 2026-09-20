@@ -1,29 +1,32 @@
 <script lang="ts">
-  import type { ResolvedTool } from '../lib/tools';
-  import { CATEGORIES, categoryLabel } from '../lib/tools';
+  import type { ResolvedTool, ToolGroup } from '../lib/tools';
   import ToolCard from './ToolCard.svelte';
 
   interface Props {
-    entries: readonly ResolvedTool[];
+    groups: readonly ToolGroup[];
+    ordered: readonly ResolvedTool[];
     selectedId: string | undefined;
     onopen: (url: string) => void;
   }
 
-  let { entries, selectedId, onopen }: Props = $props();
+  let { groups, ordered, selectedId, onopen }: Props = $props();
 
-  const groups = $derived(
-    CATEGORIES.map((category) => ({
-      label: categoryLabel(category.id),
-      entries: entries.filter((entry) => entry.tool.category === category.id),
-    })).filter((group) => group.entries.length > 0),
-  );
+  function shortcut(entry: ResolvedTool): number | undefined {
+    const position = ordered.indexOf(entry);
+    return position >= 0 && position < 9 ? position + 1 : undefined;
+  }
 </script>
 
-{#each groups as group (group.label)}
+{#each groups as group (group.category)}
   <section>
     <h2>{group.label}</h2>
     {#each group.entries as entry (entry.tool.id)}
-      <ToolCard {entry} selected={entry.tool.id === selectedId} {onopen} />
+      <ToolCard
+        {entry}
+        selected={entry.tool.id === selectedId}
+        shortcut={shortcut(entry)}
+        {onopen}
+      />
     {/each}
   </section>
 {/each}

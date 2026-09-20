@@ -4,10 +4,11 @@
   interface Props {
     entry: ResolvedTool;
     selected: boolean;
+    shortcut?: number | undefined;
     onopen: (url: string) => void;
   }
 
-  let { entry, selected, onopen }: Props = $props();
+  let { entry, selected, shortcut, onopen }: Props = $props();
 
   const monogram = $derived(entry.tool.icon ?? entry.tool.name.slice(0, 2).toLowerCase());
 </script>
@@ -29,6 +30,9 @@
     <span class="description">{entry.tool.description}</span>
     {#if entry.tool.notes}<span class="notes">{entry.tool.notes}</span>{/if}
   </span>
+  {#if shortcut !== undefined}
+    <kbd aria-hidden="true">{shortcut}</kbd>
+  {/if}
   <span class="arrow" aria-hidden="true">→</span>
 </button>
 
@@ -105,6 +109,27 @@
     color: var(--text-faint);
     font-size: 11px;
     margin-top: 1px;
+  }
+
+  kbd {
+    flex: none;
+    align-self: center;
+    min-width: 16px;
+    padding: 1px 4px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-subtle);
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .card:hover kbd,
+  .card.selected kbd {
+    color: var(--text-muted);
+    border-color: var(--border-strong);
   }
 
   .arrow {

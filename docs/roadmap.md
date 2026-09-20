@@ -22,9 +22,10 @@ product.
 - [x] Manual URL entry when the tab is not a repository
 - [x] Dark mode via `prefers-color-scheme`, tokens in one file
 - [x] Keyboard model: `/`, `↑`/`↓`, `Enter`, `Escape`
-- [ ] Number shortcuts (`1`–`9`) for the first results
-- [ ] Loading, empty and error states given the same care as the happy path
-- [ ] Reduced-motion and high-contrast handling
+- [x] Number shortcuts (`1`–`9`) for the first results
+- [x] Loading, empty and error states given the same care as the happy path
+- [x] Reduced-motion handling
+- [ ] High-contrast handling
 - [ ] Accessibility pass with a screen reader
 
 ## Phase 3 — Tool registry _(done for now)_
