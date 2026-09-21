@@ -39,6 +39,26 @@ product.
 - [ ] Expand the registry only where a tool does something none of the current 13 does
 - [ ] File-scoped and directory-scoped sections (GitZip, download-directory)
 
+## Phase 3.5 — The deck is a chosen stack _(next)_
+
+Raised on 2026-09-21, after running 0.2.0 in a browser for the first time. The current design
+shows all 13 tools and pins favourites above them. That is a catalogue with a shortcut, not a
+deck. The deck should be the tools you picked.
+
+- [ ] The popup shows only the tools the user has chosen. Nothing unchosen appears
+- [ ] `favourites` and `hidden` collapse into one chosen list: the registry is the source, the
+      stack is the selection
+- [ ] The options page becomes two panels — everything available on one side, your stack on the
+      other — and you drag tools across. Up and down arrows go
+- [ ] An empty stack is the first-run state, so the welcome panel and the picker are the same
+      screen rather than two
+- [ ] Drop the coloured dot beside each section heading. Section colour stays, delivered some
+      other way
+- [ ] Tool names say what the tool is for. "GitHub.dev" and "deps.dev" are brands, not jobs —
+      the card should lead with the job and keep the brand as provenance
+- [ ] "Open tools in" lives in exactly one place. It is currently in both the popup settings
+      panel and the options page
+
 ## Phase 4 — Browser compatibility
 
 - [ ] Verify the Firefox build end to end in a real profile

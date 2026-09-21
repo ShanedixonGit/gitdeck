@@ -30,6 +30,12 @@ and the patch number for fixes.
   what lost and why so the same candidates are not re-added later
 - The popup's settings panel keeps only the open target and a way through to the options page
 
+### Known issues
+
+- The deck shows every tool with favourites pinned above them. It should show only the tools you
+  chose — see Phase 3.5 in [docs/roadmap.md](docs/roadmap.md)
+- "Open tools in" appears in both the popup settings panel and the options page
+
 ## [0.2.0] — 2026-09-21
 
 The first build that actually loads in a browser.
