@@ -53,9 +53,39 @@ record the verification in [docs/tools.md](docs/tools.md).
   metrics.
 - **Test the logic, not the framework.** New behaviour in `lib/` arrives with tests.
 
-## Commits
+## Branches and commits
+
+`main` always builds and always loads. Work happens on a short-lived branch off `main`, named for
+what it does:
+
+| Prefix   | For                                       |
+| -------- | ----------------------------------------- |
+| `feat/`  | a user-visible feature                    |
+| `fix/`   | a bug                                     |
+| `tool/`  | adding or re-verifying a registry entry   |
+| `docs/`  | documentation only                        |
+| `chore/` | build, CI, dependencies, release plumbing |
 
 Short imperative subject lines (`Add DeepWiki to the registry`). Keep a change to one concern —
 a tool addition, a UI change and a build change are three commits.
 
-Run `npm run check` before opening a pull request.
+Run `npm run check` before opening a pull request. CI runs the same steps on every pull request
+and on every push to `main`.
+
+## Versioning and the changelog
+
+The extension version lives in one place, `package.json`. WXT copies it into the manifest for
+every browser, so nothing else should ever hard-code it.
+
+Semantic versioning, with the pre-1.0 reading: the minor number moves for user-visible change,
+the patch number for fixes. A change that alters what the user sees, or what the manifest asks
+for, belongs in [CHANGELOG.md](CHANGELOG.md) under `## [Unreleased]` as part of the same pull
+request — not afterwards, and not at release time from the git log.
+
+To cut a release:
+
+1. Move the `Unreleased` entries under a new version heading with today's date
+2. Bump `version` in `package.json`
+3. `npm run check && npm run build:all`
+4. Load `.output/chrome-mv3` once by hand and confirm the popup opens
+5. Tag it: `git tag -a v0.2.0 -m "GitDeck 0.2.0" && git push --tags`
