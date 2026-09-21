@@ -1,5 +1,6 @@
 export { TOOLS } from './registry';
-export { CATEGORIES, categoryLabel } from './categories';
+export { CATEGORIES, FAVOURITES_SECTION, categoryLabel, categoryTint } from './categories';
+export { applyHidden, applyOrder, moveInOrder, reconcileOrder } from './arrange';
 export { filterTools } from './filter';
 export { groupByCategory, flattenGroups } from './group';
 export type { ToolGroup } from './group';

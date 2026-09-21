@@ -10,7 +10,32 @@ export const OPEN_TARGETS: ReadonlyArray<{ id: OpenTarget; label: string; hint: 
 export const DEFAULT_SETTINGS: Settings = {
   openTarget: 'new-tab',
   includeUnverified: false,
+  favourites: [],
+  hidden: [],
+  order: [],
+  onboarded: false,
 };
+
+/**
+ * An upper bound on each stored id list.
+ *
+ * Storage is shared with the browser's sync quota, and nothing legitimate ever
+ * names more tools than the registry holds. The cap stops a corrupted or
+ * hand-edited value growing without limit.
+ */
+const MAX_IDS = 200;
+
+/** Keeps the strings, drops duplicates, and caps the length. */
+function idList(value: unknown): readonly string[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  for (const item of value) {
+    if (typeof item !== 'string' || item === '') continue;
+    seen.add(item);
+    if (seen.size >= MAX_IDS) break;
+  }
+  return [...seen];
+}
 
 const TARGETS = new Set<string>(OPEN_TARGETS.map((target) => target.id));
 
@@ -34,5 +59,9 @@ export function normaliseSettings(value: unknown): Settings {
       typeof stored.includeUnverified === 'boolean'
         ? stored.includeUnverified
         : DEFAULT_SETTINGS.includeUnverified,
+    favourites: idList(stored.favourites),
+    hidden: idList(stored.hidden),
+    order: idList(stored.order),
+    onboarded: stored.onboarded === true,
   };
 }
