@@ -26,6 +26,7 @@
   let selectedIndex = $state(0);
   let settings = $state<Settings>(DEFAULT_SETTINGS);
   let settingsOpen = $state(false);
+  let openError = $state<string | null>(null);
   let filterInput = $state<HTMLInputElement | null>(null);
 
   const statuses = $derived<readonly ToolStatus[]>(
@@ -81,12 +82,23 @@
   /**
    * Opens a destination and gets out of the way. A background tab is the one
    * case where the popup stays up, so several tools can be opened in a row.
+   *
+   * A rejection here is the one failure the user cannot otherwise see: the
+   * popup would simply sit there after a click that did nothing. It is shown
+   * rather than logged, because the popup takes its console with it when it
+   * closes.
    */
   function open(url: string) {
     const target = settings.openTarget;
-    void openUrl(url, target).then(() => {
-      if (target !== 'background-tab') window.close();
-    });
+    openError = null;
+    void openUrl(url, target).then(
+      () => {
+        if (target !== 'background-tab') window.close();
+      },
+      () => {
+        openError = 'The browser would not open that tool from this page.';
+      },
+    );
   }
 
   function scrollSelectedIntoView() {
@@ -191,6 +203,10 @@
       </div>
     {/if}
 
+    {#if openError !== null}
+      <p class="error" role="alert">{openError}</p>
+    {/if}
+
     <footer>
       <span>
         {ordered.length} of {resolution.resolved.length} tools
@@ -283,6 +299,14 @@
     padding: var(--space-2) var(--space-4);
     border-top: 1px solid var(--border);
     color: var(--text-faint);
+    font-size: 11px;
+  }
+
+  .error {
+    margin: 0;
+    padding: var(--space-2) var(--space-4);
+    border-top: 1px solid var(--border);
+    color: var(--warn);
     font-size: 11px;
   }
 
