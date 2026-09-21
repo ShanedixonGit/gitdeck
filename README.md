@@ -10,15 +10,15 @@ you're on. One click opens it.
 
 ## What you get
 
-|                         |                                                    |
-| ----------------------- | -------------------------------------------------- |
-| **Open in an editor**   | GitHub.dev, GitHub1s, StackBlitz, Bolt, Codespaces |
-| **Understand the code** | DeepWiki                                           |
-| **Visualise**           | GitDiagram, Git History                            |
-| **AI context**          | GitIngest, GitMCP                                  |
-| **Project insights**    | OSS Insight, Star History                          |
-| **Supply chain**        | deps.dev, OpenSSF Scorecard                        |
-| **Search**              | GitHub Code Search                                 |
+|                         |                                    |
+| ----------------------- | ---------------------------------- |
+| **Open in an editor**   | GitHub.dev, StackBlitz, Codespaces |
+| **Understand the code** | DeepWiki                           |
+| **Visualise**           | GitDiagram, Git History            |
+| **AI context**          | GitIngest, GitMCP                  |
+| **Project insights**    | OSS Insight, Star History          |
+| **Supply chain**        | deps.dev, OpenSSF Scorecard        |
+| **Search**              | GitHub Code Search                 |
 
 GitDeck doesn't rebuild any of these. It just knows how to point each one at the repo
 you're looking at.
@@ -49,7 +49,11 @@ Click the GitDeck icon on any GitHub repo. Then:
 Not on a GitHub page? Paste a repo URL instead.
 
 **Settings** (bottom right of the popup) decides where a tool opens: a new tab, the tab you're
-already on, or a background tab so you can fire off several at once. Your choice is remembered.
+already on, or a background tab so you can fire off several at once.
+
+**Customise** opens a full page where you can star the tools you actually use — starred ones sit
+at the top of the deck and keep the low numbers — reorder each section, and hide the rest. All of
+it is remembered.
 
 ## Privacy
 

@@ -4,7 +4,8 @@ The registry lives in [`src/lib/tools/registry.ts`](../src/lib/tools/registry.ts
 records how each entry was verified and — just as importantly — which candidates were rejected
 and why.
 
-**Last verification sweep: 2026-09-20.**
+**Last verification sweep: 2026-09-21** — all 13 entries reachable, checked by
+`npm run check:links`.
 
 ## Verification method
 
@@ -22,14 +23,27 @@ A candidate that could not be confirmed is either recorded as `unverified` with 
 excluded and listed below. **No entry is included on the strength of it having worked in the
 past.**
 
-## Shipped — verified (14)
+## One tool per job
+
+Where two services do the same thing, the registry carries one of them. A launcher that offers
+three ways to open the same repository in the same kind of editor has moved the choosing onto the
+user, which is the problem it was meant to solve.
+
+| Kept               | Dropped           | Why                                                                                                                                                                                |
+| ------------------ | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GitHub.dev         | GitHub1s          | Both are VS Code in the browser. GitHub.dev is GitHub's own, and can edit and commit; GitHub1s is read-only                                                                        |
+| StackBlitz         | Bolt, CodeSandbox | All three run the project in the browser. StackBlitz needs no account; Bolt is a StackBlitz product gated on sign-in and credits, and CodeSandbox never passed the automated check |
+| GitHub Code Search | grep.app          | Both search the repository. Code search is already where the user is, needs no third party, and was verified                                                                       |
+
+Removed on 2026-09-21. Each remains a fine service — this is about the size of the deck, not their
+quality. The reasoning belongs here so the same candidates are not re-added later.
+
+## Shipped — verified (13)
 
 | Tool                                                 | Category     | Transformation                                           | Verified by                                                                                                      |
 | ---------------------------------------------------- | ------------ | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | [GitHub.dev](https://github.dev)                     | Editor       | `github.dev/{owner}/{repo}`                              | 200 after redirect to the VS Code web host                                                                       |
-| [GitHub1s](https://github1s.com)                     | Editor       | `github1s.com/{owner}/{repo}`                            | 200, `<title>GitHub1s</title>`                                                                                   |
 | [StackBlitz](https://stackblitz.com)                 | Editor       | `stackblitz.com/github/{owner}/{repo}`                   | 200, `<title>Facebook - React - StackBlitz</title>`                                                              |
-| [Bolt](https://bolt.new)                             | Editor       | `bolt.new/~/github.com/{owner}/{repo}`                   | 200 (the shorter `bolt.new/github.com/…` form 302s here)                                                         |
 | [Codespaces](https://github.com/features/codespaces) | Editor       | `github.com/codespaces/new?repo={owner}%2F{repo}`        | 302 to GitHub sign-in; GitHub's own documented entry point. Carries a "requires a signed-in GitHub account" note |
 | [DeepWiki](https://deepwiki.com)                     | Understand   | `deepwiki.com/{owner}/{repo}`                            | 200, `<title>facebook/react \| DeepWiki</title>`                                                                 |
 | [GitDiagram](https://gitdiagram.com)                 | Visualise    | `gitdiagram.com/{owner}/{repo}`                          | 200, `<title>facebook/react Diagram \| GitDiagram</title>`                                                       |

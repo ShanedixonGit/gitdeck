@@ -8,6 +8,11 @@ const VERIFIED_ON = '2026-09-20';
  * Every entry here was reachable and produced the expected page on
  * `verifiedAt`. See `docs/tools.md` for the verification method and for the
  * tools that were considered and rejected.
+ *
+ * One tool per job. Where two services do the same thing, the registry carries
+ * the one that needs least from the user — no account, no credits, no sign-in —
+ * and `docs/tools.md` records which alternative lost and why. A deck that
+ * offers three ways to do the same thing makes the user do the choosing.
  */
 export const TOOLS: readonly ToolDefinition[] = [
   {
@@ -23,18 +28,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     icon: 'gh',
   },
   {
-    id: 'github1s',
-    name: 'GitHub1s',
-    description: 'Read the repository in a fast, read-only VS Code view.',
-    category: 'ide',
-    urlTemplate: 'https://github1s.com/{owner}/{repo}',
-    website: 'https://github1s.com',
-    docsUrl: 'https://github.com/conwnet/github1s',
-    status: 'verified',
-    verifiedAt: VERIFIED_ON,
-    icon: '1s',
-  },
-  {
     id: 'stackblitz',
     name: 'StackBlitz',
     description: 'Run the project in an in-browser Node environment.',
@@ -46,17 +39,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     verifiedAt: VERIFIED_ON,
     notes: 'Works best for JavaScript and TypeScript projects.',
     icon: 'sb',
-  },
-  {
-    id: 'bolt-new',
-    name: 'Bolt',
-    description: 'Import the repository into an AI-assisted web IDE.',
-    category: 'ide',
-    urlTemplate: 'https://bolt.new/~/github.com/{owner}/{repo}',
-    website: 'https://bolt.new',
-    status: 'verified',
-    verifiedAt: VERIFIED_ON,
-    icon: 'bo',
   },
   {
     id: 'github-codespaces',
@@ -187,29 +169,5 @@ export const TOOLS: readonly ToolDefinition[] = [
     status: 'verified',
     verifiedAt: VERIFIED_ON,
     icon: 'cs',
-  },
-  {
-    id: 'codesandbox',
-    name: 'CodeSandbox',
-    description: 'Open the project in a cloud development sandbox.',
-    category: 'ide',
-    urlTemplate: 'https://codesandbox.io/p/github/{owner}/{repo}',
-    website: 'https://codesandbox.io',
-    status: 'unverified',
-    verifiedAt: VERIFIED_ON,
-    notes: 'Bot protection returned HTTP 403 to the automated check; needs a manual re-check.',
-    icon: 'cb',
-  },
-  {
-    id: 'grep-app',
-    name: 'Grep',
-    description: 'Search the repository with regular expressions.',
-    category: 'search',
-    urlTemplate: 'https://grep.app/{owner}/{repo}',
-    website: 'https://grep.app',
-    status: 'unverified',
-    verifiedAt: VERIFIED_ON,
-    notes: 'Rate limiting returned HTTP 429 to the automated check; needs a manual re-check.',
-    icon: 'gr',
   },
 ];
