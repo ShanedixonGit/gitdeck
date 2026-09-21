@@ -6,9 +6,10 @@
     settings: Settings;
     onchange: (settings: Settings) => void;
     onclose: () => void;
+    onmanage: () => void;
   }
 
-  let { settings, onchange, onclose }: Props = $props();
+  let { settings, onchange, onclose, onmanage }: Props = $props();
 
   function setTarget(openTarget: OpenTarget) {
     onchange({ ...settings, openTarget });
@@ -40,18 +41,13 @@
     {/each}
   </fieldset>
 
-  <label class="toggle">
-    <input
-      type="checkbox"
-      checked={settings.includeUnverified}
-      onchange={(event) =>
-        onchange({ ...settings, includeUnverified: event.currentTarget.checked })}
-    />
+  <button type="button" class="manage" onclick={onmanage}>
     <span class="choice-text">
-      <span class="choice-label">Show unverified tools</span>
-      <span class="choice-hint">Services we could not check automatically. They may not work.</span>
+      <span class="choice-label">Customise the deck</span>
+      <span class="choice-hint">Favourites, order and what to hide, on a full page.</span>
     </span>
-  </label>
+    <span aria-hidden="true">→</span>
+  </button>
 </section>
 
 <style>
@@ -105,7 +101,7 @@
   }
 
   .choice,
-  .toggle {
+  .manage {
     display: flex;
     align-items: flex-start;
     gap: var(--space-2);
@@ -115,14 +111,22 @@
   }
 
   .choice:hover,
-  .toggle:hover {
+  .manage:hover {
     background: var(--bg-hover);
   }
 
-  .toggle {
+  .manage {
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    border: 0;
     border-top: 1px solid var(--border);
     border-radius: 0;
     padding-top: var(--space-3);
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
   }
 
   input {

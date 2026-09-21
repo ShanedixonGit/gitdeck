@@ -67,20 +67,25 @@ build step; the conversion path is documented in the roadmap so it is not a surp
 
 ## 4. Extension architecture
 
-GitDeck is a **popup-only** extension. There is no background service worker, no content script
-and no options page, because nothing needs to run when the popup is closed.
+GitDeck is a **popup plus options page** extension. There is no background service worker and no
+content script, because nothing needs to run when the popup is closed.
 
 ```
 src/
 ├── entrypoints/
-│   └── popup/
-│       ├── index.html          WXT entrypoint
+│   ├── popup/
+│   │   ├── index.html          WXT entrypoint
+│   │   ├── main.ts             mounts the Svelte app
+│   │   └── App.svelte          view state, filtering, keyboard handling
+│   └── options/
+│       ├── index.html          opens in a full tab, not the embedded dialog
 │       ├── main.ts             mounts the Svelte app
-│       └── App.svelte          view state, filtering, keyboard handling
+│       └── App.svelte          favourites, order, hidden tools
 ├── components/
 │   ├── RepoHeader.svelte       owner/repo, ref/path, "Change"
 │   ├── RepoPrompt.svelte       manual URL entry fallback
-│   ├── SettingsPanel.svelte    open target and unverified toggle
+│   ├── SettingsPanel.svelte    open target, and the way through to the options page
+│   ├── Welcome.svelte          first-run panel, shown once
 │   ├── ToolDeck.svelte         groups resolved tools by category
 │   └── ToolCard.svelte         one tool, one action
 ├── lib/
@@ -96,7 +101,8 @@ src/
 │   └── tools/
 │       ├── types.ts            ToolDefinition, ToolCategory, ToolStatus
 │       ├── registry.ts         the data
-│       ├── categories.ts       category labels and deck order
+│       ├── categories.ts       category labels, deck order and section colour
+│       ├── arrange.ts          hiding, ordering and moving, as functions over ids
 │       ├── template.ts         URL template engine
 │       ├── filter.ts           free-text search over resolved tools
 │       ├── group.ts            deck sections and on-screen ordering
@@ -145,6 +151,19 @@ with a modifier are never intercepted, and while the filter has focus the number
 plain typing. While the settings panel is open every deck shortcut is inert and `Escape` closes
 the panel. The selected card scrolls into view. Every card is a real `<button>`, so tab order and
 screen readers work without ARIA patching.
+
+**Deck preferences.** Hiding, ordering and favourites are three plain functions over tool ids in
+`lib/tools/arrange.ts`, applied in that fixed order before the deck is grouped: drop what is
+hidden, sort by the stored order, pull favourites into their own section at the top. Favourites
+therefore change both position and number shortcut, which is the point — a starred tool becomes
+`1`. Ordering is stored as one flat list of every tool id, but `moveInOrder` only ever swaps a
+tool with a neighbour in the same section, because stepping over a tool from another category
+would move a card somewhere the user cannot see it. New registry entries append rather than
+insert, so adding a tool never rearranges a deck the user has already arranged.
+
+**Colour.** Each section carries a tint, named as a CSS custom property in `categories.ts` and
+defined for light and dark in `theme.css`. It reaches the heading dot and the card monogram and
+nothing else. No state is signalled by colour alone.
 
 **Settings.** Three open targets — a new tab, this tab, or a background tab — and the unverified
 toggle, persisted to `browser.storage.sync` as one object. `this tab` is the case the rest of the
@@ -239,6 +258,13 @@ somewhere else. `storage` holds preferences and nothing else.
 the popup closes. The only thing ever written is the settings object: an open target and one
 boolean. No URL, repository name or history is stored, logged or transmitted, and there is no
 first-party network traffic of any kind.
+
+**Availability.** Dead tools are found by `scripts/check-links.ts`, which runs weekly in CI and
+never in the extension. Checking at runtime would mean the popup contacting every service in the
+registry on open — which is exactly the thing the local monograms and the missing host
+permissions exist to prevent, and it would tell a dozen third parties which repository you are
+looking at for the sake of greying out a card. The script reports; a human sets `status` in the
+registry; the popup shows only what the registry vouches for.
 
 **Third parties.** The popup issues no requests to the listed services. Tool icons are local text
 monograms specifically so that opening the deck does not leak the repository name to every

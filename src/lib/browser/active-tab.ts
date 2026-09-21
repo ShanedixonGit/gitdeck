@@ -32,3 +32,8 @@ export async function openUrl(url: string, target: OpenTarget = 'new-tab'): Prom
   }
   await browser.tabs.create({ url, active: target === 'new-tab' });
 }
+
+/** Opens the extension's own options page in a tab. */
+export async function openOptions(): Promise<void> {
+  await browser.runtime.openOptionsPage();
+}

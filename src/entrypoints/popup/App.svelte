@@ -3,13 +3,16 @@
   import RepoPrompt from '../../components/RepoPrompt.svelte';
   import SettingsPanel from '../../components/SettingsPanel.svelte';
   import ToolDeck from '../../components/ToolDeck.svelte';
-  import { getActiveTabUrl, openUrl } from '../../lib/browser/active-tab';
+  import Welcome from '../../components/Welcome.svelte';
+  import { getActiveTabUrl, openOptions, openUrl } from '../../lib/browser/active-tab';
   import { parseGitHubRepo } from '../../lib/github/parse-repo';
   import type { RepoRef } from '../../lib/github/types';
   import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../../lib/settings';
   import type { Settings } from '../../lib/settings';
   import {
     TOOLS,
+    applyHidden,
+    applyOrder,
     filterTools,
     flattenGroups,
     groupByCategory,
@@ -27,6 +30,7 @@
   let settings = $state<Settings>(DEFAULT_SETTINGS);
   let settingsOpen = $state(false);
   let openError = $state<string | null>(null);
+  let settingsReady = $state(false);
   let filterInput = $state<HTMLInputElement | null>(null);
 
   const statuses = $derived<readonly ToolStatus[]>(
@@ -39,14 +43,19 @@
       : { resolved: [], skipped: [] },
   );
 
-  const visible = $derived(filterTools(resolution.resolved, filter));
-  const groups = $derived(groupByCategory(visible));
+  const preferred = $derived(
+    applyOrder(applyHidden(resolution.resolved, settings.hidden), settings.order),
+  );
+  const visible = $derived(filterTools(preferred, filter));
+  const groups = $derived(groupByCategory(visible, settings.favourites));
   const ordered = $derived(flattenGroups(groups));
 
   const selected = $derived(ordered[Math.min(selectedIndex, ordered.length - 1)]);
   const unavailable = $derived(
     resolution.skipped.filter((entry) => entry.tool.status === 'verified').length,
   );
+  /** Held back until settings load, so the panel cannot flash for a returning user. */
+  const showWelcome = $derived(settingsReady && !settings.onboarded);
 
   $effect(() => {
     void filter;
@@ -55,6 +64,7 @@
 
   void (async () => {
     settings = await loadSettings();
+    settingsReady = true;
   })();
 
   void (async () => {
@@ -77,6 +87,18 @@
   function updateSettings(next: Settings) {
     settings = next;
     void saveSettings(next);
+  }
+
+  function toggleFavourite(id: string) {
+    const favourites = settings.favourites.includes(id)
+      ? settings.favourites.filter((each) => each !== id)
+      : [...settings.favourites, id];
+    updateSettings({ ...settings, favourites });
+  }
+
+  function manage() {
+    updateSettings({ ...settings, onboarded: true });
+    void openOptions();
   }
 
   /**
@@ -118,7 +140,7 @@
       typing: document.activeElement === filterInput,
       filterEmpty: filter === '',
       hasResults: ordered.length > 0,
-      settingsOpen,
+      settingsOpen: settingsOpen || showWelcome,
     });
     if (action.type === 'none') return;
 
@@ -162,12 +184,19 @@
       onchange={() => (view = { kind: 'prompt', message: 'Which repository?' })}
     />
 
-    {#if settingsOpen}
+    {#if showWelcome}
+      <Welcome
+        toolCount={resolution.resolved.length}
+        onmanage={manage}
+        ondismiss={() => updateSettings({ ...settings, onboarded: true })}
+      />
+    {:else if settingsOpen}
       <div class="deck">
         <SettingsPanel
           {settings}
           onchange={updateSettings}
           onclose={() => (settingsOpen = false)}
+          onmanage={manage}
         />
       </div>
     {:else}
@@ -198,7 +227,14 @@
             <button type="button" onclick={() => (filter = '')}>Clear filter</button>
           </div>
         {:else}
-          <ToolDeck {groups} {ordered} selectedId={selected?.tool.id} onopen={open} />
+          <ToolDeck
+            {groups}
+            {ordered}
+            selectedId={selected?.tool.id}
+            favourites={settings.favourites}
+            onopen={open}
+            onfavourite={toggleFavourite}
+          />
         {/if}
       </div>
     {/if}
@@ -212,14 +248,17 @@
         {ordered.length} of {resolution.resolved.length} tools
         {#if unavailable > 0}<span class="faint">· {unavailable} not available here</span>{/if}
       </span>
-      <button
-        type="button"
-        class="settings"
-        aria-expanded={settingsOpen}
-        onclick={() => (settingsOpen = !settingsOpen)}
-      >
-        Settings
-      </button>
+      <span class="footer-actions">
+        <button type="button" class="settings" onclick={manage}>Customise</button>
+        <button
+          type="button"
+          class="settings"
+          aria-expanded={settingsOpen}
+          onclick={() => (settingsOpen = !settingsOpen)}
+        >
+          Settings
+        </button>
+      </span>
     </footer>
   {/if}
 </main>
@@ -312,6 +351,12 @@
 
   footer .faint {
     color: var(--text-faint);
+  }
+
+  .footer-actions {
+    flex: none;
+    display: flex;
+    gap: var(--space-1);
   }
 
   footer .settings {

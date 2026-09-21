@@ -10,6 +10,26 @@ and the patch number for fixes.
 
 ## [Unreleased]
 
+### Added
+
+- Favourites: star a tool to pin it to a section above the deck, which also gives it a low number
+  shortcut
+- An options page, opened in a full tab, for arranging the deck: star, reorder within a section,
+  and hide tools you never use
+- A welcome panel on first run, showing what the deck can do rather than assuming it is obvious
+- A colour per section, on the heading dot and the card monogram, so the shape of the deck is
+  readable at a glance. Colour is never the only signal for anything
+- `npm run check:links`, and a weekly CI job that opens an issue when a tool marked `verified`
+  stops responding
+
+### Changed
+
+- **One tool per job.** Dropped GitHub1s (GitHub.dev does the same and can commit), Bolt and
+  CodeSandbox (StackBlitz does the same without an account) and grep.app (GitHub code search does
+  the same and was verified). 17 entries down to 13, all verified, and `docs/tools.md` records
+  what lost and why so the same candidates are not re-added later
+- The popup's settings panel keeps only the open target and a way through to the options page
+
 ## [0.2.0] — 2026-09-21
 
 The first build that actually loads in a browser.

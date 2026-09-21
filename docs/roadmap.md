@@ -35,7 +35,8 @@ product.
 - [x] 16 entries, each verified or explicitly marked unverified
 - [x] Rejected candidates documented with dated reasons
 - [x] `validateTool` invariants enforced in CI
-- [ ] Expand to 20–25 entries as new tools are verified
+- [x] One tool per job, with the rejected duplicates and reasons recorded
+- [ ] Expand the registry only where a tool does something none of the current 13 does
 - [ ] File-scoped and directory-scoped sections (GitZip, download-directory)
 
 ## Phase 4 — Browser compatibility
@@ -52,17 +53,18 @@ product.
 - [ ] Playwright end-to-end test that loads the built extension, opens the popup on a real
       GitHub page and asserts the destination URL
 - [ ] Coverage reporting on `src/lib`, with a floor in CI
-- [ ] A scripted registry link-check, run on demand and reported rather than auto-committed
+- [x] A scripted registry link-check, run on demand and reported rather than auto-committed
 
 ## Phase 6 — Polish
 
 - [x] `storage` permission, added when there was a reason: remembering the open target and the
       unverified toggle
-- [ ] Favourites pinned to the top, and recently used tools
+- [x] Favourites pinned to the top
+- [ ] Recently used tools
 - [ ] Keyboard shortcut to open the popup (`commands` in the manifest)
 - [ ] Copy the transformed URL instead of opening it
 - [ ] Optional omnibox keyword (`gd react` → deck for the repository)
-- [ ] Options page for hiding tools the user does not want
+- [x] Options page for reordering, favouriting and hiding tools
 - [ ] Screenshots and a short demo in the README
 
 ## Phase 7 — Distribution
