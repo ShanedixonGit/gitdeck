@@ -1,0 +1,61 @@
+name: Link check
+
+# Availability is checked here and never in the extension: the popup makes no
+# network requests, so a dead tool is caught by this job and hidden by editing
+# the registry's status field, not by probing services from the user's browser.
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - id: check
+        run: node --experimental-strip-types scripts/check-links.ts | tee report.txt
+      - if: failure()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('report.txt', 'utf8');
+            const title = 'Registry link check failed';
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'link-check',
+            });
+            const body = [
+              'A tool marked `verified` did not respond. Re-check it by hand, then set its',
+              '`status` to `unverified` or `deprecated` in `src/lib/tools/registry.ts`.',
+              '',
+              '```',
+              report,
+              '```',
+            ].join('\n');
+            if (open.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: open[0].number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['link-check'],
+              });
+            }

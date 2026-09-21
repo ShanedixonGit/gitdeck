@@ -18,6 +18,7 @@
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "icons": "node scripts/generate-icons.mjs",
+    "check:links": "node --experimental-strip-types scripts/check-links.ts",
     "compile": "svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
