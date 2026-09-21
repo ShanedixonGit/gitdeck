@@ -80,6 +80,7 @@ src/
 ├── components/
 │   ├── RepoHeader.svelte       owner/repo, ref/path, "Change"
 │   ├── RepoPrompt.svelte       manual URL entry fallback
+│   ├── SettingsPanel.svelte    open target and unverified toggle
 │   ├── ToolDeck.svelte         groups resolved tools by category
 │   └── ToolCard.svelte         one tool, one action
 ├── lib/
@@ -87,6 +88,11 @@ src/
 │   ├── github/
 │   │   ├── types.ts            RepoRef
 │   │   └── parse-repo.ts       URL → RepoRef
+│   ├── settings/
+│   │   ├── types.ts            Settings, OpenTarget
+│   │   ├── settings.ts         defaults and normalisation, pure
+│   │   ├── store.ts            read and write browser.storage.sync
+│   │   └── index.ts            public surface of the settings module
 │   └── tools/
 │       ├── types.ts            ToolDefinition, ToolCategory, ToolStatus
 │       ├── registry.ts         the data
@@ -107,7 +113,7 @@ plain Node environment.
 
 ## 5. UI architecture
 
-A single stateful component (`App.svelte`) and four presentational ones. State is Svelte 5 runes;
+A single stateful component (`App.svelte`) and five presentational ones. State is Svelte 5 runes;
 there is no store layer because there is one screen and no cross-component state to share.
 
 ```
@@ -115,12 +121,14 @@ App.svelte
   view          { loading } | { repo } | { prompt }
   filter        string
   selectedIndex number
-  includeUnverified boolean
+  settings      Settings          loaded from storage, defaults until it arrives
+  settingsOpen  boolean
        │
-       ├─ RepoHeader   (repo, onchange)
-       ├─ RepoPrompt   (message, onresolve)
-       └─ ToolDeck     (entries, selectedId, onopen)
-             └─ ToolCard (entry, selected, onopen)
+       ├─ RepoHeader    (repo, onchange)
+       ├─ RepoPrompt    (message, onresolve)
+       ├─ SettingsPanel (settings, onchange, onclose)
+       └─ ToolDeck      (groups, ordered, selectedId, onopen)
+             └─ ToolCard (entry, selected, shortcut, onopen)
 ```
 
 Props flow down, callbacks flow up. No component imports the registry directly except through the
@@ -134,8 +142,17 @@ header and footer stay fixed. All colour is CSS custom properties in `styles/the
 open a card directly, `Enter` opens the selection, `Escape` clears the filter. The mapping lives
 in `lib/tools/keyboard.ts` as a pure function so the whole model is tested without a DOM. Keys
 with a modifier are never intercepted, and while the filter has focus the number keys yield to
-plain typing. The selected card scrolls into view. Every card is a real `<button>`, so tab order
-and screen readers work without ARIA patching.
+plain typing. While the settings panel is open every deck shortcut is inert and `Escape` closes
+the panel. The selected card scrolls into view. Every card is a real `<button>`, so tab order and
+screen readers work without ARIA patching.
+
+**Settings.** Three open targets — a new tab, this tab, or a background tab — and the unverified
+toggle, persisted to `browser.storage.sync` as one object. `this tab` is the case the rest of the
+design exists for: you are on a repository, and you want to be looking at the same repository
+somewhere else. A background tab is the only target that leaves the popup open, so several tools
+can be opened in a row. Storage is treated as untrusted input: `normaliseSettings` falls back
+field by field, so a value written by an older version cannot reset the others or crash the
+popup.
 
 ## 6. Tool registry architecture
 
@@ -213,13 +230,15 @@ the mechanism behind the "handle tools becoming unavailable without breaking" re
 
 ## 8. Security and privacy model
 
-**Permissions.** `activeTab` only. No `host_permissions`, no `tabs`, no `storage`, no
-`scripting`. `activeTab` is granted by the browser for the current tab at the moment the user
-clicks the action, and revoked on navigation. `browser.tabs.create` needs no permission.
+**Permissions.** `activeTab` and `storage`. No `host_permissions`, no `tabs`, no `scripting`.
+`activeTab` is granted by the browser for the current tab at the moment the user clicks the
+action, and revoked on navigation; it is what allows `browser.tabs.update` to send that tab
+somewhere else. `storage` holds preferences and nothing else.
 
 **Data.** GitDeck reads one string — the active tab's URL — and holds it in popup memory until
-the popup closes. Nothing is stored, logged or transmitted. There is no first-party network
-traffic of any kind.
+the popup closes. The only thing ever written is the settings object: an open target and one
+boolean. No URL, repository name or history is stored, logged or transmitted, and there is no
+first-party network traffic of any kind.
 
 **Third parties.** The popup issues no requests to the listed services. Tool icons are local text
 monograms specifically so that opening the deck does not leak the repository name to every

@@ -25,6 +25,7 @@ product.
 - [x] Number shortcuts (`1`–`9`) for the first results
 - [x] Loading, empty and error states given the same care as the happy path
 - [x] Reduced-motion handling
+- [x] Settings panel: where tools open, and the unverified toggle, both remembered
 - [ ] High-contrast handling
 - [ ] Accessibility pass with a screen reader
 
@@ -55,8 +56,9 @@ product.
 
 ## Phase 6 — Polish
 
-- [ ] `storage` permission (added only here, when there is a reason) for: favourites pinned to
-      the top, recently used tools, remembering the unverified toggle
+- [x] `storage` permission, added when there was a reason: remembering the open target and the
+      unverified toggle
+- [ ] Favourites pinned to the top, and recently used tools
 - [ ] Keyboard shortcut to open the popup (`commands` in the manifest)
 - [ ] Copy the transformed URL instead of opening it
 - [ ] Optional omnibox keyword (`gd react` → deck for the repository)

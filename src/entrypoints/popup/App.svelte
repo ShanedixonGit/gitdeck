@@ -1,10 +1,13 @@
 <script lang="ts">
   import RepoHeader from '../../components/RepoHeader.svelte';
   import RepoPrompt from '../../components/RepoPrompt.svelte';
+  import SettingsPanel from '../../components/SettingsPanel.svelte';
   import ToolDeck from '../../components/ToolDeck.svelte';
   import { getActiveTabUrl, openUrl } from '../../lib/browser/active-tab';
   import { parseGitHubRepo } from '../../lib/github/parse-repo';
   import type { RepoRef } from '../../lib/github/types';
+  import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../../lib/settings';
+  import type { Settings } from '../../lib/settings';
   import {
     TOOLS,
     filterTools,
@@ -21,11 +24,12 @@
   let view = $state<View>({ kind: 'loading' });
   let filter = $state('');
   let selectedIndex = $state(0);
-  let includeUnverified = $state(false);
+  let settings = $state<Settings>(DEFAULT_SETTINGS);
+  let settingsOpen = $state(false);
   let filterInput = $state<HTMLInputElement | null>(null);
 
   const statuses = $derived<readonly ToolStatus[]>(
-    includeUnverified ? ['verified', 'unverified'] : ['verified'],
+    settings.includeUnverified ? ['verified', 'unverified'] : ['verified'],
   );
 
   const resolution = $derived(
@@ -49,6 +53,10 @@
   });
 
   void (async () => {
+    settings = await loadSettings();
+  })();
+
+  void (async () => {
     const url = await getActiveTabUrl();
     const repo = url === null ? null : parseGitHubRepo(url);
     view =
@@ -65,8 +73,20 @@
     if (repo !== null) view = { kind: 'repo', repo };
   }
 
+  function updateSettings(next: Settings) {
+    settings = next;
+    void saveSettings(next);
+  }
+
+  /**
+   * Opens a destination and gets out of the way. A background tab is the one
+   * case where the popup stays up, so several tools can be opened in a row.
+   */
   function open(url: string) {
-    void openUrl(url);
+    const target = settings.openTarget;
+    void openUrl(url, target).then(() => {
+      if (target !== 'background-tab') window.close();
+    });
   }
 
   function scrollSelectedIntoView() {
@@ -86,6 +106,7 @@
       typing: document.activeElement === filterInput,
       filterEmpty: filter === '',
       hasResults: ordered.length > 0,
+      settingsOpen,
     });
     if (action.type === 'none') return;
 
@@ -96,6 +117,9 @@
         break;
       case 'clear-filter':
         filter = '';
+        break;
+      case 'close-settings':
+        settingsOpen = false;
         break;
       case 'move':
         selectedIndex = (selectedIndex + action.delta + ordered.length) % ordered.length;
@@ -126,47 +150,61 @@
       onchange={() => (view = { kind: 'prompt', message: 'Which repository?' })}
     />
 
-    <div class="filter">
-      <input
-        bind:this={filterInput}
-        bind:value={filter}
-        type="text"
-        spellcheck="false"
-        autocomplete="off"
-        placeholder="Filter tools — press / to focus"
-        aria-label="Filter tools"
-      />
-    </div>
+    {#if settingsOpen}
+      <div class="deck">
+        <SettingsPanel
+          {settings}
+          onchange={updateSettings}
+          onclose={() => (settingsOpen = false)}
+        />
+      </div>
+    {:else}
+      <div class="filter">
+        <input
+          bind:this={filterInput}
+          bind:value={filter}
+          type="text"
+          spellcheck="false"
+          autocomplete="off"
+          placeholder="Filter tools — press / to focus"
+          aria-label="Filter tools"
+        />
+      </div>
 
-    <div class="deck">
-      {#if resolution.resolved.length === 0}
-        <div class="empty">
-          <p>No tools available for this page.</p>
-          <p class="hint">
-            Every tool was skipped. This usually means the registry needs a look — see
-            docs/tools.md.
-          </p>
-        </div>
-      {:else if ordered.length === 0}
-        <div class="empty">
-          <p>Nothing matches “{filter}”.</p>
-          <button type="button" onclick={() => (filter = '')}>Clear filter</button>
-        </div>
-      {:else}
-        <ToolDeck {groups} {ordered} selectedId={selected?.tool.id} onopen={open} />
-      {/if}
-    </div>
+      <div class="deck">
+        {#if resolution.resolved.length === 0}
+          <div class="empty">
+            <p>No tools available for this page.</p>
+            <p class="hint">
+              Every tool was skipped. This usually means the registry needs a look — see
+              docs/tools.md.
+            </p>
+          </div>
+        {:else if ordered.length === 0}
+          <div class="empty">
+            <p>Nothing matches “{filter}”.</p>
+            <button type="button" onclick={() => (filter = '')}>Clear filter</button>
+          </div>
+        {:else}
+          <ToolDeck {groups} {ordered} selectedId={selected?.tool.id} onopen={open} />
+        {/if}
+      </div>
+    {/if}
 
     <footer>
-      <span>{ordered.length} of {resolution.resolved.length} tools</span>
-      <label>
-        <input type="checkbox" bind:checked={includeUnverified} />
-        Show unverified
-      </label>
+      <span>
+        {ordered.length} of {resolution.resolved.length} tools
+        {#if unavailable > 0}<span class="faint">· {unavailable} not available here</span>{/if}
+      </span>
+      <button
+        type="button"
+        class="settings"
+        aria-expanded={settingsOpen}
+        onclick={() => (settingsOpen = !settingsOpen)}
+      >
+        Settings
+      </button>
     </footer>
-    {#if unavailable > 0}
-      <p class="status muted">{unavailable} tool(s) not available for this page.</p>
-    {/if}
   {/if}
 </main>
 
@@ -237,12 +275,6 @@
     background: var(--bg-hover);
   }
 
-  .status.muted {
-    padding: 0 var(--space-4) var(--space-3);
-    font-size: 11px;
-    color: var(--text-faint);
-  }
-
   footer {
     display: flex;
     align-items: center;
@@ -254,15 +286,24 @@
     font-size: 11px;
   }
 
-  footer label {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
+  footer .faint {
+    color: var(--text-faint);
+  }
+
+  footer .settings {
+    flex: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 11px;
+    padding: 3px 8px;
     cursor: pointer;
   }
 
-  footer input {
-    margin: 0;
-    accent-color: var(--accent);
+  footer .settings:hover {
+    background: var(--bg-hover);
+    color: var(--text);
   }
 </style>

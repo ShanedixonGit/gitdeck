@@ -96,4 +96,31 @@ describe('keyAction', () => {
       expect(keyAction(context({ key: '3', typing: true }))).toEqual({ type: 'none' });
     });
   });
+
+  describe('settings panel', () => {
+    it('closes the panel on escape', () => {
+      expect(keyAction(context({ key: 'Escape', settingsOpen: true }))).toEqual({
+        type: 'close-settings',
+      });
+    });
+
+    it('closes the panel on escape even when a filter is set', () => {
+      expect(keyAction(context({ key: 'Escape', settingsOpen: true, filterEmpty: false }))).toEqual(
+        { type: 'close-settings' },
+      );
+    });
+
+    it('holds every deck shortcut while the panel covers the deck', () => {
+      for (const key of ['/', 'ArrowDown', 'ArrowUp', 'Enter', '1']) {
+        expect(keyAction(context({ key, settingsOpen: true }))).toEqual({ type: 'none' });
+      }
+    });
+
+    it('behaves normally when the panel is closed', () => {
+      expect(keyAction(context({ key: 'ArrowDown', settingsOpen: false }))).toEqual({
+        type: 'move',
+        delta: 1,
+      });
+    });
+  });
 });

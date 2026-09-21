@@ -1,4 +1,5 @@
 import { browser } from 'wxt/browser';
+import type { OpenTarget } from '../settings';
 
 /**
  * The URL of the tab the popup was opened from.
@@ -16,7 +17,18 @@ export async function getActiveTabUrl(): Promise<string | null> {
   }
 }
 
-/** Opens a destination in a new tab next to the current one. */
-export async function openUrl(url: string): Promise<void> {
-  await browser.tabs.create({ url, active: true });
+/**
+ * Sends the browser to a destination, honouring the user's open preference.
+ *
+ * `current-tab` navigates the tab the popup was opened from, which is the
+ * point of a URL rewriter: you are on a repository and you want to be looking
+ * at the same repository somewhere else. The others open a tab beside it,
+ * either focused or left in the background.
+ */
+export async function openUrl(url: string, target: OpenTarget = 'new-tab'): Promise<void> {
+  if (target === 'current-tab') {
+    await browser.tabs.update({ url });
+    return;
+  }
+  await browser.tabs.create({ url, active: target === 'new-tab' });
 }

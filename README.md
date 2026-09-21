@@ -48,13 +48,17 @@ Click the GitDeck icon on any GitHub repo. Then:
 
 Not on a GitHub page? Paste a repo URL instead.
 
+**Settings** (bottom right of the popup) decides where a tool opens: a new tab, the tab you're
+already on, or a background tab so you can fire off several at once. Your choice is remembered.
+
 ## Privacy
 
-GitDeck asks for one permission, `activeTab`, and uses it to read the address of the
-tab you're on when you click the icon. That's it.
+GitDeck asks for two permissions. `activeTab` reads the address of the tab you're on
+when you click the icon. `storage` remembers your settings. That's it.
 
 - No tracking, no analytics, no accounts
 - No reading your code, your page, or your other tabs
+- Nothing is stored except your two preferences — no URLs, no history
 - The extension itself never makes a network request — the only thing that happens is
   the link you choose to click
 

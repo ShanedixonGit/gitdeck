@@ -8,7 +8,7 @@ export default defineConfig({
     name: 'GitDeck',
     short_name: 'GitDeck',
     description: 'A curated deck of tools for the GitHub repository you are looking at.',
-    permissions: ['activeTab'],
+    permissions: ['activeTab', 'storage'],
     browser_specific_settings: {
       gecko: {
         id: 'gitdeck@shanedixon.dev',
