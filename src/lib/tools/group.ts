@@ -1,24 +1,46 @@
-import { CATEGORIES, categoryLabel } from './categories';
+import { CATEGORIES, FAVOURITES_SECTION, categoryLabel, categoryTint } from './categories';
 import type { ResolvedTool } from './resolve';
-import type { ToolCategory } from './types';
 
-/** A deck section: one category and the tools in it. */
+/** A deck section: a heading, its colour, and the tools under it. */
 export interface ToolGroup {
-  readonly category: ToolCategory;
+  /** Category id, or `favourites`. */
+  readonly id: string;
   readonly label: string;
+  /** Name of the CSS custom property holding this section's colour. */
+  readonly tint: string;
   readonly entries: readonly ResolvedTool[];
 }
 
 /**
- * Splits resolved tools into deck sections, in the order declared by
- * `CATEGORIES`. Empty categories are omitted.
+ * Splits resolved tools into deck sections.
+ *
+ * Favourites come first, pulled out of their categories so that starring a tool
+ * both raises it up the deck and gives it a low number shortcut. Categories
+ * follow in the order declared by `CATEGORIES`. Empty sections are omitted.
  */
-export function groupByCategory(entries: readonly ResolvedTool[]): readonly ToolGroup[] {
-  return CATEGORIES.map((category) => ({
-    category: category.id,
-    label: categoryLabel(category.id),
-    entries: entries.filter((entry) => entry.tool.category === category.id),
-  })).filter((group) => group.entries.length > 0);
+export function groupByCategory(
+  entries: readonly ResolvedTool[],
+  favourites: readonly string[] = [],
+): readonly ToolGroup[] {
+  const starred = new Set(favourites);
+  const pinned = entries.filter((entry) => starred.has(entry.tool.id));
+  const rest = entries.filter((entry) => !starred.has(entry.tool.id));
+
+  const sections: ToolGroup[] = [];
+  if (pinned.length > 0) {
+    sections.push({ ...FAVOURITES_SECTION, entries: pinned });
+  }
+  for (const category of CATEGORIES) {
+    const inCategory = rest.filter((entry) => entry.tool.category === category.id);
+    if (inCategory.length === 0) continue;
+    sections.push({
+      id: category.id,
+      label: categoryLabel(category.id),
+      tint: categoryTint(category.id),
+      entries: inCategory,
+    });
+  }
+  return sections;
 }
 
 /**

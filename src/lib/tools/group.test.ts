@@ -27,12 +27,12 @@ describe('groupByCategory', () => {
   it('omits categories with no tools', () => {
     const groups = groupByCategory([entry('a', 'ide')]);
     expect(groups).toHaveLength(1);
-    expect(groups[0]?.category).toBe('ide');
+    expect(groups[0]?.id).toBe('ide');
   });
 
   it('orders sections by the declared category order, not input order', () => {
     const groups = groupByCategory([entry('a', 'search'), entry('b', 'ide')]);
-    expect(groups.map((group) => group.category)).toEqual(['ide', 'search']);
+    expect(groups.map((group) => group.id)).toEqual(['ide', 'search']);
   });
 
   it('keeps input order within a section', () => {
@@ -61,5 +61,39 @@ describe('flattenGroups', () => {
 
   it('round-trips an empty deck', () => {
     expect(flattenGroups(groupByCategory([]))).toEqual([]);
+  });
+});
+
+describe('favourites', () => {
+  it('pulls starred tools into a section above the categories', () => {
+    const groups = groupByCategory([entry('a', 'ide'), entry('b', 'search')], ['b']);
+    expect(groups.map((group) => group.id)).toEqual(['favourites', 'ide']);
+    expect(groups[0]?.entries.map((e) => e.tool.id)).toEqual(['b']);
+  });
+
+  it('shows a starred tool once, not in both places', () => {
+    const groups = groupByCategory([entry('a', 'ide')], ['a']);
+    expect(groups.map((group) => group.id)).toEqual(['favourites']);
+    expect(flattenGroups(groups)).toHaveLength(1);
+  });
+
+  it('omits the section when nothing is starred', () => {
+    const groups = groupByCategory([entry('a', 'ide')], []);
+    expect(groups.map((group) => group.id)).toEqual(['ide']);
+  });
+
+  it('ignores favourites that are not in the deck', () => {
+    const groups = groupByCategory([entry('a', 'ide')], ['gone']);
+    expect(groups.map((group) => group.id)).toEqual(['ide']);
+  });
+
+  it('keeps the deck order inside the favourites section', () => {
+    const groups = groupByCategory([entry('a', 'ide'), entry('b', 'search')], ['b', 'a']);
+    expect(groups[0]?.entries.map((e) => e.tool.id)).toEqual(['a', 'b']);
+  });
+
+  it('gives every section a tint', () => {
+    const groups = groupByCategory([entry('a', 'ide'), entry('b', 'search')], ['b']);
+    for (const group of groups) expect(group.tint).toMatch(/^--tint-/);
   });
 });

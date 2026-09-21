@@ -15,6 +15,15 @@
   --warn: #9a6700;
   --focus: #2f6feb;
 
+  --tint-favourites: #b8860b;
+  --tint-ide: #2f6feb;
+  --tint-understand: #7c5cd6;
+  --tint-visualise: #0f8a72;
+  --tint-ai-context: #c2410c;
+  --tint-insights: #b3357e;
+  --tint-security: #5a6b1f;
+  --tint-search: #0f7490;
+
   --radius: 8px;
   --radius-sm: 6px;
   --space-1: 4px;
@@ -42,6 +51,15 @@
     --accent-contrast: #0d1117;
     --warn: #d29922;
     --focus: #5b8cff;
+
+    --tint-favourites: #e3b341;
+    --tint-ide: #6e9bff;
+    --tint-understand: #b08cff;
+    --tint-visualise: #3fc7a4;
+    --tint-ai-context: #ff9668;
+    --tint-insights: #ff7ac0;
+    --tint-security: #a7c34f;
+    --tint-search: #4bb8d8;
   }
 }
 
