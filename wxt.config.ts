@@ -2,6 +2,9 @@ import { defineConfig } from 'wxt';
 
 export default defineConfig({
   srcDir: 'src',
+  // WXT resolves publicDir against the project root, not srcDir, so this has to
+  // be spelled out or the icons never reach the build and the manifest is invalid.
+  publicDir: 'src/public',
   modules: ['@wxt-dev/module-svelte'],
   manifestVersion: 3,
   manifest: {
