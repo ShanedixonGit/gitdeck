@@ -7,59 +7,39 @@
     shortcut?: number | undefined;
     /** CSS custom property holding the section colour. */
     tint: string;
-    favourite: boolean;
     onopen: (url: string) => void;
-    onfavourite: (id: string) => void;
   }
 
-  let { entry, selected, shortcut, tint, favourite, onopen, onfavourite }: Props = $props();
+  let { entry, selected, shortcut, tint, onopen }: Props = $props();
 
   const monogram = $derived(entry.tool.icon ?? entry.tool.name.slice(0, 2).toLowerCase());
 </script>
 
-<div class="row" style="--tint: var({tint})">
-  <button
-    type="button"
-    class="card"
-    class:selected
-    data-tool-id={entry.tool.id}
-    title={entry.url}
-    onclick={() => onopen(entry.url)}
-  >
-    <span class="monogram" aria-hidden="true">{monogram}</span>
-    <span class="body">
-      <span class="name">
-        {entry.tool.name}
-        {#if entry.tool.status === 'unverified'}<span class="badge">unverified</span>{/if}
-      </span>
-      <span class="description">{entry.tool.description}</span>
-      {#if entry.tool.notes}<span class="notes">{entry.tool.notes}</span>{/if}
+<button
+  type="button"
+  class="card"
+  class:selected
+  style="--tint: var({tint})"
+  data-tool-id={entry.tool.id}
+  title={entry.url}
+  onclick={() => onopen(entry.url)}
+>
+  <span class="monogram" aria-hidden="true">{monogram}</span>
+  <span class="body">
+    <span class="name">
+      {entry.tool.name}
+      {#if entry.tool.status === 'unverified'}<span class="badge">unverified</span>{/if}
     </span>
-    {#if shortcut !== undefined}
-      <kbd aria-hidden="true">{shortcut}</kbd>
-    {/if}
-    <span class="arrow" aria-hidden="true">→</span>
-  </button>
-  <button
-    type="button"
-    class="star"
-    class:on={favourite}
-    aria-pressed={favourite}
-    title={favourite ? `Unpin ${entry.tool.name}` : `Pin ${entry.tool.name} to the top`}
-    aria-label={favourite ? `Unpin ${entry.tool.name}` : `Pin ${entry.tool.name} to the top`}
-    onclick={() => onfavourite(entry.tool.id)}
-  >
-    {favourite ? '\u2605' : '\u2606'}
-  </button>
-</div>
+    <span class="description">{entry.tool.description}</span>
+    {#if entry.tool.notes}<span class="notes">{entry.tool.notes}</span>{/if}
+  </span>
+  {#if shortcut !== undefined}
+    <kbd aria-hidden="true">{shortcut}</kbd>
+  {/if}
+  <span class="arrow" aria-hidden="true">→</span>
+</button>
 
 <style>
-  .row {
-    display: flex;
-    align-items: stretch;
-    gap: 2px;
-  }
-
   .card {
     display: flex;
     align-items: flex-start;
@@ -100,27 +80,6 @@
     font-weight: 600;
     color: var(--tint);
     text-transform: lowercase;
-  }
-
-  .star {
-    flex: none;
-    width: 26px;
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--text-faint);
-    font-size: 13px;
-    line-height: 1;
-    cursor: pointer;
-  }
-
-  .star:hover {
-    background: var(--bg-hover);
-    color: var(--text);
-  }
-
-  .star.on {
-    color: var(--tint-favourites);
   }
 
   .body {

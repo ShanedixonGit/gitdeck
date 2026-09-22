@@ -3,22 +3,12 @@
   import RepoPrompt from '../../components/RepoPrompt.svelte';
   import SettingsPanel from '../../components/SettingsPanel.svelte';
   import ToolDeck from '../../components/ToolDeck.svelte';
-  import Welcome from '../../components/Welcome.svelte';
   import { getActiveTabUrl, openOptions, openUrl } from '../../lib/browser/active-tab';
   import { parseGitHubRepo } from '../../lib/github/parse-repo';
   import type { RepoRef } from '../../lib/github/types';
   import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../../lib/settings';
   import type { Settings } from '../../lib/settings';
-  import {
-    TOOLS,
-    applyHidden,
-    applyOrder,
-    filterTools,
-    flattenGroups,
-    groupByCategory,
-    keyAction,
-    resolveTools,
-  } from '../../lib/tools';
+  import { TOOLS, filterTools, keyAction, pickStack, resolveTools } from '../../lib/tools';
   import type { ToolStatus } from '../../lib/tools';
 
   type View =
@@ -43,19 +33,13 @@
       : { resolved: [], skipped: [] },
   );
 
-  const preferred = $derived(
-    applyOrder(applyHidden(resolution.resolved, settings.hidden), settings.order),
-  );
-  const visible = $derived(filterTools(preferred, filter));
-  const groups = $derived(groupByCategory(visible, settings.favourites));
-  const ordered = $derived(flattenGroups(groups));
+  const chosen = $derived(pickStack(resolution.resolved, settings.stack));
+  const ordered = $derived(filterTools(chosen, filter));
 
   const selected = $derived(ordered[Math.min(selectedIndex, ordered.length - 1)]);
-  const unavailable = $derived(
-    resolution.skipped.filter((entry) => entry.tool.status === 'verified').length,
-  );
-  /** Held back until settings load, so the panel cannot flash for a returning user. */
-  const showWelcome = $derived(settingsReady && !settings.onboarded);
+  const unavailable = $derived(settings.stack.length - chosen.length);
+  /** Held back until settings load, so it cannot flash for a returning user. */
+  const firstRun = $derived(settingsReady && settings.stack.length === 0);
 
   $effect(() => {
     void filter;
@@ -89,16 +73,8 @@
     void saveSettings(next);
   }
 
-  function toggleFavourite(id: string) {
-    const favourites = settings.favourites.includes(id)
-      ? settings.favourites.filter((each) => each !== id)
-      : [...settings.favourites, id];
-    updateSettings({ ...settings, favourites });
-  }
-
   function manage() {
-    updateSettings({ ...settings, onboarded: true });
-    void openOptions();
+    void openOptions().then(() => window.close());
   }
 
   /**
@@ -140,7 +116,7 @@
       typing: document.activeElement === filterInput,
       filterEmpty: filter === '',
       hasResults: ordered.length > 0,
-      settingsOpen: settingsOpen || showWelcome,
+      settingsOpen: settingsOpen || firstRun,
     });
     if (action.type === 'none') return;
 
@@ -184,12 +160,15 @@
       onchange={() => (view = { kind: 'prompt', message: 'Which repository?' })}
     />
 
-    {#if showWelcome}
-      <Welcome
-        toolCount={resolution.resolved.length}
-        onmanage={manage}
-        ondismiss={() => updateSettings({ ...settings, onboarded: true })}
-      />
+    {#if firstRun}
+      <section class="first-run">
+        <h2>Build your deck</h2>
+        <p>
+          Pick the tools you want from {TOOLS.length} on offer. Only those show up here, pointed at whatever
+          repository you are on.
+        </p>
+        <button type="button" class="primary" onclick={manage}>Choose tools</button>
+      </section>
     {:else if settingsOpen}
       <div class="deck">
         <SettingsPanel
@@ -213,13 +192,10 @@
       </div>
 
       <div class="deck">
-        {#if resolution.resolved.length === 0}
+        {#if chosen.length === 0}
           <div class="empty">
-            <p>No tools available for this page.</p>
-            <p class="hint">
-              Every tool was skipped. This usually means the registry needs a look — see
-              docs/tools.md.
-            </p>
+            <p>None of your tools apply to this page.</p>
+            <button type="button" onclick={manage}>Add more tools</button>
           </div>
         {:else if ordered.length === 0}
           <div class="empty">
@@ -227,14 +203,7 @@
             <button type="button" onclick={() => (filter = '')}>Clear filter</button>
           </div>
         {:else}
-          <ToolDeck
-            {groups}
-            {ordered}
-            selectedId={selected?.tool.id}
-            favourites={settings.favourites}
-            onopen={open}
-            onfavourite={toggleFavourite}
-          />
+          <ToolDeck entries={ordered} selectedId={selected?.tool.id} onopen={open} />
         {/if}
       </div>
     {/if}
@@ -245,8 +214,10 @@
 
     <footer>
       <span>
-        {ordered.length} of {resolution.resolved.length} tools
-        {#if unavailable > 0}<span class="faint">· {unavailable} not available here</span>{/if}
+        {#if !firstRun}
+          {ordered.length} of {settings.stack.length} tools
+          {#if unavailable > 0}<span class="faint">· {unavailable} not available here</span>{/if}
+        {/if}
       </span>
       <span class="footer-actions">
         <button type="button" class="settings" onclick={manage}>Customise</button>
@@ -298,6 +269,39 @@
     color: var(--text-muted);
   }
 
+  .first-run {
+    padding: var(--space-3) var(--space-4) var(--space-4);
+    border-top: 1px solid var(--border);
+  }
+
+  .first-run h2 {
+    margin: 0 0 var(--space-2);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .first-run p {
+    margin: 0 0 var(--space-3);
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  .primary {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .primary:hover {
+    opacity: 0.9;
+  }
+
   .empty {
     padding: var(--space-4);
     color: var(--text-muted);
@@ -306,12 +310,6 @@
 
   .empty p {
     margin: 0;
-  }
-
-  .empty .hint {
-    margin-top: var(--space-1);
-    font-size: 11px;
-    color: var(--text-faint);
   }
 
   .empty button {

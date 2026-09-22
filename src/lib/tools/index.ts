@@ -1,10 +1,7 @@
 export { TOOLS } from './registry';
-export { CATEGORIES, FAVOURITES_SECTION, categoryLabel, categoryTint } from './categories';
-export { applyHidden, applyOrder, moveInOrder, reconcileOrder } from './arrange';
+export { CATEGORIES, categoryLabel, categoryTint } from './categories';
 export { nudgeInStack, pickStack, placeInStack, reconcileStack, removeFromStack } from './stack';
 export { filterTools } from './filter';
-export { groupByCategory, flattenGroups } from './group';
-export type { ToolGroup } from './group';
 export { keyAction } from './keyboard';
 export type { KeyAction, KeyContext } from './keyboard';
 export { resolveTool, resolveTools, validateTool } from './resolve';

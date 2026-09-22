@@ -4,43 +4,50 @@
   import {
     CATEGORIES,
     TOOLS,
-    applyOrder,
-    categoryLabel,
     categoryTint,
-    moveInOrder,
-    reconcileOrder,
+    nudgeInStack,
+    placeInStack,
+    reconcileStack,
+    removeFromStack,
   } from '../../lib/tools';
   import type { ToolDefinition } from '../../lib/tools';
 
+  type Panel = 'available' | 'stack';
+
   let settings = $state<Settings>(DEFAULT_SETTINGS);
   let ready = $state(false);
+  let dragging = $state<{ id: string; from: Panel } | null>(null);
+  let over = $state<Panel | null>(null);
+  /** Where a drop on the stack would land: before this id, or at the end for `null`. */
+  let dropBefore = $state<string | null>(null);
 
   const byId = new Map(TOOLS.map((tool) => [tool.id, tool]));
   const knownIds = TOOLS.map((tool) => tool.id);
+  const unverifiedCount = TOOLS.filter((tool) => tool.status === 'unverified').length;
 
-  /** The registry in the user's order, which is what every control below acts on. */
-  const ordered = $derived(
-    applyOrder(
-      TOOLS.map((tool) => ({ tool })),
-      settings.order,
-    ).map((row) => row.tool),
+  const stackTools = $derived(
+    settings.stack.flatMap((id) => {
+      const tool = byId.get(id);
+      return tool === undefined ? [] : [tool];
+    }),
   );
 
-  const sections = $derived(
+  const available = $derived(
     CATEGORIES.map((category) => ({
-      id: category.id,
-      label: categoryLabel(category.id),
-      tint: categoryTint(category.id),
-      tools: ordered.filter((tool) => tool.category === category.id),
+      ...category,
+      tools: TOOLS.filter(
+        (tool) =>
+          tool.category === category.id &&
+          !settings.stack.includes(tool.id) &&
+          (tool.status === 'verified' ||
+            (tool.status === 'unverified' && settings.includeUnverified)),
+      ),
     })).filter((section) => section.tools.length > 0),
   );
 
-  const hiddenCount = $derived(settings.hidden.length);
-  const unverifiedCount = TOOLS.filter((tool) => tool.status === 'unverified').length;
-
   void (async () => {
     const stored = await loadSettings();
-    settings = { ...stored, order: reconcileOrder(stored.order, knownIds) };
+    settings = { ...stored, stack: reconcileStack(stored.stack, knownIds) };
     ready = true;
   })();
 
@@ -49,33 +56,65 @@
     void saveSettings(next);
   }
 
-  function toggle(list: readonly string[], id: string): string[] {
-    return list.includes(id) ? list.filter((item) => item !== id) : [...list, id];
+  function setStack(stack: string[]) {
+    update({ ...settings, stack });
   }
 
-  function sameCategory(one: string, two: string) {
-    return byId.get(one)?.category === byId.get(two)?.category;
+  function monogram(tool: ToolDefinition) {
+    return tool.icon ?? tool.name.slice(0, 2).toLowerCase();
   }
 
-  function move(id: string, delta: -1 | 1) {
-    update({ ...settings, order: moveInOrder(settings.order, id, delta, sameCategory) });
+  function startDrag(event: DragEvent, id: string, from: Panel) {
+    dragging = { id, from };
+    event.dataTransfer?.setData('text/plain', id);
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
   }
 
-  function position(tool: ToolDefinition) {
-    const section = sections.find((each) => each.id === tool.category);
-    return {
-      index: section?.tools.indexOf(tool) ?? 0,
-      last: (section?.tools.length ?? 1) - 1,
-    };
+  function endDrag() {
+    dragging = null;
+    over = null;
+    dropBefore = null;
   }
 
-  function reset() {
-    update({
-      ...settings,
-      favourites: [],
-      hidden: [],
-      order: reconcileOrder([], knownIds),
-    });
+  function overPanel(event: DragEvent, panel: Panel) {
+    if (dragging === null) return;
+    event.preventDefault();
+    over = panel;
+  }
+
+  function overStackItem(event: DragEvent, index: number) {
+    if (dragging === null) return;
+    event.preventDefault();
+    event.stopPropagation();
+    over = 'stack';
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const below = event.clientY > rect.top + rect.height / 2;
+    dropBefore = below ? (settings.stack[index + 1] ?? null) : (settings.stack[index] ?? null);
+  }
+
+  function overStackEnd(event: DragEvent) {
+    overPanel(event, 'stack');
+    dropBefore = null;
+  }
+
+  function dropOnStack(event: DragEvent) {
+    event.preventDefault();
+    if (dragging !== null) setStack(placeInStack(settings.stack, dragging.id, dropBefore));
+    endDrag();
+  }
+
+  function dropOnAvailable(event: DragEvent) {
+    event.preventDefault();
+    if (dragging?.from === 'stack') setStack(removeFromStack(settings.stack, dragging.id));
+    endDrag();
+  }
+
+  function nudge(event: KeyboardEvent, id: string) {
+    const delta = event.key === 'ArrowUp' ? -1 : event.key === 'ArrowDown' ? 1 : 0;
+    if (delta === 0) return;
+    event.preventDefault();
+    setStack(nudgeInStack(settings.stack, id, delta));
+    queueMicrotask(() => document.querySelector<HTMLElement>(`[data-handle="${id}"]`)?.focus());
   }
 </script>
 
@@ -83,14 +122,120 @@
   <header>
     <h1>Your deck</h1>
     <p>
-      Star what you reach for most, hide what you never use, and put each section in the order you
-      want it. The popup follows this page, and the number shortcuts follow the popup.
+      The popup shows only the tools in your deck, in this order, pointed at whatever repository you
+      are on. Drag tools across to add or remove them, and drag within your deck to reorder.
     </p>
   </header>
 
   {#if !ready}
     <p class="status">Loading…</p>
   {:else}
+    <div class="panels">
+      <section
+        class="panel"
+        class:target={over === 'available' && dragging?.from === 'stack'}
+        aria-labelledby="available-heading"
+        ondragover={(event) => overPanel(event, 'available')}
+        ondrop={dropOnAvailable}
+      >
+        <h2 id="available-heading">Available</h2>
+        {#each available as section (section.id)}
+          <h3>{section.label}</h3>
+          <ul>
+            {#each section.tools as tool (tool.id)}
+              <li
+                draggable="true"
+                class:lifted={dragging?.id === tool.id}
+                style="--tint: var({section.tint})"
+                ondragstart={(event) => startDrag(event, tool.id, 'available')}
+                ondragend={endDrag}
+              >
+                <span class="monogram" aria-hidden="true">{monogram(tool)}</span>
+                <span class="body">
+                  <span class="name">
+                    {tool.name}
+                    {#if tool.status === 'unverified'}<span class="badge">unverified</span>{/if}
+                  </span>
+                  <span class="description">{tool.description}</span>
+                  <a href={tool.website} target="_blank" rel="noreferrer noopener">
+                    {new URL(tool.website).host}
+                  </a>
+                </span>
+                <button
+                  type="button"
+                  class="icon"
+                  aria-label="Add {tool.name} to your deck"
+                  title="Add to your deck"
+                  onclick={() => setStack(placeInStack(settings.stack, tool.id))}>+</button
+                >
+              </li>
+            {/each}
+          </ul>
+        {:else}
+          <p class="hint">Every tool is in your deck.</p>
+        {/each}
+      </section>
+
+      <section
+        class="panel stack"
+        class:target={over === 'stack'}
+        aria-labelledby="stack-heading"
+        ondragover={overStackEnd}
+        ondrop={dropOnStack}
+      >
+        <h2 id="stack-heading">
+          In your deck <span class="count">{stackTools.length}</span>
+        </h2>
+        {#if stackTools.length === 0}
+          <div class="welcome">
+            <p class="lead">Your deck is empty.</p>
+            <p>Drag tools here, or press <kbd>+</kbd> beside one. Then, from the popup:</p>
+            <ul class="keys">
+              <li><kbd>1</kbd>–<kbd>9</kbd> opens a tool straight away</li>
+              <li><kbd>/</kbd> filters, <kbd>↑</kbd><kbd>↓</kbd> moves, <kbd>Enter</kbd> opens</li>
+            </ul>
+          </div>
+        {:else}
+          <ol class:drop-end={over === 'stack' && dropBefore === null}>
+            {#each stackTools as tool, index (tool.id)}
+              <li
+                draggable="true"
+                class:lifted={dragging?.id === tool.id}
+                class:drop-before={over === 'stack' && dropBefore === tool.id}
+                style="--tint: var({categoryTint(tool.category)})"
+                ondragstart={(event) => startDrag(event, tool.id, 'stack')}
+                ondragend={endDrag}
+                ondragover={(event) => overStackItem(event, index)}
+              >
+                <button
+                  type="button"
+                  class="handle"
+                  data-handle={tool.id}
+                  aria-label="Move {tool.name}, position {index +
+                    1}. Use the up and down arrow keys."
+                  title="Drag, or use the arrow keys"
+                  onkeydown={(event) => nudge(event, tool.id)}>⠿</button
+                >
+                <span class="monogram" aria-hidden="true">{monogram(tool)}</span>
+                <span class="body">
+                  <span class="name">{tool.name}</span>
+                  <span class="description">{tool.description}</span>
+                </span>
+                {#if index < 9}<kbd aria-hidden="true">{index + 1}</kbd>{/if}
+                <button
+                  type="button"
+                  class="icon"
+                  aria-label="Remove {tool.name} from your deck"
+                  title="Remove from your deck"
+                  onclick={() => setStack(removeFromStack(settings.stack, tool.id))}>×</button
+                >
+              </li>
+            {/each}
+          </ol>
+        {/if}
+      </section>
+    </div>
+
     <section class="prefs">
       <h2>Open tools in</h2>
       <div class="targets">
@@ -115,79 +260,22 @@
             onchange={(event) =>
               update({ ...settings, includeUnverified: event.currentTarget.checked })}
           />
-          Show the {unverifiedCount} tool{unverifiedCount === 1 ? '' : 's'} we could not verify automatically
+          Offer the {unverifiedCount} tool{unverifiedCount === 1 ? '' : 's'} we could not verify automatically
         </label>
       {/if}
     </section>
 
-    {#each sections as section (section.id)}
-      <section class="group" style="--tint: var({section.tint})">
-        <h2><span class="dot" aria-hidden="true"></span>{section.label}</h2>
-        <ul>
-          {#each section.tools as tool (tool.id)}
-            {@const spot = position(tool)}
-            {@const off = settings.hidden.includes(tool.id)}
-            <li class:off>
-              <span class="monogram" aria-hidden="true"
-                >{tool.icon ?? tool.name.slice(0, 2).toLowerCase()}</span
-              >
-              <span class="body">
-                <a href={tool.website} target="_blank" rel="noreferrer noopener">{tool.name}</a>
-                <span class="description">{tool.description}</span>
-              </span>
-              <span class="controls">
-                <button
-                  type="button"
-                  class="star"
-                  class:on={settings.favourites.includes(tool.id)}
-                  aria-pressed={settings.favourites.includes(tool.id)}
-                  aria-label="Pin {tool.name} to the top of the deck"
-                  onclick={() =>
-                    update({ ...settings, favourites: toggle(settings.favourites, tool.id) })}
-                >
-                  {settings.favourites.includes(tool.id) ? '★' : '☆'}
-                </button>
-                <button
-                  type="button"
-                  aria-label="Move {tool.name} up"
-                  disabled={spot.index === 0}
-                  onclick={() => move(tool.id, -1)}>↑</button
-                >
-                <button
-                  type="button"
-                  aria-label="Move {tool.name} down"
-                  disabled={spot.index === spot.last}
-                  onclick={() => move(tool.id, 1)}>↓</button
-                >
-                <button
-                  type="button"
-                  class="hide"
-                  aria-pressed={off}
-                  aria-label={off ? `Show ${tool.name}` : `Hide ${tool.name}`}
-                  onclick={() => update({ ...settings, hidden: toggle(settings.hidden, tool.id) })}
-                >
-                  {off ? 'Show' : 'Hide'}
-                </button>
-              </span>
-            </li>
-          {/each}
-        </ul>
-      </section>
-    {/each}
-
-    <footer>
-      <span>
-        {TOOLS.length} tools
-        {#if hiddenCount > 0}· {hiddenCount} hidden{/if}
-      </span>
-      <button type="button" onclick={reset}>Reset to defaults</button>
-    </footer>
+    {#if stackTools.length > 0}
+      <footer>
+        <button type="button" onclick={() => setStack([])}>Empty your deck</button>
+      </footer>
+    {/if}
   {/if}
 </main>
 
 <style>
   main {
-    max-width: 680px;
+    max-width: 960px;
     margin: 0 auto;
     padding: var(--space-4) var(--space-4) 48px;
   }
@@ -199,7 +287,7 @@
 
   header p {
     margin: var(--space-2) 0 var(--space-4);
-    max-width: 52ch;
+    max-width: 60ch;
     color: var(--text-muted);
     font-size: 13px;
     line-height: 1.5;
@@ -213,7 +301,14 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    margin: 0 0 var(--space-2);
+    margin: 0 0 var(--space-3);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  h3 {
+    margin: var(--space-3) 0 var(--space-1);
+    padding: 0 var(--space-2);
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -221,17 +316,239 @@
     color: var(--text-faint);
   }
 
-  .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--tint);
+  .count {
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--bg-hover);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    align-items: start;
+  }
+
+  @media (max-width: 720px) {
+    .panels {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .panel {
+    min-height: 240px;
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-subtle);
+    transition: border-color 80ms ease;
+  }
+
+  .panel.target {
+    border-color: var(--accent);
+  }
+
+  .stack {
+    position: sticky;
+    top: var(--space-4);
+    background: var(--bg);
+  }
+
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 2px;
+  }
+
+  li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2);
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    background: var(--bg);
+    cursor: grab;
+  }
+
+  li:hover {
+    border-color: var(--border);
+  }
+
+  li.lifted {
+    opacity: 0.4;
+  }
+
+  li.drop-before::before,
+  ol.drop-end::after {
+    content: '';
+    height: 2px;
+    border-radius: 1px;
+    background: var(--accent);
+  }
+
+  li.drop-before::before {
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+  }
+
+  .monogram {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--tint) 35%, transparent);
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--tint) 12%, transparent);
+    color: var(--tint);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .name {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .badge {
+    margin-left: var(--space-1);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--warn);
+  }
+
+  .description {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .body a {
+    width: fit-content;
+    font-size: 11px;
+    color: var(--text-faint);
+    text-decoration: none;
+  }
+
+  .body a:hover {
+    color: var(--text-muted);
+    text-decoration: underline;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .icon {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .icon:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+  }
+
+  .handle {
+    flex: none;
+    width: 18px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-faint);
+    font-size: 14px;
+    cursor: grab;
+  }
+
+  .handle:hover {
+    color: var(--text);
+  }
+
+  kbd {
+    flex: none;
+    min-width: 16px;
+    padding: 1px 4px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-subtle);
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .welcome {
+    display: grid;
+    place-content: center;
+    min-height: 180px;
+    padding: var(--space-4);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .welcome p {
+    margin: 0 0 var(--space-2);
+  }
+
+  .welcome .lead {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .keys {
+    gap: var(--space-1);
+    justify-items: center;
+  }
+
+  .keys li {
+    display: block;
+    padding: 0;
+    background: none;
+    cursor: default;
+  }
+
+  .hint {
+    margin: 0;
+    color: var(--text-faint);
+    font-size: 12px;
   }
 
   .prefs {
-    margin-bottom: var(--space-4);
-    padding-bottom: var(--space-4);
-    border-bottom: 1px solid var(--border);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border);
   }
 
   .targets {
@@ -278,122 +595,10 @@
     cursor: pointer;
   }
 
-  .group {
-    margin-bottom: var(--space-4);
-  }
-
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: 2px;
-  }
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-2) var(--space-3);
-    border: 1px solid transparent;
-    border-radius: var(--radius);
-  }
-
-  li:hover {
-    background: var(--bg-hover);
-    border-color: var(--border);
-  }
-
-  li.off {
-    opacity: 0.45;
-  }
-
-  .monogram {
-    flex: none;
-    width: 26px;
-    height: 26px;
-    display: grid;
-    place-items: center;
-    border: 1px solid color-mix(in srgb, var(--tint) 35%, transparent);
-    border-radius: var(--radius-sm);
-    background: color-mix(in srgb, var(--tint) 12%, transparent);
-    color: var(--tint);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 600;
-  }
-
-  .body {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .body a {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    text-decoration: none;
-    width: fit-content;
-  }
-
-  .body a:hover {
-    text-decoration: underline;
-  }
-
-  .description {
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  .controls {
-    flex: none;
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
-
-  .controls button {
-    min-width: 26px;
-    height: 26px;
-    padding: 0 6px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--text-muted);
-    font: inherit;
-    font-size: 12px;
-    cursor: pointer;
-  }
-
-  .controls button:hover:not(:disabled) {
-    background: var(--bg-subtle);
-    color: var(--text);
-  }
-
-  .controls button:disabled {
-    opacity: 0.3;
-    cursor: default;
-  }
-
-  .controls .star.on {
-    color: var(--tint-favourites);
-    border-color: color-mix(in srgb, var(--tint-favourites) 40%, transparent);
-  }
-
-  .controls .hide {
-    font-size: 11px;
-  }
-
   footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    margin-top: var(--space-4);
     padding-top: var(--space-3);
     border-top: 1px solid var(--border);
-    color: var(--text-faint);
-    font-size: 12px;
   }
 
   footer button {
@@ -402,9 +607,7 @@
     border-radius: var(--radius-sm);
     background: transparent;
     color: var(--text-muted);
-    font: inherit;
     font-size: 12px;
-    cursor: pointer;
   }
 
   footer button:hover {

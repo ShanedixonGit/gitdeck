@@ -10,10 +10,7 @@ export const OPEN_TARGETS: ReadonlyArray<{ id: OpenTarget; label: string; hint: 
 export const DEFAULT_SETTINGS: Settings = {
   openTarget: 'new-tab',
   includeUnverified: false,
-  favourites: [],
-  hidden: [],
-  order: [],
-  onboarded: false,
+  stack: [],
 };
 
 /**
@@ -44,6 +41,19 @@ function isOpenTarget(value: unknown): value is OpenTarget {
 }
 
 /**
+ * The stack for settings written before there was one.
+ *
+ * 0.2.0 showed every tool and pinned `favourites` on top, sorted by `order`.
+ * Starred tools were the ones the user reached for, so they become the stack;
+ * with nothing starred the stack starts empty and the user picks afresh.
+ */
+function legacyStack(stored: Partial<Record<string, unknown>>): readonly string[] {
+  const favourites = idList(stored.favourites);
+  const rank = new Map(idList(stored.order).map((id, index) => [id, index]));
+  return [...favourites].sort((a, b) => (rank.get(a) ?? Infinity) - (rank.get(b) ?? Infinity));
+}
+
+/**
  * Turns whatever came back from storage into usable settings.
  *
  * Storage is not a trusted source: it may hold `null` on first run, a shape
@@ -52,16 +62,13 @@ function isOpenTarget(value: unknown): value is OpenTarget {
  */
 export function normaliseSettings(value: unknown): Settings {
   if (typeof value !== 'object' || value === null) return DEFAULT_SETTINGS;
-  const stored = value as Partial<Record<keyof Settings, unknown>>;
+  const stored = value as Partial<Record<string, unknown>>;
   return {
     openTarget: isOpenTarget(stored.openTarget) ? stored.openTarget : DEFAULT_SETTINGS.openTarget,
     includeUnverified:
       typeof stored.includeUnverified === 'boolean'
         ? stored.includeUnverified
         : DEFAULT_SETTINGS.includeUnverified,
-    favourites: idList(stored.favourites),
-    hidden: idList(stored.hidden),
-    order: idList(stored.order),
-    onboarded: stored.onboarded === true,
+    stack: Array.isArray(stored.stack) ? idList(stored.stack) : legacyStack(stored),
   };
 }

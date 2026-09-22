@@ -61,49 +61,58 @@ describe('normaliseSettings', () => {
   });
 });
 
-describe('normaliseSettings — deck preferences', () => {
-  it('defaults every list to empty and onboarding to unseen', () => {
-    expect(normaliseSettings({})).toEqual({
-      ...DEFAULT_SETTINGS,
-      favourites: [],
-      hidden: [],
-      order: [],
-      onboarded: false,
-    });
+describe('normaliseSettings — stack', () => {
+  it('defaults to an empty stack', () => {
+    expect(normaliseSettings({}).stack).toEqual([]);
   });
 
-  it('keeps stored ids', () => {
-    const settings = normaliseSettings({ favourites: ['a'], hidden: ['b'], order: ['b', 'a'] });
-    expect(settings.favourites).toEqual(['a']);
-    expect(settings.hidden).toEqual(['b']);
-    expect(settings.order).toEqual(['b', 'a']);
+  it('keeps stored ids in order', () => {
+    expect(normaliseSettings({ stack: ['b', 'a'] }).stack).toEqual(['b', 'a']);
   });
 
   it('drops entries that are not strings', () => {
-    expect(normaliseSettings({ favourites: ['a', 3, null, {}, 'b'] }).favourites).toEqual([
-      'a',
-      'b',
-    ]);
+    expect(normaliseSettings({ stack: ['a', 3, null, {}, 'b'] }).stack).toEqual(['a', 'b']);
   });
 
   it('drops empty strings and duplicates', () => {
-    expect(normaliseSettings({ order: ['a', '', 'a', 'b'] }).order).toEqual(['a', 'b']);
+    expect(normaliseSettings({ stack: ['a', '', 'a', 'b'] }).stack).toEqual(['a', 'b']);
   });
 
   it('falls back to empty when the value is not a list', () => {
-    expect(normaliseSettings({ favourites: 'a', hidden: 7 })).toMatchObject({
-      favourites: [],
-      hidden: [],
-    });
+    expect(normaliseSettings({ stack: 'a' }).stack).toEqual([]);
   });
 
   it('caps a list that has grown out of hand', () => {
     const huge = Array.from({ length: 5000 }, (_, index) => `tool-${index}`);
-    expect(normaliseSettings({ order: huge }).order.length).toBeLessThanOrEqual(200);
+    expect(normaliseSettings({ stack: huge }).stack.length).toBeLessThanOrEqual(200);
   });
 
-  it('treats any non-true onboarded value as not yet onboarded', () => {
-    expect(normaliseSettings({ onboarded: 'yes' }).onboarded).toBe(false);
-    expect(normaliseSettings({ onboarded: true }).onboarded).toBe(true);
+  it('does not carry the old preference keys forward', () => {
+    expect(Object.keys(normaliseSettings({ favourites: ['a'], hidden: ['b'] })).sort()).toEqual([
+      'includeUnverified',
+      'openTarget',
+      'stack',
+    ]);
+  });
+});
+
+describe('normaliseSettings — settings from 0.2.0', () => {
+  it('turns favourites into the stack', () => {
+    expect(normaliseSettings({ favourites: ['a', 'b'] }).stack).toEqual(['a', 'b']);
+  });
+
+  it('orders them by the old stored order', () => {
+    expect(normaliseSettings({ favourites: ['a', 'b'], order: ['b', 'c', 'a'] }).stack).toEqual([
+      'b',
+      'a',
+    ]);
+  });
+
+  it('starts empty when nothing was starred, whatever was hidden', () => {
+    expect(normaliseSettings({ favourites: [], hidden: ['a'], onboarded: true }).stack).toEqual([]);
+  });
+
+  it('prefers a stored stack over favourites', () => {
+    expect(normaliseSettings({ stack: [], favourites: ['a'] }).stack).toEqual([]);
   });
 });
