@@ -15,10 +15,15 @@ and the patch number for fixes.
 - An options page, opened in a full tab, with two panels: every available tool, and your deck.
   Drag tools across to add or remove them and within your deck to reorder. An empty deck is the
   first-run state, so the welcome and the picker are one screen
-- An icon and a colour per section on every card, so the shape of the deck is readable at a glance.
+- An icon and a colour per section on every card, replacing the letter monogram, so the shape of the deck is readable at a glance.
   Colour is never the only signal for anything
+- **Get the code**: copy a clone command for HTTPS, SSH or the GitHub CLI, or download a ZIP.
+  Copy tools put text on the clipboard instead of opening a page
+- A recommended deck, the best tool from each section, one click away on first run and on the
+  options page
 - `npm run check:links`, and a weekly CI job that opens an issue when a tool marked `verified`
-  stops responding
+  stops responding. It checks every website and docs link the extension shows, not only each
+  tool's destination
 
 ### Changed
 
@@ -26,6 +31,7 @@ and the patch number for fixes.
   you set, and 1–9 follow that order. Nothing you did not pick appears
 - Tool names say what the tool does ("Browse in VS Code"), with the brand ("GitHub.dev")
   underneath as provenance
+- The supply chain section is now **Security & dependencies**, which is what it holds
 - "Open tools in" moved from the popup's settings panel to the options page, and the panel is gone
 - **One tool per job.** Dropped GitHub1s (GitHub.dev does the same and can commit), Bolt and
   CodeSandbox (StackBlitz does the same without an account) and grep.app (GitHub code search does
