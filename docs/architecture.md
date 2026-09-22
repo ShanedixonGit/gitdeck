@@ -157,8 +157,11 @@ the registry no longer has. New registry entries never join a stack on their own
 is the first-run state: the popup says so and sends the user to the options page, whose empty
 deck panel doubles as the welcome.
 
-**Colour.** Each section carries a tint, named as a CSS custom property in `categories.ts` and
-defined for light and dark in `theme.css`. It reaches the card monogram and nothing else. No state is signalled by colour alone.
+**Section icons.** Each section has an icon and a tint, both declared in `categories.ts`: the icon
+as stroke path data on a 24 × 24 grid, the tint as a CSS custom property defined for light and
+dark in `theme.css`. `CategoryIcon.svelte` draws the icon in the tint on every card and beside each
+heading on the options page. The icon carries the meaning and the colour reinforces it, so no
+state is signalled by colour alone.
 
 **Settings.** The stack, three open targets — a new tab, this tab, or a background tab — and the unverified
 toggle, persisted to `browser.storage.sync` as one object. `this tab` is the case the rest of the
@@ -172,21 +175,20 @@ popup.
 
 A tool is a plain data object. `ToolDefinition` (`src/lib/tools/types.ts`):
 
-| Field         | Required | Purpose                                                              |
-| ------------- | -------- | -------------------------------------------------------------------- |
-| `id`          | yes      | Stable kebab-case identifier, never reused or renamed                |
-| `name`        | yes      | Card title: the job, led by a verb                                   |
-| `brand`       | yes      | The service's own name, shown as provenance                          |
-| `description` | yes      | One imperative sentence: what the user gets                          |
-| `category`    | yes      | Deck grouping                                                        |
-| `urlTemplate` | yes      | The transformation                                                   |
-| `website`     | yes      | Provenance                                                           |
-| `status`      | yes      | `verified` \| `unverified` \| `deprecated`                           |
-| `verifiedAt`  | yes      | ISO date the template was last checked                               |
-| `requires`    | no       | Repository fields beyond owner/repo (`ref`, `path`)                  |
-| `icon`        | no       | Two-character monogram; defaults to the first two letters of `brand` |
-| `docsUrl`     | no       | Documentation or source for the tool itself                          |
-| `notes`       | no       | Caveats surfaced on the card                                         |
+| Field         | Required | Purpose                                               |
+| ------------- | -------- | ----------------------------------------------------- |
+| `id`          | yes      | Stable kebab-case identifier, never reused or renamed |
+| `name`        | yes      | Card title: the job, led by a verb                    |
+| `brand`       | yes      | The service's own name, shown as provenance           |
+| `description` | yes      | One imperative sentence: what the user gets           |
+| `category`    | yes      | Deck grouping                                         |
+| `urlTemplate` | yes      | The transformation                                    |
+| `website`     | yes      | Provenance                                            |
+| `status`      | yes      | `verified` \| `unverified` \| `deprecated`            |
+| `verifiedAt`  | yes      | ISO date the template was last checked                |
+| `requires`    | no       | Repository fields beyond owner/repo (`ref`, `path`)   |
+| `docsUrl`     | no       | Documentation or source for the tool itself           |
+| `notes`       | no       | Caveats surfaced on the card                          |
 
 The registry is a frozen array in one file. There is no per-tool module and no plugin system:
 sixteen data objects do not need either, and a flat array is the form a contributor can edit
@@ -257,13 +259,13 @@ first-party network traffic of any kind.
 
 **Availability.** Dead tools are found by `scripts/check-links.ts`, which runs weekly in CI and
 never in the extension. Checking at runtime would mean the popup contacting every service in the
-registry on open — which is exactly the thing the local monograms and the missing host
+registry on open — which is exactly the thing the inline section icons and the missing host
 permissions exist to prevent, and it would tell a dozen third parties which repository you are
 looking at for the sake of greying out a card. The script reports; a human sets `status` in the
 registry; the popup shows only what the registry vouches for.
 
-**Third parties.** The popup issues no requests to the listed services. Tool icons are local text
-monograms specifically so that opening the deck does not leak the repository name to every
+**Third parties.** The popup issues no requests to the listed services. Card icons are inline SVG
+drawn from path data in the bundle, never favicons, specifically so that opening the deck does not leak the repository name to every
 service in the registry via favicon fetches. The only third-party contact is the tab the user
 deliberately opens.
 

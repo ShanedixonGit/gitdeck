@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { categoryTint } from '../lib/tools';
   import type { ResolvedTool } from '../lib/tools';
   import ToolCard from './ToolCard.svelte';
 
@@ -19,7 +18,6 @@
         {entry}
         selected={entry.tool.id === selectedId}
         shortcut={index < 9 ? index + 1 : undefined}
-        tint={categoryTint(entry.tool.category)}
         {onopen}
       />
     </li>

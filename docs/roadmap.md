@@ -18,7 +18,7 @@ product.
 ## Phase 2 — UI _(mostly done)_
 
 - [x] Popup shell with detected repository, filter, grouped deck and footer
-- [x] Tool cards with monogram, description, caveats and status badge
+- [x] Tool cards with section icon, description, caveats and status badge
 - [x] Manual URL entry when the tab is not a repository
 - [x] Dark mode via `prefers-color-scheme`, tokens in one file
 - [x] Keyboard model: `/`, `↑`/`↓`, `Enter`, `Escape`

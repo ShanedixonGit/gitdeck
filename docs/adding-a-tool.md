@@ -32,7 +32,6 @@ In [`src/lib/tools/registry.ts`](../src/lib/tools/registry.ts):
   docsUrl: 'https://github.com/someone/the-tool',
   status: 'verified',
   verifiedAt: '2026-09-20',
-  icon: 'tt',
 }
 ```
 
