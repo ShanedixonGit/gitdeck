@@ -12,29 +12,25 @@ and the patch number for fixes.
 
 ### Added
 
-- Favourites: star a tool to pin it to a section above the deck, which also gives it a low number
-  shortcut
-- An options page, opened in a full tab, for arranging the deck: star, reorder within a section,
-  and hide tools you never use
-- A welcome panel on first run, showing what the deck can do rather than assuming it is obvious
-- A colour per section, on the heading dot and the card monogram, so the shape of the deck is
-  readable at a glance. Colour is never the only signal for anything
+- An options page, opened in a full tab, with two panels: every available tool, and your deck.
+  Drag tools across to add or remove them and within your deck to reorder. An empty deck is the
+  first-run state, so the welcome and the picker are one screen
+- A colour per section on each card's monogram, so the shape of the deck is readable at a glance.
+  Colour is never the only signal for anything
 - `npm run check:links`, and a weekly CI job that opens an issue when a tool marked `verified`
   stops responding
 
 ### Changed
 
+- **The deck is the tools you chose.** The popup shows only your stack, as one list in the order
+  you set, and 1–9 follow that order. Nothing you did not pick appears
+- Tool names say what the tool does ("Browse in VS Code"), with the brand ("GitHub.dev")
+  underneath as provenance
+- "Open tools in" moved from the popup's settings panel to the options page, and the panel is gone
 - **One tool per job.** Dropped GitHub1s (GitHub.dev does the same and can commit), Bolt and
   CodeSandbox (StackBlitz does the same without an account) and grep.app (GitHub code search does
   the same and was verified). 17 entries down to 13, all verified, and `docs/tools.md` records
   what lost and why so the same candidates are not re-added later
-- The popup's settings panel keeps only the open target and a way through to the options page
-
-### Known issues
-
-- The deck shows every tool with favourites pinned above them. It should show only the tools you
-  chose — see Phase 3.5 in [docs/roadmap.md](docs/roadmap.md)
-- "Open tools in" appears in both the popup settings panel and the options page
 
 ## [0.2.0] — 2026-09-21
 
