@@ -1,12 +1,11 @@
 <script lang="ts">
   import RepoHeader from '../../components/RepoHeader.svelte';
   import RepoPrompt from '../../components/RepoPrompt.svelte';
-  import SettingsPanel from '../../components/SettingsPanel.svelte';
   import ToolDeck from '../../components/ToolDeck.svelte';
   import { getActiveTabUrl, openOptions, openUrl } from '../../lib/browser/active-tab';
   import { parseGitHubRepo } from '../../lib/github/parse-repo';
   import type { RepoRef } from '../../lib/github/types';
-  import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../../lib/settings';
+  import { DEFAULT_SETTINGS, loadSettings } from '../../lib/settings';
   import type { Settings } from '../../lib/settings';
   import { TOOLS, filterTools, keyAction, pickStack, resolveTools } from '../../lib/tools';
   import type { ToolStatus } from '../../lib/tools';
@@ -18,7 +17,6 @@
   let filter = $state('');
   let selectedIndex = $state(0);
   let settings = $state<Settings>(DEFAULT_SETTINGS);
-  let settingsOpen = $state(false);
   let openError = $state<string | null>(null);
   let settingsReady = $state(false);
   let filterInput = $state<HTMLInputElement | null>(null);
@@ -68,11 +66,6 @@
     if (repo !== null) view = { kind: 'repo', repo };
   }
 
-  function updateSettings(next: Settings) {
-    settings = next;
-    void saveSettings(next);
-  }
-
   function manage() {
     void openOptions().then(() => window.close());
   }
@@ -116,7 +109,6 @@
       typing: document.activeElement === filterInput,
       filterEmpty: filter === '',
       hasResults: ordered.length > 0,
-      settingsOpen: settingsOpen || firstRun,
     });
     if (action.type === 'none') return;
 
@@ -127,9 +119,6 @@
         break;
       case 'clear-filter':
         filter = '';
-        break;
-      case 'close-settings':
-        settingsOpen = false;
         break;
       case 'move':
         selectedIndex = (selectedIndex + action.delta + ordered.length) % ordered.length;
@@ -169,15 +158,6 @@
         </p>
         <button type="button" class="primary" onclick={manage}>Choose tools</button>
       </section>
-    {:else if settingsOpen}
-      <div class="deck">
-        <SettingsPanel
-          {settings}
-          onchange={updateSettings}
-          onclose={() => (settingsOpen = false)}
-          onmanage={manage}
-        />
-      </div>
     {:else}
       <div class="filter">
         <input
@@ -221,14 +201,6 @@
       </span>
       <span class="footer-actions">
         <button type="button" class="settings" onclick={manage}>Customise</button>
-        <button
-          type="button"
-          class="settings"
-          aria-expanded={settingsOpen}
-          onclick={() => (settingsOpen = !settingsOpen)}
-        >
-          Settings
-        </button>
       </span>
     </footer>
   {/if}
