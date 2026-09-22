@@ -4,8 +4,8 @@ The registry lives in [`src/lib/tools/registry.ts`](../src/lib/tools/registry.ts
 records how each entry was verified and — just as importantly — which candidates were rejected
 and why.
 
-**Last verification sweep: 2026-09-21** — all 13 entries reachable, checked by
-`npm run check:links`.
+**Last verification sweep: 2026-09-23** — all 17 entries, and every website and docs link the
+extension shows, reachable. Checked by `npm run check:links`.
 
 ## Verification method
 
@@ -38,7 +38,7 @@ user, which is the problem it was meant to solve.
 Removed on 2026-09-21. Each remains a fine service — this is about the size of the deck, not their
 quality. The reasoning belongs here so the same candidates are not re-added later.
 
-## Shipped — verified (13)
+## Shipped — verified (17)
 
 | Tool                                                 | Category                | Transformation                                           | Verified by                                                                                                      |
 | ---------------------------------------------------- | ----------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
@@ -58,33 +58,30 @@ quality. The reasoning belongs here so the same candidates are not re-added late
 | [Star History](https://www.star-history.com)         | Insights                | `www.star-history.com/#{owner}/{repo}`                   | 200 on the `www` host (the apex 301s)                                                                            |
 | [Open Source Insights](https://deps.dev)             | Security & dependencies | `deps.dev/project/github/{owner}%2F{repo}`               | 200, `<title>Open Source Insights</title>`                                                                       |
 | [OpenSSF Scorecard](https://scorecard.dev)           | Security & dependencies | `scorecard.dev/viewer/?uri=github.com/{owner}/{repo}`    | 200, `<title>OpenSSF scorecard report</title>`                                                                   |
+| [GitHub Code Search](https://github.com/search)      | Search                  | `github.com/search?q=repo%3A{owner}%2F{repo}&type=code`  | 200, GitHub's own search scoped with the `repo:` qualifier                                                       |
 
-## Shipped — unverified (2)
+## Shipped — unverified (0)
 
-Live services whose automated check was inconclusive. Hidden until the user ticks **Show
-unverified**, and each carries the reason on its card.
-
-| Tool                                  | Transformation                           | Why unverified                                                                       |
-| ------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------ |
-| [CodeSandbox](https://codesandbox.io) | `codesandbox.io/p/github/{owner}/{repo}` | HTTP 403 to a non-browser user agent (bot protection). Needs a manual browser check. |
-| [Grep](https://grep.app)              | `grep.app/{owner}/{repo}`                | HTTP 429 (rate limited) during the sweep. Needs a re-check.                          |
+None. A tool whose automated check turns inconclusive moves here with the reason, and is hidden
+until the user ticks the option to offer unverified tools.
 
 ## Rejected
 
 Kept here so that nobody re-adds them without new evidence.
 
-| Candidate                                    | Checked    | Outcome                                                                                                                                                                                                                                                                              |
-| -------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Gitpod**                                   | 2026-09-20 | Gitpod Classic pay-as-you-go was sunset on 2025-10-15 and the product moved to Ona. `gitpod.io/#<url>` still serves a dashboard shell, but the URL-launch flow it depended on is no longer a dependable public entry point. Revisit if Ona publishes a stable repository-URL scheme. |
-| **Sourcegraph**                              | 2026-09-20 | `sourcegraph.com/github.com/{owner}/{repo}` returns 404. The public code-search instance is gone and the product is enterprise-only.                                                                                                                                                 |
-| **CodeSee**                                  | 2026-09-20 | `app.codesee.io` sits behind a Cloudflare Access login for an unrelated internal tenant. The public product is gone.                                                                                                                                                                 |
-| **Replit**                                   | 2026-09-20 | `replit.com/github/{owner}/{repo}` 302s to a login wall before any import happens. Not usable without an account, so it fails the "publicly accessible" bar.                                                                                                                         |
-| **uithub**                                   | 2026-09-20 | `uithub.com/{owner}/{repo}` returns `401 Unauthorized. Authentication required.`                                                                                                                                                                                                     |
-| **zread.ai**                                 | 2026-09-20 | Connection failure; the host did not resolve.                                                                                                                                                                                                                                        |
-| **Libraries.io**                             | 2026-09-20 | `libraries.io/github/{owner}/{repo}` now 301s to a nonsensical GitHub URL (`github.com/react/react`). Broken transformation.                                                                                                                                                         |
-| **download-directory.github.io**, **GitZip** | 2026-09-20 | Both are live, but they operate on a _subdirectory_ URL rather than a repository root, so the repository-level transformation GitDeck performs produces a useless page. Candidates for a future file/directory-scoped section.                                                       |
-| **emgithub**                                 | 2026-09-20 | Live, but produces an embeddable snippet for a single file — not a destination a user navigates to.                                                                                                                                                                                  |
-| **vscode.dev**                               | 2026-09-20 | Live, but `github.dev/{owner}/{repo}` redirects to exactly this URL. Listing both would put two identical destinations in the deck.                                                                                                                                                  |
+| Candidate                                              | Checked    | Outcome                                                                                                                                                                                                                                                                              |
+| ------------------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Gitpod**                                             | 2026-09-20 | Gitpod Classic pay-as-you-go was sunset on 2025-10-15 and the product moved to Ona. `gitpod.io/#<url>` still serves a dashboard shell, but the URL-launch flow it depended on is no longer a dependable public entry point. Revisit if Ona publishes a stable repository-URL scheme. |
+| **Sourcegraph**                                        | 2026-09-20 | `sourcegraph.com/github.com/{owner}/{repo}` returns 404. The public code-search instance is gone and the product is enterprise-only.                                                                                                                                                 |
+| **CodeSee**                                            | 2026-09-20 | `app.codesee.io` sits behind a Cloudflare Access login for an unrelated internal tenant. The public product is gone.                                                                                                                                                                 |
+| **Replit**                                             | 2026-09-20 | `replit.com/github/{owner}/{repo}` 302s to a login wall before any import happens. Not usable without an account, so it fails the "publicly accessible" bar.                                                                                                                         |
+| **uithub**                                             | 2026-09-20 | `uithub.com/{owner}/{repo}` returns `401 Unauthorized. Authentication required.`                                                                                                                                                                                                     |
+| **zread.ai**                                           | 2026-09-20 | Connection failure; the host did not resolve.                                                                                                                                                                                                                                        |
+| **Libraries.io**                                       | 2026-09-20 | `libraries.io/github/{owner}/{repo}` now 301s to a nonsensical GitHub URL (`github.com/react/react`). Broken transformation.                                                                                                                                                         |
+| **download-directory.github.io**, **GitZip**           | 2026-09-20 | Both are live, but they operate on a _subdirectory_ URL rather than a repository root, so the repository-level transformation GitDeck performs produces a useless page. Candidates for a future file/directory-scoped section.                                                       |
+| **emgithub**                                           | 2026-09-20 | Live, but produces an embeddable snippet for a single file — not a destination a user navigates to.                                                                                                                                                                                  |
+| **vscode.dev**                                         | 2026-09-20 | Live, but `github.dev/{owner}/{repo}` redirects to exactly this URL. Listing both would put two identical destinations in the deck.                                                                                                                                                  |
+| **Refined GitHub**, **Octotree**, **GitHub Hovercard** | 2026-09-23 | Good tools, but browser extensions that change GitHub's own pages rather than destinations a repository URL can point at. GitDeck rewrites URLs; install these alongside it.                                                                                                         |
 
 ## Re-verification
 
