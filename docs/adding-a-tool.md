@@ -38,6 +38,8 @@ In [`src/lib/tools/registry.ts`](../src/lib/tools/registry.ts):
 Rules the tests enforce:
 
 - `id` is kebab-case, stable and never reused.
+- Each section has exactly one `recommended: true` tool, the one offered in the recommended deck.
+  Moving the flag to your tool means arguing that it is the better default in its section.
 - `name` says what the tool does for the user, led by a verb, and is never just `brand`. The card
   leads with the job; the brand sits underneath as provenance.
 - `description` is one imperative sentence ending in a full stop, describing what the _user_

@@ -5,9 +5,16 @@
   import { getActiveTabUrl, openOptions, openUrl } from '../../lib/browser/active-tab';
   import { parseGitHubRepo } from '../../lib/github/parse-repo';
   import type { RepoRef } from '../../lib/github/types';
-  import { DEFAULT_SETTINGS, loadSettings } from '../../lib/settings';
+  import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../../lib/settings';
   import type { Settings } from '../../lib/settings';
-  import { TOOLS, filterTools, keyAction, pickStack, resolveTools } from '../../lib/tools';
+  import {
+    TOOLS,
+    filterTools,
+    keyAction,
+    pickStack,
+    recommendedStack,
+    resolveTools,
+  } from '../../lib/tools';
   import type { ResolvedTool, ToolStatus } from '../../lib/tools';
 
   type View =
@@ -65,6 +72,11 @@
   function useInput(input: string) {
     const repo = parseGitHubRepo(input);
     if (repo !== null) view = { kind: 'repo', repo };
+  }
+
+  function useRecommended() {
+    settings = { ...settings, stack: recommendedStack(TOOLS) };
+    void saveSettings(settings);
   }
 
   function manage() {
@@ -177,10 +189,15 @@
       <section class="first-run">
         <h2>Build your deck</h2>
         <p>
-          Pick the tools you want from {TOOLS.length} on offer. Only those show up here, pointed at whatever
-          repository you are on.
+          Only the tools you pick show up here, pointed at whatever repository you are on. Start
+          with the best one from each section, or choose your own from {TOOLS.length}.
         </p>
-        <button type="button" class="primary" onclick={manage}>Choose tools</button>
+        <div class="actions">
+          <button type="button" class="primary" onclick={useRecommended}>
+            Use the recommended deck
+          </button>
+          <button type="button" class="secondary" onclick={manage}>Choose my own</button>
+        </div>
       </section>
     {:else}
       <div class="filter">
@@ -286,8 +303,29 @@
     font-size: 12px;
   }
 
+  .actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .secondary {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .secondary:hover {
+    background: var(--bg-hover);
+  }
+
   .primary {
-    width: 100%;
+    flex: 1;
     padding: 6px 10px;
     border: 1px solid var(--accent);
     border-radius: var(--radius-sm);

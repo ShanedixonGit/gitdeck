@@ -27,6 +27,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     docsUrl: 'https://docs.github.com/en/codespaces/the-githubdev-web-based-editor',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
+    recommended: true,
   },
   {
     id: 'stackblitz',
@@ -65,6 +66,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     website: 'https://docs.github.com/en/get-started/git-basics/about-remote-repositories',
     status: 'verified',
     verifiedAt: VERIFIED_ON_CLONE,
+    recommended: true,
   },
   {
     id: 'clone-ssh',
@@ -113,6 +115,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     website: 'https://deepwiki.com',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
+    recommended: true,
   },
   {
     id: 'gitdiagram',
@@ -125,6 +128,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     docsUrl: 'https://github.com/ahmedkhaleel2004/gitdiagram',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
+    recommended: true,
   },
   {
     id: 'githistory',
@@ -150,6 +154,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     docsUrl: 'https://github.com/coderamp-labs/gitingest',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
+    recommended: true,
   },
   {
     id: 'gitmcp',
@@ -173,6 +178,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     website: 'https://ossinsight.io',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
+    recommended: true,
   },
   {
     id: 'star-history',
@@ -207,6 +213,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     docsUrl: 'https://github.com/ossf/scorecard',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
+    recommended: true,
   },
   {
     id: 'github-code-search',
@@ -219,5 +226,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     docsUrl: 'https://docs.github.com/en/search-github/github-code-search',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
+    recommended: true,
   },
 ];

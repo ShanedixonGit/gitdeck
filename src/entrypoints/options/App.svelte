@@ -6,6 +6,7 @@
     TOOLS,
     nudgeInStack,
     placeInStack,
+    recommendedStack,
     reconcileStack,
     removeFromStack,
   } from '../../lib/tools';
@@ -181,7 +182,19 @@
         {#if stackTools.length === 0}
           <div class="welcome">
             <p class="lead">Your deck is empty.</p>
-            <p>Drag tools here, or press <kbd>+</kbd> beside one. Then, from the popup:</p>
+            <p>
+              <button
+                type="button"
+                class="recommend"
+                onclick={() => setStack(recommendedStack(TOOLS))}
+              >
+                Use the recommended deck
+              </button>
+            </p>
+            <p>
+              The best tool from each section. Or drag your own here, or press <kbd>+</kbd> beside one.
+            </p>
+            <p>Then, from the popup:</p>
             <ul class="keys">
               <li><kbd>1</kbd>–<kbd>9</kbd> opens a tool straight away</li>
               <li><kbd>/</kbd> filters, <kbd>↑</kbd><kbd>↓</kbd> moves, <kbd>Enter</kbd> opens</li>
@@ -258,6 +271,9 @@
 
     {#if stackTools.length > 0}
       <footer>
+        <button type="button" onclick={() => setStack(recommendedStack(TOOLS))}>
+          Reset to the recommended deck
+        </button>
         <button type="button" onclick={() => setStack([])}>Empty your deck</button>
       </footer>
     {/if}
@@ -574,7 +590,22 @@
     cursor: pointer;
   }
 
+  .recommend {
+    padding: 6px 12px;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-size: 12px;
+  }
+
+  .recommend:hover {
+    opacity: 0.9;
+  }
+
   footer {
+    display: flex;
+    gap: var(--space-2);
     margin-top: var(--space-4);
     padding-top: var(--space-3);
     border-top: 1px solid var(--border);
