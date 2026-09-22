@@ -80,13 +80,11 @@ src/
 │   └── options/
 │       ├── index.html          opens in a full tab, not the embedded dialog
 │       ├── main.ts             mounts the Svelte app
-│       └── App.svelte          favourites, order, hidden tools
+│       └── App.svelte          available ↔ your deck, dragged across; open target
 ├── components/
 │   ├── RepoHeader.svelte       owner/repo, ref/path, "Change"
 │   ├── RepoPrompt.svelte       manual URL entry fallback
-│   ├── SettingsPanel.svelte    open target, and the way through to the options page
-│   ├── Welcome.svelte          first-run panel, shown once
-│   ├── ToolDeck.svelte         groups resolved tools by category
+│   ├── ToolDeck.svelte         the chosen tools, in stack order
 │   └── ToolCard.svelte         one tool, one action
 ├── lib/
 │   ├── browser/active-tab.ts   the only place that touches browser.*
@@ -102,10 +100,9 @@ src/
 │       ├── types.ts            ToolDefinition, ToolCategory, ToolStatus
 │       ├── registry.ts         the data
 │       ├── categories.ts       category labels, deck order and section colour
-│       ├── arrange.ts          hiding, ordering and moving, as functions over ids
+│       ├── stack.ts            the user's chosen tools, as functions over ids
 │       ├── template.ts         URL template engine
 │       ├── filter.ts           free-text search over resolved tools
-│       ├── group.ts            deck sections and on-screen ordering
 │       ├── keyboard.ts         keypress → deck action
 │       ├── resolve.ts          registry + RepoRef → deck, plus validateTool
 │       └── index.ts            public surface of the tools module
@@ -119,7 +116,7 @@ plain Node environment.
 
 ## 5. UI architecture
 
-A single stateful component (`App.svelte`) and five presentational ones. State is Svelte 5 runes;
+A single stateful component (`App.svelte`) and four presentational ones. State is Svelte 5 runes;
 there is no store layer because there is one screen and no cross-component state to share.
 
 ```
@@ -128,12 +125,10 @@ App.svelte
   filter        string
   selectedIndex number
   settings      Settings          loaded from storage, defaults until it arrives
-  settingsOpen  boolean
        │
        ├─ RepoHeader    (repo, onchange)
        ├─ RepoPrompt    (message, onresolve)
-       ├─ SettingsPanel (settings, onchange, onclose)
-       └─ ToolDeck      (groups, ordered, selectedId, onopen)
+       └─ ToolDeck      (entries, selectedId, onopen)
              └─ ToolCard (entry, selected, shortcut, onopen)
 ```
 
@@ -148,24 +143,24 @@ header and footer stay fixed. All colour is CSS custom properties in `styles/the
 open a card directly, `Enter` opens the selection, `Escape` clears the filter. The mapping lives
 in `lib/tools/keyboard.ts` as a pure function so the whole model is tested without a DOM. Keys
 with a modifier are never intercepted, and while the filter has focus the number keys yield to
-plain typing. While the settings panel is open every deck shortcut is inert and `Escape` closes
-the panel. The selected card scrolls into view. Every card is a real `<button>`, so tab order and
+plain typing. The selected card scrolls into view. Every card is a real `<button>`, so tab order and
 screen readers work without ARIA patching.
 
-**Deck preferences.** Hiding, ordering and favourites are three plain functions over tool ids in
-`lib/tools/arrange.ts`, applied in that fixed order before the deck is grouped: drop what is
-hidden, sort by the stored order, pull favourites into their own section at the top. Favourites
-therefore change both position and number shortcut, which is the point — a starred tool becomes
-`1`. Ordering is stored as one flat list of every tool id, but `moveInOrder` only ever swaps a
-tool with a neighbour in the same section, because stepping over a tool from another category
-would move a card somewhere the user cannot see it. New registry entries append rather than
-insert, so adding a tool never rearranges a deck the user has already arranged.
+**The stack.** The registry is the source; the stack is the selection. `Settings.stack` is one
+list of tool ids in the order the user dragged them, and the popup shows exactly those tools that
+apply to the current page, flat, in that order — so `1` is always the first tool the user put in
+their deck. Nothing outside the stack appears. The operations live in `lib/tools/stack.ts` as
+functions over ids: `pickStack` selects and orders, `placeInStack` adds or moves a tool before a
+named neighbour (anchoring on an id rather than an index, so a drop lands where the user saw it
+whichever way it moved), `nudgeInStack` is the keyboard equivalent, and `reconcileStack` drops ids
+the registry no longer has. New registry entries never join a stack on their own. An empty stack
+is the first-run state: the popup says so and sends the user to the options page, whose empty
+deck panel doubles as the welcome.
 
 **Colour.** Each section carries a tint, named as a CSS custom property in `categories.ts` and
-defined for light and dark in `theme.css`. It reaches the heading dot and the card monogram and
-nothing else. No state is signalled by colour alone.
+defined for light and dark in `theme.css`. It reaches the card monogram and nothing else. No state is signalled by colour alone.
 
-**Settings.** Three open targets — a new tab, this tab, or a background tab — and the unverified
+**Settings.** The stack, three open targets — a new tab, this tab, or a background tab — and the unverified
 toggle, persisted to `browser.storage.sync` as one object. `this tab` is the case the rest of the
 design exists for: you are on a repository, and you want to be looking at the same repository
 somewhere else. A background tab is the only target that leaves the popup open, so several tools

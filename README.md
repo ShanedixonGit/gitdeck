@@ -48,12 +48,11 @@ Click the GitDeck icon on any GitHub repo. Then:
 
 Not on a GitHub page? Paste a repo URL instead.
 
-**Settings** (bottom right of the popup) decides where a tool opens: a new tab, the tab you're
-already on, or a background tab so you can fire off several at once.
-
-**Customise** opens a full page where you can star the tools you actually use — starred ones sit
-at the top of the deck and keep the low numbers — reorder each section, and hide the rest. All of
-it is remembered.
+The deck is yours: it shows only the tools you picked, in your order. **Customise** (bottom right
+of the popup) opens a full page with every available tool on one side and your deck on the other.
+Drag tools across to add or remove them, and drag within your deck to reorder — the first nine
+get the number keys. The same page decides where a tool opens: a new tab, the tab you're already
+on, or a background tab so you can fire off several at once. All of it is remembered.
 
 ## Privacy
 
