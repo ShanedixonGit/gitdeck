@@ -5,7 +5,7 @@
   interface Props {
     entries: readonly ResolvedTool[];
     selectedId: string | undefined;
-    onopen: (url: string) => void;
+    onopen: (entry: ResolvedTool) => void;
   }
 
   let { entries, selectedId, onopen }: Props = $props();

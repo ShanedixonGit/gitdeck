@@ -16,6 +16,7 @@
   --focus: #2f6feb;
 
   --tint-ide: #2f6feb;
+  --tint-get: #4f5b93;
   --tint-understand: #7c5cd6;
   --tint-visualise: #0f8a72;
   --tint-ai-context: #c2410c;
@@ -52,6 +53,7 @@
     --focus: #5b8cff;
 
     --tint-ide: #6e9bff;
+    --tint-get: #9aa8e8;
     --tint-understand: #b08cff;
     --tint-visualise: #3fc7a4;
     --tint-ai-context: #ff9668;

@@ -8,4 +8,4 @@ export type { KeyAction, KeyContext } from './keyboard';
 export { resolveTool, resolveTools, validateTool } from './resolve';
 export type { ResolvedTool, SkippedTool, ResolutionResult, ResolveOptions } from './resolve';
 export { renderTemplate, templatePlaceholders, TemplateError } from './template';
-export type { ToolDefinition, ToolCategory, ToolStatus } from './types';
+export type { ToolAction, ToolDefinition, ToolCategory, ToolStatus } from './types';

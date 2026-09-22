@@ -1,6 +1,7 @@
 /**
  * Checks every link GitDeck shows is still alive: each tool's destination for a
- * real repository, plus the website and docs links on the options page.
+ * real repository, plus the website and docs links on the options page. A
+ * `copy` tool has no destination, only text, so only its links are checked.
  *
  * This runs in CI and on demand — never in the extension. GitDeck makes no
  * network requests of its own precisely so that opening the popup does not
@@ -56,11 +57,13 @@ async function probe(url: string): Promise<{ ok: boolean; detail: string }> {
 }
 
 const links = TOOLS.flatMap((tool) => {
-  const each = [
-    { tool, link: 'destination' as const, url: renderTemplate(tool.urlTemplate, PROBE) },
-    { tool, link: 'website' as const, url: tool.website },
+  const each: Array<{ tool: (typeof TOOLS)[number]; link: Result['link']; url: string }> = [
+    { tool, link: 'website', url: tool.website },
   ];
-  if (tool.docsUrl !== undefined) each.push({ tool, link: 'docs' as const, url: tool.docsUrl });
+  if (tool.action !== 'copy') {
+    each.unshift({ tool, link: 'destination', url: renderTemplate(tool.urlTemplate, PROBE) });
+  }
+  if (tool.docsUrl !== undefined) each.push({ tool, link: 'docs', url: tool.docsUrl });
   return each;
 });
 

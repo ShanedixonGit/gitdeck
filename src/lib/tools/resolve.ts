@@ -2,7 +2,10 @@ import type { RepoRef } from '../github/types';
 import { renderTemplate, templatePlaceholders, TemplateError } from './template';
 import type { ToolDefinition, ToolStatus } from './types';
 
-/** A tool whose destination URL has been computed for a repository. */
+/**
+ * A tool whose template has been rendered for a repository: the destination URL
+ * for an `open` tool, the text to copy for a `copy` tool.
+ */
 export interface ResolvedTool {
   readonly tool: ToolDefinition;
   readonly url: string;
@@ -57,6 +60,8 @@ export function resolveTool(
     return { ok: false, reason: message };
   }
 
+  if (tool.action === 'copy') return { ok: true, url };
+
   let parsed: URL;
   try {
     parsed = new URL(url);
@@ -109,7 +114,7 @@ export function validateTool(tool: ToolDefinition): string[] {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(tool.verifiedAt)) {
     problems.push(`verifiedAt "${tool.verifiedAt}" is not an ISO date`);
   }
-  if (!tool.urlTemplate.startsWith('https://')) {
+  if (tool.action !== 'copy' && !tool.urlTemplate.startsWith('https://')) {
     problems.push('urlTemplate must be https');
   }
   if (!tool.website.startsWith('https://')) {

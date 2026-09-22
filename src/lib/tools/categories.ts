@@ -28,6 +28,12 @@ export const CATEGORIES: readonly Category[] = [
     icon: ['m16 18 6-6-6-6', 'm8 6-6 6 6 6'],
   },
   {
+    id: 'get',
+    label: 'Get the code',
+    tint: '--tint-get',
+    icon: ['M12 3v12', 'm7 10 5 5 5-5', 'M5 21h14'],
+  },
+  {
     id: 'understand',
     label: 'Understand the code',
     tint: '--tint-understand',

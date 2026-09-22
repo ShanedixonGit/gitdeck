@@ -10,15 +10,16 @@ you're on. One click opens it.
 
 ## What you get
 
-|                             |                                    |
-| --------------------------- | ---------------------------------- |
-| **Open in an editor**       | GitHub.dev, StackBlitz, Codespaces |
-| **Understand the code**     | DeepWiki                           |
-| **Visualise**               | GitDiagram, Git History            |
-| **AI context**              | GitIngest, GitMCP                  |
-| **Project insights**        | OSS Insight, Star History          |
-| **Security & dependencies** | deps.dev, OpenSSF Scorecard        |
-| **Search**                  | GitHub Code Search                 |
+|                             |                                               |
+| --------------------------- | --------------------------------------------- |
+| **Open in an editor**       | GitHub.dev, StackBlitz, Codespaces            |
+| **Get the code**            | Clone over HTTPS, SSH or `gh`, download a ZIP |
+| **Understand the code**     | DeepWiki                                      |
+| **Visualise**               | GitDiagram, Git History                       |
+| **AI context**              | GitIngest, GitMCP                             |
+| **Project insights**        | OSS Insight, Star History                     |
+| **Security & dependencies** | deps.dev, OpenSSF Scorecard                   |
+| **Search**                  | GitHub Code Search                            |
 
 GitDeck doesn't rebuild any of these. It just knows how to point each one at the repo
 you're looking at.

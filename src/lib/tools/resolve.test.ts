@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveTool, resolveTools } from './resolve';
+import { resolveTool, resolveTools, validateTool } from './resolve';
 import type { ToolDefinition } from './types';
 
 const base: ToolDefinition = {
@@ -83,6 +83,29 @@ describe('resolveTool', () => {
   it('rejects a template that is not https', () => {
     const tool = { ...base, urlTemplate: 'http://example.dev/{owner}/{repo}' };
     expect(resolveTool(tool, repo)).toEqual({ ok: false, reason: 'Destination is not HTTPS' });
+  });
+});
+
+describe('copy tools', () => {
+  const ssh: ToolDefinition = {
+    ...base,
+    action: 'copy',
+    urlTemplate: 'git clone git@github.com:{owner}/{repo}.git',
+  };
+
+  it('renders the text to copy, which need not be a URL', () => {
+    expect(resolveTool(ssh, repo)).toEqual({
+      ok: true,
+      url: 'git clone git@github.com:facebook/react.git',
+    });
+  });
+
+  it('passes validation without an https template', () => {
+    expect(validateTool(ssh)).toEqual([]);
+  });
+
+  it('still requires https of a tool that opens', () => {
+    expect(validateTool({ ...ssh, action: 'open' })).toContain('urlTemplate must be https');
   });
 });
 
