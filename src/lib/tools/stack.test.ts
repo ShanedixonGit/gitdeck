@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { nudgeInStack, pickStack, placeInStack, reconcileStack, removeFromStack } from './stack';
+import {
+  nudgeInStack,
+  pickStack,
+  placeInStack,
+  recommendedStack,
+  reconcileStack,
+  removeFromStack,
+} from './stack';
 
 function entries(...ids: string[]) {
   return ids.map((id) => ({ tool: { id } }));
@@ -103,5 +110,30 @@ describe('reconcileStack', () => {
 
   it('drops duplicates, keeping the first', () => {
     expect(reconcileStack(['b', 'a', 'b'], ['a', 'b'])).toEqual(['b', 'a']);
+  });
+});
+
+describe('recommendedStack', () => {
+  const tool = (id: string, category: 'ide' | 'search', extra = {}) => ({
+    id,
+    category,
+    status: 'verified' as const,
+    ...extra,
+  });
+
+  it('takes only recommended tools, in section order', () => {
+    expect(
+      recommendedStack([
+        tool('s', 'search', { recommended: true }),
+        tool('i', 'ide'),
+        tool('e', 'ide', { recommended: true }),
+      ]),
+    ).toEqual(['e', 's']);
+  });
+
+  it('never recommends a tool that is not verified', () => {
+    expect(
+      recommendedStack([tool('e', 'ide', { recommended: true, status: 'unverified' })]),
+    ).toEqual([]);
   });
 });

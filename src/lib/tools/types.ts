@@ -60,6 +60,11 @@ export interface ToolDefinition {
    * requires `path` is only offered when the user is viewing a file.
    */
   readonly requires?: readonly RepoField[];
+  /**
+   * The pick for its section in the recommended deck offered on first run.
+   * Exactly one tool per category carries it; the registry test enforces that.
+   */
+  readonly recommended?: true;
   /** Documentation or source repository for the tool itself. */
   readonly docsUrl?: string;
   /** Caveats worth surfacing, e.g. "requires a GitHub account". */

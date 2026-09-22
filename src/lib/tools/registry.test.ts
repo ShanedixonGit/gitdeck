@@ -27,6 +27,17 @@ describe('tool registry', () => {
     }
   });
 
+  it('recommends exactly one verified tool per section', () => {
+    for (const section of CATEGORIES) {
+      const picks = TOOLS.filter((tool) => tool.category === section.id && tool.recommended);
+      expect(
+        picks.map((tool) => tool.id),
+        section.id,
+      ).toHaveLength(1);
+      expect(picks[0]?.status, section.id).toBe('verified');
+    }
+  });
+
   it('only uses declared categories', () => {
     const known = new Set(CATEGORIES.map((category) => category.id));
     for (const tool of TOOLS) {

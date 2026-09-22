@@ -6,6 +6,9 @@
  * repository or a DOM.
  */
 
+import { CATEGORIES } from './categories';
+import type { ToolDefinition } from './types';
+
 /** Anything the deck can hold. Only the id matters here. */
 export interface Identified {
   readonly tool: { readonly id: string };
@@ -70,4 +73,22 @@ export function nudgeInStack(stack: readonly string[], id: string, delta: -1 | 1
 export function reconcileStack(stack: readonly string[], known: readonly string[]): string[] {
   const exists = new Set(known);
   return [...new Set(stack)].filter((id) => exists.has(id));
+}
+
+/**
+ * The deck offered on first run: the recommended tool from each section, in
+ * section order, so every kind of job is one keypress away from the start.
+ * Only verified tools qualify.
+ */
+export function recommendedStack(
+  tools: readonly Pick<ToolDefinition, 'id' | 'category' | 'status' | 'recommended'>[],
+): string[] {
+  return CATEGORIES.flatMap((section) =>
+    tools
+      .filter(
+        (tool) =>
+          tool.category === section.id && tool.recommended === true && tool.status === 'verified',
+      )
+      .map((tool) => tool.id),
+  );
 }

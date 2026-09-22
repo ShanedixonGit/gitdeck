@@ -154,8 +154,9 @@ functions over ids: `pickStack` selects and orders, `placeInStack` adds or moves
 named neighbour (anchoring on an id rather than an index, so a drop lands where the user saw it
 whichever way it moved), `nudgeInStack` is the keyboard equivalent, and `reconcileStack` drops ids
 the registry no longer has. New registry entries never join a stack on their own. An empty stack
-is the first-run state: the popup says so and sends the user to the options page, whose empty
-deck panel doubles as the welcome.
+is the first-run state. The popup offers the recommended deck — the one tool per section marked
+`recommended` in the registry, chosen by `recommendedStack` — or sends the user to the options
+page, whose empty deck panel doubles as the welcome and offers the same one-click start.
 
 **Section icons.** Each section has an icon and a tint, both declared in `categories.ts`: the icon
 as stroke path data on a 24 × 24 grid, the tint as a CSS custom property defined for light and
@@ -175,21 +176,22 @@ popup.
 
 A tool is a plain data object. `ToolDefinition` (`src/lib/tools/types.ts`):
 
-| Field         | Required | Purpose                                               |
-| ------------- | -------- | ----------------------------------------------------- |
-| `id`          | yes      | Stable kebab-case identifier, never reused or renamed |
-| `name`        | yes      | Card title: the job, led by a verb                    |
-| `brand`       | yes      | The service's own name, shown as provenance           |
-| `description` | yes      | One imperative sentence: what the user gets           |
-| `category`    | yes      | Deck grouping                                         |
-| `urlTemplate` | yes      | The transformation: a URL to open, or text to copy    |
-| `action`      | no       | `open` (default) or `copy`                            |
-| `website`     | yes      | Provenance                                            |
-| `status`      | yes      | `verified` \| `unverified` \| `deprecated`            |
-| `verifiedAt`  | yes      | ISO date the template was last checked                |
-| `requires`    | no       | Repository fields beyond owner/repo (`ref`, `path`)   |
-| `docsUrl`     | no       | Documentation or source for the tool itself           |
-| `notes`       | no       | Caveats surfaced on the card                          |
+| Field         | Required | Purpose                                                       |
+| ------------- | -------- | ------------------------------------------------------------- |
+| `id`          | yes      | Stable kebab-case identifier, never reused or renamed         |
+| `name`        | yes      | Card title: the job, led by a verb                            |
+| `brand`       | yes      | The service's own name, shown as provenance                   |
+| `description` | yes      | One imperative sentence: what the user gets                   |
+| `category`    | yes      | Deck grouping                                                 |
+| `urlTemplate` | yes      | The transformation: a URL to open, or text to copy            |
+| `action`      | no       | `open` (default) or `copy`                                    |
+| `recommended` | no       | This section's pick for the recommended deck; one per section |
+| `website`     | yes      | Provenance                                                    |
+| `status`      | yes      | `verified` \| `unverified` \| `deprecated`                    |
+| `verifiedAt`  | yes      | ISO date the template was last checked                        |
+| `requires`    | no       | Repository fields beyond owner/repo (`ref`, `path`)           |
+| `docsUrl`     | no       | Documentation or source for the tool itself                   |
+| `notes`       | no       | Caveats surfaced on the card                                  |
 
 The registry is a frozen array in one file. There is no per-tool module and no plugin system:
 sixteen data objects do not need either, and a flat array is the form a contributor can edit
