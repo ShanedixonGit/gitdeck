@@ -74,15 +74,18 @@ body {
 }
 
 body {
-  width: 384px;
-  max-height: 600px;
-  overflow: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
   font-size: 13px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+}
+
+body.popup {
+  width: 384px;
+  max-height: 600px;
+  overflow: hidden;
 }
 
 :focus-visible {
