@@ -14,7 +14,7 @@ export const CATEGORIES: ReadonlyArray<{ id: ToolCategory; label: string; tint: 
   { id: 'visualise', label: 'Visualise', tint: '--tint-visualise' },
   { id: 'ai-context', label: 'AI context', tint: '--tint-ai-context' },
   { id: 'insights', label: 'Project insights', tint: '--tint-insights' },
-  { id: 'security', label: 'Supply chain', tint: '--tint-security' },
+  { id: 'security', label: 'Security & dependencies', tint: '--tint-security' },
   { id: 'search', label: 'Search', tint: '--tint-search' },
 ];
 
