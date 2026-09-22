@@ -8,6 +8,7 @@ function entry(id: string, name: string, description: string, category = 'ide'):
     tool: {
       id,
       name,
+      brand: `${id} brand`,
       description,
       category: category as ResolvedTool['tool']['category'],
       urlTemplate: `https://${id}.dev/{owner}/{repo}`,

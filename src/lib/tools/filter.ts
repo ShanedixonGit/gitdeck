@@ -4,6 +4,7 @@ import type { ResolvedTool } from './resolve';
 function haystack(entry: ResolvedTool): string {
   return [
     entry.tool.name,
+    entry.tool.brand,
     entry.tool.description,
     entry.tool.id,
     categoryLabel(entry.tool.category),
@@ -15,7 +16,7 @@ function haystack(entry: ResolvedTool): string {
 /**
  * Narrows the deck to the tools matching a free-text query.
  *
- * Matches on name, description, id and category label. An empty or
+ * Matches on name, brand, description, id and category label. An empty or
  * whitespace-only query returns every entry unchanged.
  */
 export function filterTools(

@@ -12,7 +12,7 @@
 
   let { entry, selected, shortcut, tint, onopen }: Props = $props();
 
-  const monogram = $derived(entry.tool.icon ?? entry.tool.name.slice(0, 2).toLowerCase());
+  const monogram = $derived(entry.tool.icon ?? entry.tool.brand.slice(0, 2).toLowerCase());
 </script>
 
 <button
@@ -30,7 +30,7 @@
       {entry.tool.name}
       {#if entry.tool.status === 'unverified'}<span class="badge">unverified</span>{/if}
     </span>
-    <span class="description">{entry.tool.description}</span>
+    <span class="brand">{entry.tool.brand}</span>
     {#if entry.tool.notes}<span class="notes">{entry.tool.notes}</span>{/if}
   </span>
   {#if shortcut !== undefined}
@@ -103,7 +103,7 @@
     color: var(--warn);
   }
 
-  .description {
+  .brand {
     color: var(--text-muted);
     font-size: 12px;
   }

@@ -23,7 +23,8 @@ In [`src/lib/tools/registry.ts`](../src/lib/tools/registry.ts):
 ```ts
 {
   id: 'the-tool',
-  name: 'The Tool',
+  name: 'Do the useful thing',
+  brand: 'The Tool',
   description: 'Do the useful thing with the repository.',
   category: 'understand',
   urlTemplate: 'https://thetool.dev/{owner}/{repo}',
@@ -38,6 +39,8 @@ In [`src/lib/tools/registry.ts`](../src/lib/tools/registry.ts):
 Rules the tests enforce:
 
 - `id` is kebab-case, stable and never reused.
+- `name` says what the tool does for the user, led by a verb, and is never just `brand`. The card
+  leads with the job; the brand sits underneath as provenance.
 - `description` is one imperative sentence ending in a full stop, describing what the _user_
   gets — not what the service is.
 - `urlTemplate` and `website` are HTTPS.

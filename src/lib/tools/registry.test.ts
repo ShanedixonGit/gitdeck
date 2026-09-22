@@ -20,6 +20,13 @@ describe('tool registry', () => {
     expect(new Set(names).size).toBe(names.length);
   });
 
+  it('names every tool by its job and its brand, and never the same way twice', () => {
+    for (const tool of TOOLS) {
+      expect(tool.brand, `${tool.id} needs a brand`).toBeTruthy();
+      expect(tool.name, `${tool.id} is named after its brand`).not.toBe(tool.brand);
+    }
+  });
+
   it('only uses declared categories', () => {
     const known = new Set(CATEGORIES.map((category) => category.id));
     for (const tool of TOOLS) {
