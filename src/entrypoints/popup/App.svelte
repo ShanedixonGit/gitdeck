@@ -8,7 +8,7 @@
   import { DEFAULT_SETTINGS, loadSettings } from '../../lib/settings';
   import type { Settings } from '../../lib/settings';
   import { TOOLS, filterTools, keyAction, pickStack, resolveTools } from '../../lib/tools';
-  import type { ToolStatus } from '../../lib/tools';
+  import type { ResolvedTool, ToolStatus } from '../../lib/tools';
 
   type View =
     { kind: 'loading' } | { kind: 'repo'; repo: RepoRef } | { kind: 'prompt'; message: string };
@@ -18,6 +18,7 @@
   let selectedIndex = $state(0);
   let settings = $state<Settings>(DEFAULT_SETTINGS);
   let openError = $state<string | null>(null);
+  let notice = $state<string | null>(null);
   let settingsReady = $state(false);
   let filterInput = $state<HTMLInputElement | null>(null);
 
@@ -79,15 +80,38 @@
    * rather than logged, because the popup takes its console with it when it
    * closes.
    */
-  function open(url: string) {
+  function open(entry: ResolvedTool) {
+    if (entry.tool.action === 'copy') {
+      copy(entry.url);
+      return;
+    }
     const target = settings.openTarget;
     openError = null;
-    void openUrl(url, target).then(
+    notice = null;
+    void openUrl(entry.url, target).then(
       () => {
         if (target !== 'background-tab') window.close();
       },
       () => {
         openError = 'The browser would not open that tool from this page.';
+      },
+    );
+  }
+
+  /**
+   * Copies a tool's text and says so, then closes the popup once the user has
+   * had a moment to see it. The keypress or click that got here is the user
+   * gesture the clipboard needs, so no extra permission is involved.
+   */
+  function copy(text: string) {
+    openError = null;
+    void navigator.clipboard.writeText(text).then(
+      () => {
+        notice = `Copied ${text}`;
+        setTimeout(() => window.close(), 900);
+      },
+      () => {
+        openError = 'The browser would not let GitDeck use the clipboard.';
       },
     );
   }
@@ -125,11 +149,11 @@
         scrollSelectedIntoView();
         break;
       case 'open-selected':
-        if (selected !== undefined) open(selected.url);
+        if (selected !== undefined) open(selected);
         break;
       case 'open-index': {
         const entry = ordered[action.index];
-        if (entry !== undefined) open(entry.url);
+        if (entry !== undefined) open(entry);
         break;
       }
     }
@@ -186,6 +210,10 @@
           <ToolDeck entries={ordered} selectedId={selected?.tool.id} onopen={open} />
         {/if}
       </div>
+    {/if}
+
+    {#if notice !== null}
+      <p class="notice" role="status">{notice}</p>
     {/if}
 
     {#if openError !== null}
@@ -309,6 +337,18 @@
     border-top: 1px solid var(--border);
     color: var(--text-faint);
     font-size: 11px;
+  }
+
+  .notice {
+    margin: 0;
+    padding: var(--space-2) var(--space-4);
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .error {

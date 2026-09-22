@@ -182,7 +182,8 @@ A tool is a plain data object. `ToolDefinition` (`src/lib/tools/types.ts`):
 | `brand`       | yes      | The service's own name, shown as provenance           |
 | `description` | yes      | One imperative sentence: what the user gets           |
 | `category`    | yes      | Deck grouping                                         |
-| `urlTemplate` | yes      | The transformation                                    |
+| `urlTemplate` | yes      | The transformation: a URL to open, or text to copy    |
+| `action`      | no       | `open` (default) or `copy`                            |
 | `website`     | yes      | Provenance                                            |
 | `status`      | yes      | `verified` \| `unverified` \| `deprecated`            |
 | `verifiedAt`  | yes      | ISO date the template was last checked                |
@@ -200,7 +201,7 @@ checkbox; `deprecated` is never shown. This gives a graceful path between "worki
 and keeps the reason in version control.
 
 **Registry invariants are tested, not documented.** `validateTool` checks id casing, HTTPS-only
-URLs, ISO dates, placeholder names, and agreement between `requires` and the template.
+URLs for tools that open, ISO dates, placeholder names, and agreement between `requires` and the template.
 `registry.test.ts` runs it over every entry and resolves every entry against a full reference. A
 malformed tool fails CI.
 
@@ -241,7 +242,10 @@ wrong URL.
 ### Resolving — `resolveTools(tools, repo, options)`
 
 Filters by status, checks `requires` against the available fields, renders, then re-parses the
-result and rejects anything that is not HTTPS. Returns `{ resolved, skipped }` where every skip
+result and rejects anything that is not HTTPS. A `copy` tool skips the URL check: its rendered
+template is text for the clipboard, such as a clone command, and the popup writes it with
+`navigator.clipboard` on the click or keypress that picked it — a user gesture, so no clipboard
+permission is needed. Returns `{ resolved, skipped }` where every skip
 carries a reason. **Nothing throws.** One broken entry costs one card, never the deck — this is
 the mechanism behind the "handle tools becoming unavailable without breaking" requirement.
 

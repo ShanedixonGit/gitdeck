@@ -5,7 +5,16 @@ import type { RepoField } from '../github/types';
  * giving it a label in `categories.ts`; no other code needs to change.
  */
 export type ToolCategory =
-  'ide' | 'understand' | 'visualise' | 'ai-context' | 'insights' | 'security' | 'search';
+  'ide' | 'get' | 'understand' | 'visualise' | 'ai-context' | 'insights' | 'security' | 'search';
+
+/**
+ * What picking a tool does.
+ *
+ * - `open` — navigate to the rendered template, which must be an HTTPS URL.
+ * - `copy` — put the rendered template on the clipboard, for things that are
+ *            typed rather than visited, such as a clone command.
+ */
+export type ToolAction = 'open' | 'copy';
 
 /**
  * Verification lifecycle of a tool.
@@ -34,8 +43,13 @@ export interface ToolDefinition {
   /** One short sentence describing what the user gets, written in the imperative. */
   readonly description: string;
   readonly category: ToolCategory;
-  /** URL template rendered against a `RepoRef`. See `template.ts` for the syntax. */
+  /**
+   * Template rendered against a `RepoRef`. See `template.ts` for the syntax. For
+   * an `open` tool it is the destination URL; for a `copy` tool, the text copied.
+   */
   readonly urlTemplate: string;
+  /** Defaults to `open`. */
+  readonly action?: ToolAction;
   /** Home page of the service, shown as the provenance link. */
   readonly website: string;
   readonly status: ToolStatus;

@@ -1,6 +1,7 @@
 import type { ToolDefinition } from './types';
 
 const VERIFIED_ON = '2026-09-20';
+const VERIFIED_ON_CLONE = '2026-09-23';
 
 /**
  * The GitDeck tool registry.
@@ -52,6 +53,55 @@ export const TOOLS: readonly ToolDefinition[] = [
     status: 'verified',
     verifiedAt: VERIFIED_ON,
     notes: 'Requires a signed-in GitHub account.',
+  },
+  {
+    id: 'clone-https',
+    name: 'Copy the HTTPS clone command',
+    brand: 'Git',
+    description: 'Clone with Git over HTTPS, which needs no SSH key.',
+    category: 'get',
+    action: 'copy',
+    urlTemplate: 'git clone https://github.com/{owner}/{repo}.git',
+    website: 'https://docs.github.com/en/get-started/git-basics/about-remote-repositories',
+    status: 'verified',
+    verifiedAt: VERIFIED_ON_CLONE,
+  },
+  {
+    id: 'clone-ssh',
+    name: 'Copy the SSH clone command',
+    brand: 'Git',
+    description: 'Clone with Git over SSH, using the key already added to your account.',
+    category: 'get',
+    action: 'copy',
+    urlTemplate: 'git clone git@github.com:{owner}/{repo}.git',
+    website: 'https://docs.github.com/en/authentication/connecting-to-github-with-ssh',
+    status: 'verified',
+    verifiedAt: VERIFIED_ON_CLONE,
+  },
+  {
+    id: 'clone-gh',
+    name: 'Copy the GitHub CLI clone command',
+    brand: 'GitHub CLI',
+    description: 'Clone with gh, which also sets up the upstream remote for a fork.',
+    category: 'get',
+    action: 'copy',
+    urlTemplate: 'gh repo clone {owner}/{repo}',
+    website: 'https://cli.github.com',
+    docsUrl: 'https://cli.github.com/manual/gh_repo_clone',
+    status: 'verified',
+    verifiedAt: VERIFIED_ON_CLONE,
+  },
+  {
+    id: 'download-zip',
+    name: 'Download a ZIP',
+    brand: 'GitHub',
+    description: 'Download the default branch as an archive, with no Git needed.',
+    category: 'get',
+    urlTemplate: 'https://github.com/{owner}/{repo}/archive/HEAD.zip',
+    website:
+      'https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives',
+    status: 'verified',
+    verifiedAt: VERIFIED_ON_CLONE,
   },
   {
     id: 'deepwiki',

@@ -6,10 +6,12 @@
     entry: ResolvedTool;
     selected: boolean;
     shortcut?: number | undefined;
-    onopen: (url: string) => void;
+    onopen: (entry: ResolvedTool) => void;
   }
 
   let { entry, selected, shortcut, onopen }: Props = $props();
+
+  const copies = $derived(entry.tool.action === 'copy');
 </script>
 
 <button
@@ -17,8 +19,8 @@
   class="card"
   class:selected
   data-tool-id={entry.tool.id}
-  title={entry.url}
-  onclick={() => onopen(entry.url)}
+  title={copies ? `Copy: ${entry.url}` : entry.url}
+  onclick={() => onopen(entry)}
 >
   <CategoryIcon id={entry.tool.category} />
   <span class="body">
@@ -26,13 +28,17 @@
       {entry.tool.name}
       {#if entry.tool.status === 'unverified'}<span class="badge">unverified</span>{/if}
     </span>
-    <span class="brand">{entry.tool.brand}</span>
+    {#if copies}
+      <code>{entry.url}</code>
+    {:else}
+      <span class="brand">{entry.tool.brand}</span>
+    {/if}
     {#if entry.tool.notes}<span class="notes">{entry.tool.notes}</span>{/if}
   </span>
   {#if shortcut !== undefined}
     <kbd aria-hidden="true">{shortcut}</kbd>
   {/if}
-  <span class="arrow" aria-hidden="true">→</span>
+  <span class="arrow" aria-hidden="true">{copies ? '⧉' : '→'}</span>
 </button>
 
 <style>
@@ -92,6 +98,15 @@
     color: var(--text-faint);
     font-size: 11px;
     margin-top: 1px;
+  }
+
+  code {
+    overflow: hidden;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   kbd {
