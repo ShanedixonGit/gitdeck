@@ -26,7 +26,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     docsUrl: 'https://docs.github.com/en/codespaces/the-githubdev-web-based-editor',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
-    icon: 'gh',
   },
   {
     id: 'stackblitz',
@@ -40,7 +39,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     status: 'verified',
     verifiedAt: VERIFIED_ON,
     notes: 'Works best for JavaScript and TypeScript projects.',
-    icon: 'sb',
   },
   {
     id: 'github-codespaces',
@@ -54,7 +52,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     status: 'verified',
     verifiedAt: VERIFIED_ON,
     notes: 'Requires a signed-in GitHub account.',
-    icon: 'cs',
   },
   {
     id: 'deepwiki',
@@ -66,7 +63,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     website: 'https://deepwiki.com',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
-    icon: 'dw',
   },
   {
     id: 'gitdiagram',
@@ -79,7 +75,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     docsUrl: 'https://github.com/ahmedkhaleel2004/gitdiagram',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
-    icon: 'gd',
   },
   {
     id: 'githistory',
@@ -93,7 +88,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     status: 'verified',
     verifiedAt: VERIFIED_ON,
     requires: ['ref', 'path'],
-    icon: 'gh',
   },
   {
     id: 'gitingest',
@@ -106,7 +100,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     docsUrl: 'https://github.com/coderamp-labs/gitingest',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
-    icon: 'gi',
   },
   {
     id: 'gitmcp',
@@ -119,7 +112,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     docsUrl: 'https://github.com/idosal/git-mcp',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
-    icon: 'mc',
   },
   {
     id: 'ossinsight',
@@ -131,7 +123,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     website: 'https://ossinsight.io',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
-    icon: 'oi',
   },
   {
     id: 'star-history',
@@ -143,7 +134,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     website: 'https://www.star-history.com',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
-    icon: 'sh',
   },
   {
     id: 'deps-dev',
@@ -155,7 +145,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     website: 'https://deps.dev',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
-    icon: 'dd',
   },
   {
     id: 'openssf-scorecard',
@@ -168,7 +157,6 @@ export const TOOLS: readonly ToolDefinition[] = [
     docsUrl: 'https://github.com/ossf/scorecard',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
-    icon: 'sc',
   },
   {
     id: 'github-code-search',
@@ -181,6 +169,5 @@ export const TOOLS: readonly ToolDefinition[] = [
     docsUrl: 'https://docs.github.com/en/search-github/github-code-search',
     status: 'verified',
     verifiedAt: VERIFIED_ON,
-    icon: 'cs',
   },
 ];

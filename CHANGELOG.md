@@ -15,7 +15,7 @@ and the patch number for fixes.
 - An options page, opened in a full tab, with two panels: every available tool, and your deck.
   Drag tools across to add or remove them and within your deck to reorder. An empty deck is the
   first-run state, so the welcome and the picker are one screen
-- A colour per section on each card's monogram, so the shape of the deck is readable at a glance.
+- An icon and a colour per section on every card, so the shape of the deck is readable at a glance.
   Colour is never the only signal for anything
 - `npm run check:links`, and a weekly CI job that opens an issue when a tool marked `verified`
   stops responding

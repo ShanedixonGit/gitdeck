@@ -1,30 +1,26 @@
 <script lang="ts">
   import type { ResolvedTool } from '../lib/tools';
+  import CategoryIcon from './CategoryIcon.svelte';
 
   interface Props {
     entry: ResolvedTool;
     selected: boolean;
     shortcut?: number | undefined;
-    /** CSS custom property holding the section colour. */
-    tint: string;
     onopen: (url: string) => void;
   }
 
-  let { entry, selected, shortcut, tint, onopen }: Props = $props();
-
-  const monogram = $derived(entry.tool.icon ?? entry.tool.brand.slice(0, 2).toLowerCase());
+  let { entry, selected, shortcut, onopen }: Props = $props();
 </script>
 
 <button
   type="button"
   class="card"
   class:selected
-  style="--tint: var({tint})"
   data-tool-id={entry.tool.id}
   title={entry.url}
   onclick={() => onopen(entry.url)}
 >
-  <span class="monogram" aria-hidden="true">{monogram}</span>
+  <CategoryIcon id={entry.tool.category} />
   <span class="body">
     <span class="name">
       {entry.tool.name}
@@ -64,22 +60,6 @@
   .card.selected .arrow {
     opacity: 1;
     color: var(--accent);
-  }
-
-  .monogram {
-    flex: none;
-    width: 26px;
-    height: 26px;
-    display: grid;
-    place-items: center;
-    border: 1px solid color-mix(in srgb, var(--tint) 35%, transparent);
-    border-radius: var(--radius-sm);
-    background: color-mix(in srgb, var(--tint) 12%, transparent);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--tint);
-    text-transform: lowercase;
   }
 
   .body {

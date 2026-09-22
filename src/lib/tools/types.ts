@@ -46,8 +46,6 @@ export interface ToolDefinition {
    * requires `path` is only offered when the user is viewing a file.
    */
   readonly requires?: readonly RepoField[];
-  /** Short monogram shown on the card. Defaults to the first two letters of `brand`. */
-  readonly icon?: string;
   /** Documentation or source repository for the tool itself. */
   readonly docsUrl?: string;
   /** Caveats worth surfacing, e.g. "requires a GitHub account". */

@@ -4,13 +4,12 @@
   import {
     CATEGORIES,
     TOOLS,
-    categoryTint,
     nudgeInStack,
     placeInStack,
     reconcileStack,
     removeFromStack,
   } from '../../lib/tools';
-  import type { ToolDefinition } from '../../lib/tools';
+  import CategoryIcon from '../../components/CategoryIcon.svelte';
 
   type Panel = 'available' | 'stack';
 
@@ -58,10 +57,6 @@
 
   function setStack(stack: string[]) {
     update({ ...settings, stack });
-  }
-
-  function monogram(tool: ToolDefinition) {
-    return tool.icon ?? tool.brand.slice(0, 2).toLowerCase();
   }
 
   function startDrag(event: DragEvent, id: string, from: Panel) {
@@ -140,17 +135,16 @@
       >
         <h2 id="available-heading">Available</h2>
         {#each available as section (section.id)}
-          <h3>{section.label}</h3>
+          <h3><CategoryIcon id={section.id} bare />{section.label}</h3>
           <ul>
             {#each section.tools as tool (tool.id)}
               <li
                 draggable="true"
                 class:lifted={dragging?.id === tool.id}
-                style="--tint: var({section.tint})"
                 ondragstart={(event) => startDrag(event, tool.id, 'available')}
                 ondragend={endDrag}
               >
-                <span class="monogram" aria-hidden="true">{monogram(tool)}</span>
+                <CategoryIcon id={tool.category} />
                 <span class="body">
                   <span class="name">
                     {tool.name}
@@ -200,7 +194,6 @@
                 draggable="true"
                 class:lifted={dragging?.id === tool.id}
                 class:drop-before={over === 'stack' && dropBefore === tool.id}
-                style="--tint: var({categoryTint(tool.category)})"
                 ondragstart={(event) => startDrag(event, tool.id, 'stack')}
                 ondragend={endDrag}
                 ondragover={(event) => overStackItem(event, index)}
@@ -214,7 +207,7 @@
                   title="Drag, or use the arrow keys"
                   onkeydown={(event) => nudge(event, tool.id)}>⠿</button
                 >
-                <span class="monogram" aria-hidden="true">{monogram(tool)}</span>
+                <CategoryIcon id={tool.category} />
                 <span class="body">
                   <span class="name">{tool.name}</span>
                   <span class="description">{tool.brand}</span>
@@ -305,6 +298,9 @@
   }
 
   h3 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     margin: var(--space-3) 0 var(--space-1);
     padding: 0 var(--space-2);
     font-size: 10px;
@@ -397,21 +393,6 @@
     top: -2px;
     left: 0;
     right: 0;
-  }
-
-  .monogram {
-    flex: none;
-    width: 26px;
-    height: 26px;
-    display: grid;
-    place-items: center;
-    border: 1px solid color-mix(in srgb, var(--tint) 35%, transparent);
-    border-radius: var(--radius-sm);
-    background: color-mix(in srgb, var(--tint) 12%, transparent);
-    color: var(--tint);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 600;
   }
 
   .body {
