@@ -1,5 +1,6 @@
 /**
- * Checks every registry URL is still alive.
+ * Checks every link GitDeck shows is still alive: each tool's destination for a
+ * real repository, plus the website and docs links on the options page.
  *
  * This runs in CI and on demand — never in the extension. GitDeck makes no
  * network requests of its own precisely so that opening the popup does not
@@ -24,7 +25,9 @@ const USER_AGENT =
 
 interface Result {
   id: string;
-  name: string;
+  brand: string;
+  /** Which of the tool's links this is. */
+  link: 'destination' | 'website' | 'docs';
   status: string;
   url: string;
   ok: boolean;
@@ -40,6 +43,7 @@ async function probe(url: string): Promise<{ ok: boolean; detail: string }> {
       headers: { 'user-agent': USER_AGENT, accept: 'text/html,*/*' },
       signal: controller.signal,
     });
+    await response.body?.cancel();
     // 401/403/429 mean the service is up but guarded — a human decides whether
     // that is a dead tool or a bot wall, so it is reported, not judged here.
     return { ok: response.ok, detail: `HTTP ${response.status}` };
@@ -51,29 +55,43 @@ async function probe(url: string): Promise<{ ok: boolean; detail: string }> {
   }
 }
 
-const results: Result[] = [];
-for (const tool of TOOLS) {
-  const url = renderTemplate(tool.urlTemplate, PROBE);
-  const { ok, detail } = await probe(url);
-  results.push({ id: tool.id, name: tool.name, status: tool.status, url, ok, detail });
-}
+const links = TOOLS.flatMap((tool) => {
+  const each = [
+    { tool, link: 'destination' as const, url: renderTemplate(tool.urlTemplate, PROBE) },
+    { tool, link: 'website' as const, url: tool.website },
+  ];
+  if (tool.docsUrl !== undefined) each.push({ tool, link: 'docs' as const, url: tool.docsUrl });
+  return each;
+});
+
+const results: Result[] = await Promise.all(
+  links.map(async ({ tool, link, url }) => ({
+    id: tool.id,
+    brand: tool.brand,
+    link,
+    status: tool.status,
+    url,
+    ...(await probe(url)),
+  })),
+);
 
 if (process.argv.includes('--json')) {
   console.log(JSON.stringify(results, null, 2));
 } else {
   for (const result of results) {
     const mark = result.ok ? 'ok  ' : 'FAIL';
-    console.log(`${mark} ${result.name.padEnd(22)} ${result.detail.padEnd(12)} ${result.url}`);
+    const label = `${result.brand} (${result.link})`;
+    console.log(`${mark} ${label.padEnd(36)} ${result.detail.padEnd(12)} ${result.url}`);
   }
 }
 
 const broken = results.filter((result) => !result.ok && result.status === 'verified');
 if (broken.length > 0) {
   console.error(
-    `\n${broken.length} verified tool(s) failed. Re-check by hand, then set status to ` +
+    `\n${broken.length} link(s) on verified tools failed. Re-check by hand, then set status to ` +
       `"unverified" or "deprecated" in src/lib/tools/registry.ts — the popup only ever shows ` +
       `what the registry claims is good.`,
   );
   process.exit(1);
 }
-console.log(`\nAll ${results.length} tools reachable.`);
+console.log(`\nAll ${results.length} links on ${TOOLS.length} tools reachable.`);
