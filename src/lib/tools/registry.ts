@@ -17,7 +17,8 @@ const VERIFIED_ON = '2026-09-20';
 export const TOOLS: readonly ToolDefinition[] = [
   {
     id: 'github-dev',
-    name: 'GitHub.dev',
+    name: 'Browse in VS Code',
+    brand: 'GitHub.dev',
     description: 'Open the repository in a browser-based VS Code editor.',
     category: 'ide',
     urlTemplate: 'https://github.dev/{owner}/{repo}',
@@ -29,7 +30,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'stackblitz',
-    name: 'StackBlitz',
+    name: 'Run it in the browser',
+    brand: 'StackBlitz',
     description: 'Run the project in an in-browser Node environment.',
     category: 'ide',
     urlTemplate: 'https://stackblitz.com/github/{owner}/{repo}',
@@ -42,7 +44,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'github-codespaces',
-    name: 'Codespaces',
+    name: 'Start a cloud dev environment',
+    brand: 'Codespaces',
     description: 'Create a cloud development environment for the repository.',
     category: 'ide',
     urlTemplate: 'https://github.com/codespaces/new?repo={owner}%2F{repo}',
@@ -55,7 +58,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'deepwiki',
-    name: 'DeepWiki',
+    name: 'Read a generated wiki',
+    brand: 'DeepWiki',
     description: 'Read a generated wiki explaining the codebase.',
     category: 'understand',
     urlTemplate: 'https://deepwiki.com/{owner}/{repo}',
@@ -66,7 +70,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'gitdiagram',
-    name: 'GitDiagram',
+    name: 'Diagram the architecture',
+    brand: 'GitDiagram',
     description: 'Generate an interactive architecture diagram of the repository.',
     category: 'visualise',
     urlTemplate: 'https://gitdiagram.com/{owner}/{repo}',
@@ -78,7 +83,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'githistory',
-    name: 'Git History',
+    name: "Replay this file's history",
+    brand: 'Git History',
     description: 'Play back the change history of the current file.',
     category: 'visualise',
     urlTemplate: 'https://github.githistory.xyz/{owner}/{repo}/blob/{ref}/{path|path}',
@@ -91,7 +97,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'gitingest',
-    name: 'GitIngest',
+    name: 'Flatten it for an LLM',
+    brand: 'GitIngest',
     description: 'Turn the repository into a single prompt-friendly text digest.',
     category: 'ai-context',
     urlTemplate: 'https://gitingest.com/{owner}/{repo}',
@@ -103,7 +110,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'gitmcp',
-    name: 'GitMCP',
+    name: 'Connect it to an AI assistant',
+    brand: 'GitMCP',
     description: 'Expose the repository to AI assistants as an MCP server.',
     category: 'ai-context',
     urlTemplate: 'https://gitmcp.io/{owner}/{repo}',
@@ -115,7 +123,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'ossinsight',
-    name: 'OSS Insight',
+    name: 'See who contributes',
+    brand: 'OSS Insight',
     description: 'Inspect contributor, star and activity analytics.',
     category: 'insights',
     urlTemplate: 'https://ossinsight.io/analyze/{owner}/{repo}',
@@ -126,7 +135,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'star-history',
-    name: 'Star History',
+    name: 'Chart star growth',
+    brand: 'Star History',
     description: 'Chart how the repository gained stars over time.',
     category: 'insights',
     urlTemplate: 'https://www.star-history.com/#{owner}/{repo}',
@@ -137,7 +147,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'deps-dev',
-    name: 'Open Source Insights',
+    name: 'Check dependencies',
+    brand: 'deps.dev',
     description: 'Explore the dependency graph and known advisories.',
     category: 'security',
     urlTemplate: 'https://deps.dev/project/github/{owner}%2F{repo}',
@@ -148,7 +159,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'openssf-scorecard',
-    name: 'OpenSSF Scorecard',
+    name: 'Score its security practices',
+    brand: 'OpenSSF Scorecard',
     description: 'Review automated supply-chain security checks.',
     category: 'security',
     urlTemplate: 'https://scorecard.dev/viewer/?uri=github.com/{owner}/{repo}',
@@ -160,7 +172,8 @@ export const TOOLS: readonly ToolDefinition[] = [
   },
   {
     id: 'github-code-search',
-    name: 'GitHub Code Search',
+    name: 'Search the code',
+    brand: 'GitHub Code Search',
     description: 'Search the repository with GitHub code search syntax.',
     category: 'search',
     urlTemplate: 'https://github.com/search?q=repo%3A{owner}%2F{repo}&type=code',

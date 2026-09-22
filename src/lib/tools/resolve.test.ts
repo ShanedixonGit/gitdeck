@@ -4,7 +4,8 @@ import type { ToolDefinition } from './types';
 
 const base: ToolDefinition = {
   id: 'example',
-  name: 'Example',
+  name: 'Do the example thing',
+  brand: 'Example',
   description: 'Do a thing.',
   category: 'ide',
   urlTemplate: 'https://example.dev/{owner}/{repo}',

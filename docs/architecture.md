@@ -177,20 +177,21 @@ popup.
 
 A tool is a plain data object. `ToolDefinition` (`src/lib/tools/types.ts`):
 
-| Field         | Required | Purpose                                                             |
-| ------------- | -------- | ------------------------------------------------------------------- |
-| `id`          | yes      | Stable kebab-case identifier, never reused or renamed               |
-| `name`        | yes      | Card title                                                          |
-| `description` | yes      | One imperative sentence: what the user gets                         |
-| `category`    | yes      | Deck grouping                                                       |
-| `urlTemplate` | yes      | The transformation                                                  |
-| `website`     | yes      | Provenance                                                          |
-| `status`      | yes      | `verified` \| `unverified` \| `deprecated`                          |
-| `verifiedAt`  | yes      | ISO date the template was last checked                              |
-| `requires`    | no       | Repository fields beyond owner/repo (`ref`, `path`)                 |
-| `icon`        | no       | Two-character monogram; defaults to the first two letters of `name` |
-| `docsUrl`     | no       | Documentation or source for the tool itself                         |
-| `notes`       | no       | Caveats surfaced on the card                                        |
+| Field         | Required | Purpose                                                              |
+| ------------- | -------- | -------------------------------------------------------------------- |
+| `id`          | yes      | Stable kebab-case identifier, never reused or renamed                |
+| `name`        | yes      | Card title: the job, led by a verb                                   |
+| `brand`       | yes      | The service's own name, shown as provenance                          |
+| `description` | yes      | One imperative sentence: what the user gets                          |
+| `category`    | yes      | Deck grouping                                                        |
+| `urlTemplate` | yes      | The transformation                                                   |
+| `website`     | yes      | Provenance                                                           |
+| `status`      | yes      | `verified` \| `unverified` \| `deprecated`                           |
+| `verifiedAt`  | yes      | ISO date the template was last checked                               |
+| `requires`    | no       | Repository fields beyond owner/repo (`ref`, `path`)                  |
+| `icon`        | no       | Two-character monogram; defaults to the first two letters of `brand` |
+| `docsUrl`     | no       | Documentation or source for the tool itself                          |
+| `notes`       | no       | Caveats surfaced on the card                                         |
 
 The registry is a frozen array in one file. There is no per-tool module and no plugin system:
 sixteen data objects do not need either, and a flat array is the form a contributor can edit

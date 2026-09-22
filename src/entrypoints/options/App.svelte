@@ -61,7 +61,7 @@
   }
 
   function monogram(tool: ToolDefinition) {
-    return tool.icon ?? tool.name.slice(0, 2).toLowerCase();
+    return tool.icon ?? tool.brand.slice(0, 2).toLowerCase();
   }
 
   function startDrag(event: DragEvent, id: string, from: Panel) {
@@ -157,9 +157,7 @@
                     {#if tool.status === 'unverified'}<span class="badge">unverified</span>{/if}
                   </span>
                   <span class="description">{tool.description}</span>
-                  <a href={tool.website} target="_blank" rel="noreferrer noopener">
-                    {new URL(tool.website).host}
-                  </a>
+                  <a href={tool.website} target="_blank" rel="noreferrer noopener">{tool.brand}</a>
                 </span>
                 <button
                   type="button"
@@ -219,7 +217,7 @@
                 <span class="monogram" aria-hidden="true">{monogram(tool)}</span>
                 <span class="body">
                   <span class="name">{tool.name}</span>
-                  <span class="description">{tool.description}</span>
+                  <span class="description">{tool.brand}</span>
                 </span>
                 {#if index < 9}<kbd aria-hidden="true">{index + 1}</kbd>{/if}
                 <button
