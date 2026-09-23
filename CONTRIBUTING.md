@@ -19,7 +19,7 @@ Node 20 or newer.
 | `npm run build`         | Production build → `.output/chrome-mv3` |
 | `npm run build:firefox` | → `.output/firefox-mv3`                 |
 | `npm run build:edge`    | → `.output/edge-mv3`                    |
-| `npm run zip`           | Store-ready archive                     |
+| `npm run zip:all`       | Store archives for all three, + sources |
 | `npm test`              | Unit tests                              |
 | `npm run test:e2e`      | Build, then test the pages in Chrome    |
 | `npm run test:watch`    | Unit tests in watch mode                |
@@ -54,6 +54,8 @@ record the verification in [docs/tools.md](docs/tools.md).
 - **No network requests from the extension.** Not for icons, not for availability checks, not for
   metrics.
 - **Test the logic, not the framework.** New behaviour in `lib/` arrives with tests.
+- **Credit the service.** GitDeck is a connector. Docs, listings and UI copy never present a linked
+  tool's features as GitDeck's, and never imply an affiliation.
 
 ## Branches and commits
 
@@ -88,6 +90,12 @@ To cut a release:
 
 1. Move the `Unreleased` entries under a new version heading with today's date
 2. Bump `version` in `package.json`
-3. `npm run check && npm run build:all`
-4. Load `.output/chrome-mv3` once by hand and confirm the popup opens
-5. Tag it: `git tag -a v0.2.0 -m "GitDeck 0.2.0" && git push --tags`
+3. `npm run check && npm run test:e2e && npm run check:links`
+4. `npm run screenshots`, and commit them if they changed
+5. Load `.output/chrome-mv3` once by hand and confirm the popup opens
+6. Merge, then tag `main`: `git tag -a v0.3.0 -m "GitDeck 0.3.0" && git push origin v0.3.0`
+
+The tag starts the release workflow. It checks the tag matches `package.json`, runs the checks,
+builds the Chrome, Edge and Firefox packages and the Firefox source archive, and attaches them to
+a GitHub release whose notes are that version's changelog section. Submitting the packages to the
+stores is manual; the text for each is in [docs/store-listing.md](docs/store-listing.md).

@@ -31,6 +31,9 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run build:firefox
+      # Mozilla's own checks, as AMO runs them. Fails on errors; the one expected
+      # warning is Svelte's runtime building templates from static strings.
+      - run: npx web-ext lint --source-dir .output/firefox-mv3
       - run: npm run build:edge
 
   e2e:

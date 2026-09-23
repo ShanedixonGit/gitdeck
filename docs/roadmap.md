@@ -92,8 +92,8 @@ deck. The deck should be the tools you picked.
 
 ## Phase 7 — Distribution
 
-- [ ] Release checklist: verification sweep, version bump, changelog
-- [ ] CI that builds and attaches store artefacts on a tag
+- [x] Release checklist: verification sweep, version bump, changelog (CONTRIBUTING)
+- [x] CI that builds and attaches store artefacts on a tag
 - [x] Chrome Web Store listing and permission justification, in `docs/store-listing.md`
 - [ ] Edge Add-ons listing (same artefact)
 - [ ] Firefox Add-ons listing, including the sources archive AMO requires

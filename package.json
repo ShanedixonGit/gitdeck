@@ -17,6 +17,8 @@
     "build:all": "npm run build && npm run build:firefox && npm run build:edge",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
+    "zip:edge": "wxt zip -b edge",
+    "zip:all": "npm run zip && npm run zip:firefox && npm run zip:edge",
     "icons": "node scripts/generate-icons.mjs",
     "check:links": "node --experimental-strip-types scripts/check-links.ts",
     "screenshots": "npm run build && node --experimental-strip-types scripts/screenshots.ts",
