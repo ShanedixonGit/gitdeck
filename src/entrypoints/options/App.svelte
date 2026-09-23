@@ -62,7 +62,7 @@
 
   function update(next: Settings) {
     settings = next;
-    queue.push($state.snapshot(next));
+    queue.push(next);
   }
 
   function flushOnHide() {
