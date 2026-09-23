@@ -14,13 +14,15 @@ export async function loadSettings(): Promise<Settings> {
 }
 
 /**
- * Persists settings. A failure here is never worth interrupting the user for:
- * the popup keeps working with the settings it holds in memory.
+ * Persists settings, resolving to whether the write succeeded. It never throws:
+ * the caller keeps working with the settings it holds in memory, and decides
+ * whether a failed write is worth telling the user about.
  */
-export async function saveSettings(settings: Settings): Promise<void> {
+export async function saveSettings(settings: Settings): Promise<boolean> {
   try {
     await ITEM.setValue(settings);
+    return true;
   } catch {
-    /* preferences are a convenience, not a requirement */
+    return false;
   }
 }

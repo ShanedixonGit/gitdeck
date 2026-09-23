@@ -46,6 +46,9 @@ and the patch number for fixes.
 
 ### Fixed
 
+- Reordering quickly on the options page no longer loses the result. The browser caps sync writes
+  at about two a second and dropped the rest silently; a burst of changes is now saved once it
+  settles, and a write the browser refuses is reported on the page
 - Enter activates whatever has focus. Tabbing to **Change** or **Customise** and pressing Enter
   used to open the selected tool instead, and a card reached with Tab opened the highlighted one
   rather than itself. The arrow keys now carry focus along with the highlight
