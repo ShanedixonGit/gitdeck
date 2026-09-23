@@ -14,13 +14,26 @@ export async function loadSettings(): Promise<Settings> {
 }
 
 /**
+ * A structured-clone-safe copy. Callers hold settings in Svelte state, which
+ * wraps them in proxies; Chrome's storage reads through a proxy, but Firefox
+ * structured-clones the value and throws on one.
+ */
+function plain(settings: Settings): Settings {
+  return {
+    openTarget: settings.openTarget,
+    includeUnverified: settings.includeUnverified,
+    stack: [...settings.stack],
+  };
+}
+
+/**
  * Persists settings, resolving to whether the write succeeded. It never throws:
  * the caller keeps working with the settings it holds in memory, and decides
  * whether a failed write is worth telling the user about.
  */
 export async function saveSettings(settings: Settings): Promise<boolean> {
   try {
-    await ITEM.setValue(settings);
+    await ITEM.setValue(plain(settings));
     return true;
   } catch {
     return false;

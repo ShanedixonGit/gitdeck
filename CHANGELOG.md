@@ -49,6 +49,8 @@ and the patch number for fixes.
 
 ### Fixed
 
+- Settings are saved as a plain copy. Choosing the recommended deck in the popup handed storage a
+  Svelte state proxy, which Chrome accepts but a structured-clone storage, as in Firefox, refuses
 - GitHub's own pages, such as `/copilot`, `/models` and `/readme`, are no longer mistaken for
   repositories
 - The popup no longer flashes "None of your tools apply to this page" before your deck appears.
