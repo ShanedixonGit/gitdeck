@@ -1,14 +1,17 @@
 # GitDeck
 
-**You're looking at a GitHub repo. GitDeck shows you every other way to look at it.**
+**You're looking at a GitHub repo. GitDeck connects it to other tools that can open it.**
 
-Click the icon on any repository and get a deck of tools — browser IDEs, architecture
-diagrams, dependency graphs, AI context exporters — each already pointed at the repo
-you're on. One click opens it.
+Click the icon on any repository and get a deck of links to other services — browser IDEs,
+architecture diagrams, dependency graphs, AI context exporters — each already pointed at the
+repo you're on. One click takes you there.
+
+GitDeck is a connector. The editors, diagrams, wikis and reports are built and run by the
+services it links to, not by GitDeck.
 
 <!-- TODO: screenshot of the popup -->
 
-## What you get
+## Where it can take you
 
 |                             |                                               |
 | --------------------------- | --------------------------------------------- |
@@ -21,8 +24,20 @@ you're on. One click opens it.
 | **Security & dependencies** | deps.dev, OpenSSF Scorecard                   |
 | **Search**                  | GitHub Code Search                            |
 
-GitDeck doesn't rebuild any of these. It just knows how to point each one at the repo
-you're looking at.
+Each of these is a separate service, run by its own provider. GitDeck isn't affiliated with any
+of them and doesn't rebuild what they do. It knows how to point each one at the repo you're
+looking at.
+
+## What GitDeck does itself
+
+- Works out which repo (and file) you're on from the address bar
+- Builds the right link for each tool, and the clone commands it copies for you
+- Keeps your deck: the tools you picked, in your order, with keyboard shortcuts
+- Checks every link it offers still responds, weekly, outside the extension
+
+Everything after the click is the other service: what it shows, whether it's accurate, whether
+it needs an account, whether it's up. Those questions belong to that service. The ZIP comes
+from GitHub, and the clone commands run with your own `git` or `gh`.
 
 ## Install
 
@@ -65,6 +80,8 @@ when you click the icon. `storage` remembers your settings. That's it.
 - Nothing is stored except your two preferences — no URLs, no history
 - The extension itself never makes a network request — the only thing that happens is
   the link you choose to click
+- When you open a tool, that service sees which repo you sent it, and its own privacy policy
+  applies from there
 
 ## Want to add a tool?
 

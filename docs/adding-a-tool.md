@@ -44,6 +44,11 @@ Rules the tests enforce:
   leads with the job; the brand sits underneath as provenance.
 - `description` is one imperative sentence ending in a full stop, describing what the _user_
   gets — not what the service is.
+
+Copy anywhere else — the README, `docs/`, the changelog, store listings — must not present the
+service's work as GitDeck's. GitDeck opens the tool; the tool does the job. Write "opens the
+repository in GitDiagram", not "GitDeck diagrams your repository".
+
 - `urlTemplate` and `website` are HTTPS.
 - `verifiedAt` is the ISO date you ran the check above.
 - A non-`verified` status must have `notes` explaining why.

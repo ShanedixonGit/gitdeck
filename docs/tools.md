@@ -4,6 +4,11 @@ The registry lives in [`src/lib/tools/registry.ts`](../src/lib/tools/registry.ts
 records how each entry was verified and — just as importantly — which candidates were rejected
 and why.
 
+Every tool here is an independent service run by its own provider. GitDeck links to them and is
+not affiliated with any of them. Verification confirms that a link reaches a page for the right
+repository; it says nothing about the quality of what the service produces, which is the
+service's responsibility.
+
 **Last verification sweep: 2026-09-23** — all 17 entries, and every website and docs link the
 extension shows, reachable. Checked by `npm run check:links`.
 

@@ -9,6 +9,24 @@ presents the results as a keyboard-navigable deck.
 The value is **aggregation, discovery and UX**. GitDeck deliberately reimplements none of the
 services it links to.
 
+### Connector, not provider
+
+GitDeck is a connector between a GitHub repository and other services. Documentation, store
+listings and UI copy describe what GitDeck itself does, and credit everything else to the
+service that does it.
+
+| GitDeck's own                                                    | Belongs to the linked service                          |
+| ---------------------------------------------------------------- | ------------------------------------------------------ |
+| Parsing the repository, ref and path from the tab's URL          | Everything the destination page shows or does          |
+| Rendering each tool's destination URL from the registry          | Accuracy of generated wikis, diagrams, digests, scores |
+| Composing clone commands and copying them to the clipboard       | Cloning itself (`git`, `gh`) and the ZIP (GitHub)      |
+| The deck: choosing, ordering, keyboard access, the options page  | Accounts, sign-in, pricing and usage limits            |
+| Curation: which tool per job, and the reasons in `docs/tools.md` | Terms of service and privacy policy after the click    |
+| Link checking (`scripts/check-links.ts`), which confirms a 200   | Uptime, and whether the page is right for the repo     |
+
+GitDeck is not affiliated with or endorsed by any linked service. Names are used only to say
+where a link goes, and each one's `brand` is shown on its card so the provider is never hidden.
+
 ### Stack, and why
 
 | Choice                               | Reason                                                                                                                                                                                                                                                                                                     |
@@ -273,7 +291,8 @@ registry; the popup shows only what the registry vouches for.
 **Third parties.** The popup issues no requests to the listed services. Card icons are inline SVG
 drawn from path data in the bundle, never favicons, specifically so that opening the deck does not leak the repository name to every
 service in the registry via favicon fetches. The only third-party contact is the tab the user
-deliberately opens.
+deliberately opens. From that point the repository name is in the destination URL, and the
+service's own privacy policy and terms apply; GitDeck has no part in what happens there.
 
 **Injection surface.** Owner and repository names are percent-encoded before substitution, so a
 crafted repository name cannot break out of its URL position. Every resolved URL is re-parsed and
