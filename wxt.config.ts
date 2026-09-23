@@ -10,7 +10,8 @@ export default defineConfig({
   manifest: {
     name: 'GitDeck',
     short_name: 'GitDeck',
-    description: 'A curated deck of tools for the GitHub repository you are looking at.',
+    description:
+      'Opens the GitHub repository you are looking at in other tools, each run by its own provider.',
     permissions: ['activeTab', 'storage'],
     browser_specific_settings: {
       gecko: {
