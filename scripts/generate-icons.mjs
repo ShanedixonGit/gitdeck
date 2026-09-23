@@ -10,65 +10,88 @@ const SUPERSAMPLE = 4;
 const BACKGROUND = [47, 111, 235];
 const FOREGROUND = [255, 255, 255];
 
-const BARS = [
-  { top: 0.28, height: 0.1, left: 0.28, right: 0.72 },
-  { top: 0.45, height: 0.1, left: 0.22, right: 0.78 },
-  { top: 0.62, height: 0.1, left: 0.28, right: 0.72 },
+/**
+ * The Repohopper mark, on a unit square: a card with a second card tilted
+ * behind it, as if dealt from a deck, and an arrow on the front card for the
+ * hop to another tool.
+ */
+const TILE = { left: 0.02, top: 0.02, right: 0.98, bottom: 0.98, radius: 0.22 };
+const BACK_CARD = { left: 0.18, top: 0.28, right: 0.54, bottom: 0.72, radius: 0.07, angle: -12 };
+const BACK_CARD_OPACITY = 0.55;
+const FRONT_CARD = { left: 0.34, top: 0.27, right: 0.82, bottom: 0.73, radius: 0.085 };
+const ARROW_WIDTH = 0.075;
+const ARROW = [
+  [0.47, 0.5, 0.69, 0.5],
+  [0.6, 0.41, 0.69, 0.5],
+  [0.6, 0.59, 0.69, 0.5],
 ];
 
-function roundedRectCoverage(x, y, left, top, right, bottom, radius) {
+function inRoundedRect(x, y, { left, top, right, bottom, radius }) {
   if (x < left || x > right || y < top || y > bottom) return false;
   const cx = Math.min(Math.max(x, left + radius), right - radius);
   const cy = Math.min(Math.max(y, top + radius), bottom - radius);
+  return (x - cx) ** 2 + (y - cy) ** 2 <= radius * radius;
+}
+
+function inRotatedRect(x, y, rect) {
+  const cx = (rect.left + rect.right) / 2;
+  const cy = (rect.top + rect.bottom) / 2;
+  const turn = (-rect.angle * Math.PI) / 180;
   const dx = x - cx;
   const dy = y - cy;
-  return dx * dx + dy * dy <= radius * radius;
+  return inRoundedRect(
+    cx + dx * Math.cos(turn) - dy * Math.sin(turn),
+    cy + dx * Math.sin(turn) + dy * Math.cos(turn),
+    rect,
+  );
+}
+
+function nearSegment(x, y, [x1, y1, x2, y2], width) {
+  const vx = x2 - x1;
+  const vy = y2 - y1;
+  const t = Math.max(0, Math.min(1, ((x - x1) * vx + (y - y1) * vy) / (vx * vx + vy * vy)));
+  return (x - (x1 + t * vx)) ** 2 + (y - (y1 + t * vy)) ** 2 <= (width / 2) ** 2;
+}
+
+/** The colour at one point, or null outside the tile. Later layers paint over earlier ones. */
+function sample(x, y) {
+  if (!inRoundedRect(x, y, TILE)) return null;
+  let colour = BACKGROUND;
+  if (inRotatedRect(x, y, BACK_CARD)) {
+    colour = colour.map((c, i) => c + (FOREGROUND[i] - c) * BACK_CARD_OPACITY);
+  }
+  if (inRoundedRect(x, y, FRONT_CARD)) {
+    colour = FOREGROUND;
+    if (ARROW.some((segment) => nearSegment(x, y, segment, ARROW_WIDTH))) colour = BACKGROUND;
+  }
+  return colour;
 }
 
 function renderPixels(size) {
   const scale = size * SUPERSAMPLE;
   const pixels = Buffer.alloc(size * size * 4);
+  const samples = SUPERSAMPLE * SUPERSAMPLE;
 
   for (let py = 0; py < size; py += 1) {
     for (let px = 0; px < size; px += 1) {
-      let bg = 0;
-      let fg = 0;
+      let covered = 0;
+      const sum = [0, 0, 0];
       for (let sy = 0; sy < SUPERSAMPLE; sy += 1) {
         for (let sx = 0; sx < SUPERSAMPLE; sx += 1) {
-          const x = (px * SUPERSAMPLE + sx + 0.5) / scale;
-          const y = (py * SUPERSAMPLE + sy + 0.5) / scale;
-          if (!roundedRectCoverage(x, y, 0.02, 0.02, 0.98, 0.98, 0.22)) continue;
-          bg += 1;
-          for (const bar of BARS) {
-            const barRadius = bar.height / 2;
-            if (
-              roundedRectCoverage(
-                x,
-                y,
-                bar.left,
-                bar.top,
-                bar.right,
-                bar.top + bar.height,
-                barRadius,
-              )
-            ) {
-              fg += 1;
-              break;
-            }
-          }
+          const colour = sample(
+            (px * SUPERSAMPLE + sx + 0.5) / scale,
+            (py * SUPERSAMPLE + sy + 0.5) / scale,
+          );
+          if (colour === null) continue;
+          covered += 1;
+          for (let channel = 0; channel < 3; channel += 1) sum[channel] += colour[channel];
         }
       }
-
-      const samples = SUPERSAMPLE * SUPERSAMPLE;
-      const alpha = bg / samples;
-      const mix = bg === 0 ? 0 : fg / bg;
       const offset = (py * size + px) * 4;
       for (let channel = 0; channel < 3; channel += 1) {
-        pixels[offset + channel] = Math.round(
-          BACKGROUND[channel] * (1 - mix) + FOREGROUND[channel] * mix,
-        );
+        pixels[offset + channel] = covered === 0 ? 0 : Math.round(sum[channel] / covered);
       }
-      pixels[offset + 3] = Math.round(alpha * 255);
+      pixels[offset + 3] = Math.round((covered / samples) * 255);
     }
   }
 
