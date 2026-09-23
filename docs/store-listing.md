@@ -101,9 +101,13 @@ AMO requires the source for bundled code. Upload the archive from `npm run zip:f
 
 ## Screenshots
 
-1280×800 PNG. Chrome takes up to five, Edge up to ten, Firefox any number.
+`npm run screenshots` renders them from the built extension into `docs/images/store/`: 1280×800
+JPEG, since the Chrome Web Store rejects PNGs with an alpha channel. Rerun it before each release
+so the listing matches what ships. Chrome takes up to five, Edge up to ten, Firefox any number.
 
-1. The popup on a repository page, showing a recommended deck
-2. The options page with both panels
-3. First run: "Use the recommended deck" or "Choose my own"
-4. A copy tool after copying a clone command
+1. `1-deck.jpg` — the popup on a repository, showing the recommended deck
+2. `2-first-run.jpg` — first run: "Use the recommended deck" or "Choose my own"
+3. `3-copy.jpg` — a clone command just copied
+4. `4-options.jpg` — the options page with both panels
+
+It drives the installed Google Chrome through `playwright-core`, so it downloads no browser.

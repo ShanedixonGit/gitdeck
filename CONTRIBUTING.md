@@ -26,6 +26,7 @@ Node 20 or newer.
 | `npm run lint`          | ESLint                                  |
 | `npm run format`        | Prettier, writing changes               |
 | `npm run icons`         | Regenerate `src/public/icon/*.png`      |
+| `npm run screenshots`   | Store screenshots → `docs/images/store` |
 | `npm run check`         | Everything CI runs                      |
 
 ## Loading a build by hand

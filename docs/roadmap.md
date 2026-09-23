@@ -85,7 +85,7 @@ deck. The deck should be the tools you picked.
 - [ ] Copy the transformed URL instead of opening it
 - [ ] Optional omnibox keyword (`gd react` → deck for the repository)
 - [x] Options page for choosing and ordering the stack
-- [ ] Screenshots and a short demo in the README
+- [x] Screenshots in the README and the store listings, from `npm run screenshots`
 
 ## Phase 7 — Distribution
 
