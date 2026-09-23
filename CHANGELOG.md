@@ -29,6 +29,9 @@ and the patch number for fixes.
 
 ### Changed
 
+- Firefox 140 or newer is required (142 on Android), the first releases that read the manifest's
+  declaration that GitDeck collects no data. The Firefox-only manifest keys are no longer in the
+  Chrome and Edge builds, which warned about them
 - The README, docs and extension description now say plainly that GitDeck is a connector: the
   linked tools are independent services, not affiliated with GitDeck, and their features,
   accuracy, accounts and privacy policies are theirs. What GitDeck does itself is listed

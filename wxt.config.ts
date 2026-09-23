@@ -7,19 +7,25 @@ export default defineConfig({
   publicDir: 'src/public',
   modules: ['@wxt-dev/module-svelte'],
   manifestVersion: 3,
-  manifest: {
+  manifest: ({ browser }) => ({
     name: 'GitDeck',
     short_name: 'GitDeck',
     description:
       'Opens the GitHub repository you are looking at in other tools, each run by its own provider.',
     permissions: ['activeTab', 'storage'],
-    browser_specific_settings: {
-      gecko: {
-        id: 'gitdeck@shanedixon.dev',
-        strict_min_version: '115.0',
-        data_collection_permissions: { required: ['none'] },
+    // Firefox only: Chrome and Edge warn about keys they do not know. 140 and
+    // 142 are the first releases that read data_collection_permissions, which
+    // AMO requires of new add-ons.
+    ...(browser === 'firefox' && {
+      browser_specific_settings: {
+        gecko: {
+          id: 'gitdeck@shanedixon.dev',
+          strict_min_version: '140.0',
+          data_collection_permissions: { required: ['none'] },
+        },
+        gecko_android: { strict_min_version: '142.0' },
       },
-    },
+    }),
     action: {
       default_title: 'GitDeck',
     },
@@ -30,5 +36,5 @@ export default defineConfig({
       96: 'icon/96.png',
       128: 'icon/128.png',
     },
-  },
+  }),
 });
