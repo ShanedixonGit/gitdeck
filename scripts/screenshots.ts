@@ -1,90 +1,26 @@
 /**
  * Renders the store screenshots from the real built extension.
  *
- * Serves `.output/chrome-mv3`, loads the popup and options pages in the locally
- * installed Chrome with the extension APIs stubbed (a fixed tab URL, fixed
- * settings, a clipboard that accepts anything), and frames each capture at the
- * 1280×800 the stores ask for. JPEG, because the Chrome Web Store rejects PNGs
+ * Loads the popup and options pages through `harness.ts`, with a fixed tab and
+ * fixed settings, and frames each capture at the 1280×800 the stores ask for. JPEG, because the Chrome Web Store rejects PNGs
  * with an alpha channel.
  *
  * Usage: npm run screenshots (builds first). Output: docs/images/store/.
  */
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { createServer } from 'node:http';
-import type { AddressInfo } from 'node:net';
-import { extname, join, normalize, resolve } from 'node:path';
-import { chromium } from 'playwright-core';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
 import type { Browser, Page } from 'playwright-core';
 import { CATEGORIES } from '../src/lib/tools/categories.ts';
 import { TOOLS } from '../src/lib/tools/registry.ts';
+import { launch, openPage, serve } from './harness.ts';
+import type { Scene } from './harness.ts';
 
-const ROOT = resolve(import.meta.dirname, '..');
-const BUILD = join(ROOT, '.output/chrome-mv3');
-const OUT = join(ROOT, 'docs/images/store');
+const OUT = resolve(import.meta.dirname, '../docs/images/store');
 const REPO_URL = 'https://github.com/facebook/react';
-
-const TYPES: Record<string, string> = {
-  '.html': 'text/html',
-  '.js': 'text/javascript',
-  '.css': 'text/css',
-  '.png': 'image/png',
-};
 
 const RECOMMENDED = CATEGORIES.flatMap((section) =>
   TOOLS.filter((tool) => tool.category === section.id && tool.recommended).map((tool) => tool.id),
 );
-
-interface Scene {
-  url: string;
-  stack: readonly string[];
-}
-
-/** Runs in the page before any extension code, standing in for the browser APIs. */
-function stubExtension({ url, stack }: Scene) {
-  const store: Record<string, unknown> = {
-    settings: { openTarget: 'new-tab', includeUnverified: false, stack },
-  };
-  const event = { addListener() {}, removeListener() {}, hasListener: () => false };
-  Object.assign(window, {
-    chrome: {
-      runtime: { id: 'screenshots', openOptionsPage: async () => {}, onMessage: event },
-      tabs: { query: async () => [{ url }], create: async () => ({}), update: async () => ({}) },
-      storage: {
-        onChanged: event,
-        sync: {
-          onChanged: event,
-          get: async (keys?: string | string[]) =>
-            Object.fromEntries([keys ?? Object.keys(store)].flat().map((key) => [key, store[key]])),
-          set: async (items: Record<string, unknown>) => void Object.assign(store, items),
-          remove: async () => {},
-        },
-      },
-    },
-    close: () => {},
-  });
-  Object.defineProperty(navigator, 'clipboard', { value: { writeText: async () => {} } });
-}
-
-function serve(): Promise<{ origin: string; close: () => void }> {
-  const server = createServer((request, response) => {
-    const path = normalize(new URL(request.url ?? '/', 'http://x').pathname);
-    const file = join(BUILD, path);
-    if (!file.startsWith(BUILD)) return void response.writeHead(403).end();
-    readFile(file).then(
-      (body) =>
-        response
-          .writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' })
-          .end(body),
-      () => response.writeHead(404).end(),
-    );
-  });
-  return new Promise((done) =>
-    server.listen(0, '127.0.0.1', () => {
-      const { port } = server.address() as AddressInfo;
-      done({ origin: `http://127.0.0.1:${port}`, close: () => server.close() });
-    }),
-  );
-}
 
 async function capturePopup(
   browser: Browser,
@@ -92,9 +28,7 @@ async function capturePopup(
   scene: Scene,
   act?: (page: Page) => Promise<void>,
 ): Promise<Buffer> {
-  const page = await browser.newPage({ deviceScaleFactor: 2, colorScheme: 'light' });
-  await page.addInitScript(stubExtension, scene);
-  await page.goto(`${origin}/popup.html`);
+  const page = await openPage(browser, origin, 'popup.html', scene, { deviceScaleFactor: 2 });
   await page.locator('main header').waitFor();
   if (act !== undefined) await act(page);
   const shot = await page.locator('main').screenshot();
@@ -128,12 +62,13 @@ async function frame(browser: Browser, popup: Buffer, title: string, body: strin
 }
 
 async function captureOptions(browser: Browser, origin: string): Promise<Buffer> {
-  const page = await browser.newPage({
-    viewport: { width: 1280, height: 800 },
-    colorScheme: 'light',
-  });
-  await page.addInitScript(stubExtension, { url: REPO_URL, stack: RECOMMENDED });
-  await page.goto(`${origin}/options.html`);
+  const page = await openPage(
+    browser,
+    origin,
+    'options.html',
+    { url: REPO_URL, stack: RECOMMENDED },
+    { viewport: { width: 1280, height: 800 } },
+  );
   await page.locator('.panels').waitFor();
   const shot = await page.screenshot({ type: 'jpeg', quality: 92 });
   await page.close();
@@ -142,7 +77,7 @@ async function captureOptions(browser: Browser, origin: string): Promise<Buffer>
 
 await mkdir(OUT, { recursive: true });
 const server = await serve();
-const browser = await chromium.launch({ channel: 'chrome', headless: true });
+const browser = await launch();
 
 try {
   const shots: Array<[string, Buffer]> = [
