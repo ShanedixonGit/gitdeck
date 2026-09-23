@@ -69,12 +69,12 @@ skipped with a reason rather than shown broken.
 
 ## 3. Supported browsers
 
-| Browser | Target                                                         | Status                                                                      |
-| ------- | -------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Chrome  | `chrome-mv3`                                                   | Supported, primary development target                                       |
-| Edge    | `edge-mv3`                                                     | Supported, same build as Chrome                                             |
-| Firefox | `firefox-mv3`                                                  | Supported, separate build (`browser_specific_settings`, no data collection) |
-| Safari  | via `xcrun safari-web-extension-converter` on the Chrome build | Planned, Phase 4                                                            |
+| Browser | Target                                                         | Status                                                                  |
+| ------- | -------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Chrome  | `chrome-mv3`                                                   | Supported, primary development target                                   |
+| Edge    | `edge-mv3`                                                     | Supported, same build as Chrome                                         |
+| Firefox | `firefox-mv3`                                                  | Separate build: Firefox 140+, Android 142+, declares no data collection |
+| Safari  | via `xcrun safari-web-extension-converter` on the Chrome build | Planned, Phase 4                                                        |
 
 WXT produces each target from one `wxt.config.ts`. The application code uses the promise-based
 `browser.*` API from `wxt/browser`, which is polyfilled for Chrome, so no per-browser branching

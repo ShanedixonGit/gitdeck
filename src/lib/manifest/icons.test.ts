@@ -13,7 +13,16 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
  * chrome://extensions.
  */
 describe('manifest icons', () => {
-  const manifest = config.manifest as { icons?: Record<string, string> } | undefined;
+  const manifest = (
+    typeof config.manifest === 'function'
+      ? config.manifest({
+          browser: 'chrome',
+          manifestVersion: 3,
+          mode: 'production',
+          command: 'build',
+        })
+      : config.manifest
+  ) as { icons?: Record<string, string> } | undefined;
   const icons = Object.entries(manifest?.icons ?? {});
 
   it('declares at least one icon', () => {
