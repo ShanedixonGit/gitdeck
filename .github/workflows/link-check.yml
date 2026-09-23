@@ -20,7 +20,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
+      # shell: bash adds pipefail, without which tee would hide the checker's exit code.
       - id: check
+        shell: bash
         run: node --experimental-strip-types scripts/check-links.ts | tee report.txt
       - if: failure()
         uses: actions/github-script@v8
