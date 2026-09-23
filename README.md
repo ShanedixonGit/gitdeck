@@ -77,11 +77,15 @@ when you click the icon. `storage` remembers your settings. That's it.
 
 - No tracking, no analytics, no accounts
 - No reading your code, your page, or your other tabs
-- Nothing is stored except your two preferences — no URLs, no history
+- Nothing is stored except your settings: your deck, where tools open, and whether to offer
+  unverified tools. They sit in your browser's sync storage, so browser sync can carry them
+  between your devices. No URLs, no history
 - The extension itself never makes a network request — the only thing that happens is
   the link you choose to click
 - When you open a tool, that service sees which repo you sent it, and its own privacy policy
   applies from there
+
+The full [privacy policy](docs/privacy.md) spells this out.
 
 ## Want to add a tool?
 
@@ -92,6 +96,7 @@ about five minutes.
 
 - **[Architecture](docs/architecture.md)** — how it's built and why
 - **[Tools](docs/tools.md)** — what's in the deck, how each was verified, what got rejected
+- **[Privacy policy](docs/privacy.md)** — what GitDeck reads, stores and sends
 - **[Roadmap](docs/roadmap.md)** — what's next
 - **[Contributing](CONTRIBUTING.md)** — dev setup and house rules
 

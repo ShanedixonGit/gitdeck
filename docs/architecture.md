@@ -277,9 +277,12 @@ action, and revoked on navigation; it is what allows `browser.tabs.update` to se
 somewhere else. `storage` holds preferences and nothing else.
 
 **Data.** GitDeck reads one string — the active tab's URL — and holds it in popup memory until
-the popup closes. The only thing ever written is the settings object: an open target and one
-boolean. No URL, repository name or history is stored, logged or transmitted, and there is no
-first-party network traffic of any kind.
+the popup closes. The only thing ever written is the settings object: the stack of tool ids, an
+open target and one boolean. It lives in `storage.sync`, so the browser's own sync, when the user
+has turned it on, copies it between devices through their Google, Microsoft or Mozilla account.
+No URL, repository name or history is stored, logged or transmitted, and there is no first-party
+network traffic of any kind. [`docs/privacy.md`](privacy.md) is the user-facing policy and the URL
+given to the stores; a change here must change it too.
 
 **Availability.** Dead tools are found by `scripts/check-links.ts`, which runs weekly in CI and
 never in the extension. Checking at runtime would mean the popup contacting every service in the
