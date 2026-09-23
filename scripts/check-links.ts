@@ -1,9 +1,9 @@
 /**
- * Checks every link GitDeck shows is still alive: each tool's destination for a
+ * Checks every link Repohopper shows is still alive: each tool's destination for a
  * real repository, plus the website and docs links on the options page. A
  * `copy` tool has no destination, only text, so only its links are checked.
  *
- * This runs in CI and on demand — never in the extension. GitDeck makes no
+ * This runs in CI and on demand — never in the extension. Repohopper makes no
  * network requests of its own precisely so that opening the popup does not
  * announce the repository you are viewing to a dozen third parties; doing
  * availability checks at runtime would give that away for the sake of a

@@ -129,7 +129,7 @@
         setTimeout(() => window.close(), 900);
       },
       () => {
-        openError = 'The browser would not let GitDeck use the clipboard.';
+        openError = 'The browser would not let Repohopper use the clipboard.';
       },
     );
   }

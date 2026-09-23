@@ -1,6 +1,6 @@
 ---
 name: New tool
-about: Suggest a tool for the GitDeck registry
+about: Suggest a tool for the Repohopper registry
 labels: tool
 ---
 

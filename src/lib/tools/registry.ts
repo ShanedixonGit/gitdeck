@@ -4,7 +4,7 @@ const VERIFIED_ON = '2026-09-20';
 const VERIFIED_ON_CLONE = '2026-09-23';
 
 /**
- * The GitDeck tool registry.
+ * The Repohopper tool registry.
  *
  * Every entry here was reachable and produced the expected page on
  * `verifiedAt`. See `docs/tools.md` for the verification method and for the

@@ -8,8 +8,8 @@ export default defineConfig({
   modules: ['@wxt-dev/module-svelte'],
   manifestVersion: 3,
   manifest: ({ browser }) => ({
-    name: 'GitDeck',
-    short_name: 'GitDeck',
+    name: 'Repohopper',
+    short_name: 'Repohopper',
     description:
       'Opens the GitHub repository you are looking at in other tools, each run by its own provider.',
     permissions: ['activeTab', 'storage'],
@@ -19,7 +19,7 @@ export default defineConfig({
     ...(browser === 'firefox' && {
       browser_specific_settings: {
         gecko: {
-          id: 'gitdeck@shanedixon.dev',
+          id: 'repohopper@shanedixon.dev',
           strict_min_version: '140.0',
           data_collection_permissions: { required: ['none'] },
         },
@@ -27,7 +27,7 @@ export default defineConfig({
       },
     }),
     action: {
-      default_title: 'GitDeck',
+      default_title: 'Repohopper',
     },
     icons: {
       16: 'icon/16.png',

@@ -29,6 +29,6 @@ jobs:
           awk -v v="${GITHUB_REF_NAME#v}" \
             'index($0, "## [" v "]") == 1 {f=1; next} /^## \[/ {f=0} f' CHANGELOG.md > notes.md
           test -s notes.md || { echo "CHANGELOG.md has no section for ${GITHUB_REF_NAME#v}"; exit 1; }
-      - run: gh release create "$GITHUB_REF_NAME" .output/*.zip --title "GitDeck ${GITHUB_REF_NAME#v}" --notes-file notes.md
+      - run: gh release create "$GITHUB_REF_NAME" .output/*.zip --title "Repohopper ${GITHUB_REF_NAME#v}" --notes-file notes.md
         env:
           GH_TOKEN: ${{ github.token }}

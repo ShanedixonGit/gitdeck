@@ -28,7 +28,7 @@ export type ToolStatus = 'verified' | 'unverified' | 'deprecated';
 
 /**
  * A single entry in the tool registry. This is the only thing that needs to be
- * written to add a tool to GitDeck.
+ * written to add a tool to Repohopper.
  */
 export interface ToolDefinition {
   /** Stable kebab-case identifier. Never reused or renamed. */
