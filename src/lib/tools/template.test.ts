@@ -26,9 +26,9 @@ describe('renderTemplate', () => {
     );
   });
 
-  it('inserts values verbatim with the raw modifier', () => {
-    expect(renderTemplate('https://x.dev/{ref|raw}', { ref: 'feat/x' })).toBe(
-      'https://x.dev/feat/x',
+  it('has no verbatim modifier, so a value can never add its own ? # or ..', () => {
+    expect(() => renderTemplate('https://x.dev/{ref|raw}', { ref: 'x?y' })).toThrow(
+      'Unknown modifier "raw"',
     );
   });
 

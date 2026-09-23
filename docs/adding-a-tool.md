@@ -65,8 +65,8 @@ Placeholders: `{owner}`, `{repo}`, `{ref}`, `{path}`. Everything else is literal
 | Fragment                        | `https://www.star-history.com/#{owner}/{repo}`         |
 | File path, separators preserved | `https://x.dev/{owner}/{repo}/blob/{ref}/{path\|path}` |
 
-Values are percent-encoded by default. `{name|path}` encodes each segment but keeps the `/`;
-`{name|raw}` inserts the value untouched.
+Values are percent-encoded by default. `{name|path}` encodes each segment but keeps the `/`, for
+a branch or file path. There is deliberately no way to insert a value unencoded.
 
 ## 4. File-scoped tools
 
