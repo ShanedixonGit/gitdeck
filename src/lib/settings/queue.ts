@@ -3,6 +3,8 @@ export interface WriteQueue<T> {
   push(value: T): void;
   /** Writes the waiting value now, if there is one. */
   flush(): Promise<void>;
+  /** A value is waiting, so what storage holds is about to be replaced. */
+  readonly pending: boolean;
 }
 
 /**
@@ -36,5 +38,8 @@ export function createWriteQueue<T>(
       timer = setTimeout(() => void flush(), delay);
     },
     flush,
+    get pending() {
+      return pending !== null;
+    },
   };
 }

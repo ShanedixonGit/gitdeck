@@ -35,6 +35,15 @@ describe('createWriteQueue', () => {
     expect(write).not.toHaveBeenCalled();
   });
 
+  it('says whether a value is waiting to be written', async () => {
+    const queue = createWriteQueue(async () => true, 300);
+    expect(queue.pending).toBe(false);
+    queue.push(1);
+    expect(queue.pending).toBe(true);
+    await vi.advanceTimersByTimeAsync(300);
+    expect(queue.pending).toBe(false);
+  });
+
   it('reports each write result', async () => {
     const results: boolean[] = [];
     const write = vi.fn(async (value: number) => value !== 2);

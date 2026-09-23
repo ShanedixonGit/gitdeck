@@ -5,6 +5,7 @@
     createWriteQueue,
     loadSettings,
     saveSettings,
+    watchSettings,
   } from '../../lib/settings';
   import type { OpenTarget, Settings } from '../../lib/settings';
   import {
@@ -68,6 +69,18 @@
   function flushOnHide() {
     if (document.visibilityState === 'hidden') void queue.flush();
   }
+
+  /**
+   * Follows changes made elsewhere, such as the popup's recommended deck. A
+   * change of this page's own still waiting to be written wins, since it is
+   * newer than anything storage holds.
+   */
+  $effect(() =>
+    watchSettings((next) => {
+      if (queue.pending) return;
+      settings = { ...next, stack: reconcileStack(next.stack, knownIds) };
+    }),
+  );
 
   function setStack(stack: string[]) {
     update({ ...settings, stack });
