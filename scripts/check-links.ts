@@ -45,6 +45,7 @@ const EXPECT: Readonly<Record<string, string>> = {
 };
 
 const TIMEOUT_MS = 15_000;
+const RETRY_AFTER_MS = 5_000;
 const USER_AGENT =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36';
 
@@ -59,7 +60,12 @@ interface Result {
   detail: string;
 }
 
-async function probe(url: string, expect?: string): Promise<{ ok: boolean; detail: string }> {
+interface Outcome {
+  ok: boolean;
+  detail: string;
+}
+
+async function attempt(url: string, expect?: string): Promise<Outcome> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
@@ -84,6 +90,21 @@ async function probe(url: string, expect?: string): Promise<{ ok: boolean; detai
   } finally {
     clearTimeout(timer);
   }
+}
+
+/**
+ * Tries a failing link once more after a pause, so one slow or hiccuping
+ * response does not open an issue. Services wake from idle slowly — the first
+ * response from gitingest.com has taken 20 seconds and the next 0.2 — and bot
+ * walls and 5xx errors come and go. A retry that passes still records what the
+ * first attempt saw, so a flaky service shows up in the log.
+ */
+async function probe(url: string, expect?: string): Promise<Outcome> {
+  const first = await attempt(url, expect);
+  if (first.ok) return first;
+  await new Promise((done) => setTimeout(done, RETRY_AFTER_MS));
+  const second = await attempt(url, expect);
+  return second.ok ? { ok: true, detail: `${first.detail}, then ok` } : second;
 }
 
 const unchecked = TOOLS.filter((tool) => tool.action !== 'copy' && !(tool.id in EXPECT));
@@ -115,14 +136,10 @@ const links = TOOLS.flatMap((tool) => {
 });
 
 const results: Result[] = await Promise.all(
-  links.map(async ({ tool, link, url, expect }) => ({
-    id: tool.id,
-    brand: tool.brand,
-    link,
-    status: tool.status,
-    url,
-    ...(await probe(url, expect)),
-  })),
+  links.map(async ({ tool, link, url, expect }) => {
+    const { ok, detail } = await probe(url, expect);
+    return { id: tool.id, brand: tool.brand, link, status: tool.status, url, ok, detail };
+  }),
 );
 
 if (process.argv.includes('--json')) {
