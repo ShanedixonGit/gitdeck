@@ -336,7 +336,8 @@ ships rather than components in isolation, and adds no dependency beyond `playwr
 cannot cover is the browser itself: `activeTab`, real storage quotas and popup sizing still need
 the manual pass in Phase 4.
 
-`npm run check` runs types, lint, format and unit tests. CI runs it, the three builds, and the
+CI runs the unit tests with a coverage floor on the pure code in `src/lib`: 90% of lines and 85% of
+branches, a little under where it stands. `npm run check` runs types, lint, format and unit tests. CI runs it, the three builds, and the
 end-to-end tests as separate jobs.
 
 ## 10. Distribution strategy

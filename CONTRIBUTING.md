@@ -22,6 +22,7 @@ Node 20 or newer.
 | `npm run zip:all`       | Store archives for all three, + sources |
 | `npm test`              | Unit tests                              |
 | `npm run test:e2e`      | Build, then test the pages in Chrome    |
+| `npm run test:coverage` | Unit tests with the coverage floor      |
 | `npm run test:watch`    | Unit tests in watch mode                |
 | `npm run compile`       | Type-check `.ts` and `.svelte`          |
 | `npm run lint`          | ESLint                                  |

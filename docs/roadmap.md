@@ -74,7 +74,7 @@ deck. The deck should be the tools you picked.
       Chosen over `vitest-browser-svelte` to test what ships without new dependencies
 - [ ] Load the packed extension itself in CI, for what the stub cannot show: `activeTab` and real
       storage
-- [ ] Coverage reporting on `src/lib`, with a floor in CI
+- [x] Coverage reporting on `src/lib`, with a floor in CI (90% lines, 85% branches)
 - [x] A scripted registry link-check, run on demand and weekly in CI, reported rather than
       auto-committed, and checking each destination's content as well as its status
 
