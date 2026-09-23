@@ -107,6 +107,17 @@ describe('copy tools', () => {
   it('still requires https of a tool that opens', () => {
     expect(validateTool({ ...ssh, action: 'open' })).toContain('urlTemplate must be https');
   });
+
+  it('may not put a branch or path into text the user pastes into a shell', () => {
+    const checkout: ToolDefinition = {
+      ...ssh,
+      urlTemplate: 'git clone -b {ref} git@github.com:{owner}/{repo}.git',
+      requires: ['ref'],
+    };
+    expect(validateTool(checkout)).toContain(
+      'a copy template may only use {owner} and {repo}, not "{ref}"',
+    );
+  });
 });
 
 describe('resolveTools', () => {

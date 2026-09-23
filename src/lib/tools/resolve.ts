@@ -134,6 +134,16 @@ export function validateTool(tool: ToolDefinition): string[] {
       problems.push(`requires "${field}" but the template never uses it`);
     }
   }
+  // Copy templates become shell commands. Owner and repository names are
+  // validated to a safe alphabet; branches and paths can hold anything,
+  // including `;` and `$(…)`, so they never reach the clipboard.
+  if (tool.action === 'copy') {
+    for (const name of placeholders) {
+      if (name !== 'owner' && name !== 'repo') {
+        problems.push(`a copy template may only use {owner} and {repo}, not "{${name}}"`);
+      }
+    }
+  }
   for (const name of placeholders) {
     if (name === 'owner' || name === 'repo') continue;
     if (!(tool.requires ?? []).includes(name as 'ref' | 'path')) {
