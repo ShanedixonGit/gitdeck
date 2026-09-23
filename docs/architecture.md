@@ -314,22 +314,30 @@ Svelte-compiled output reaches the published bundle.
 
 ## 9. Testing strategy
 
-| Layer               | Tool              | What is covered                                                                                                                      |
-| ------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| URL parsing         | Vitest            | Supported formats, refs and paths, invalid and hostile input, GitHub name rules                                                      |
-| Template engine     | Vitest            | Substitution, all three modifiers, repeated placeholders, error cases                                                                |
-| Resolution          | Vitest            | Each URL shape (path, query, fragment, encoded separator), `requires` gating, HTTPS enforcement, status filtering, graceful skipping |
-| Registry            | Vitest            | Unique ids and names, known categories, `validateTool` over every entry, every entry resolves, unverified entries carry notes        |
-| Types               | `svelte-check`    | Strict TypeScript across `.ts` and `.svelte`                                                                                         |
-| Style               | ESLint + Prettier | Flat config with `typescript-eslint` and `eslint-plugin-svelte`                                                                      |
-| Component behaviour | _not yet_         | Planned for Phase 5 (`vitest-browser-svelte`)                                                                                        |
-| End to end          | _not yet_         | Planned for Phase 5 (Playwright, loading the built extension)                                                                        |
+| Layer             | Tool              | What is covered                                                                                                                      |
+| ----------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| URL parsing       | Vitest            | Supported formats, refs and paths, invalid and hostile input, GitHub name rules                                                      |
+| Template engine   | Vitest            | Substitution, all three modifiers, repeated placeholders, error cases                                                                |
+| Resolution        | Vitest            | Each URL shape (path, query, fragment, encoded separator), `requires` gating, HTTPS enforcement, status filtering, graceful skipping |
+| Registry          | Vitest            | Unique ids and names, known categories, `validateTool` over every entry, every entry resolves, unverified entries carry notes        |
+| Types             | `svelte-check`    | Strict TypeScript across `.ts` and `.svelte`                                                                                         |
+| Style             | ESLint + Prettier | Flat config with `typescript-eslint` and `eslint-plugin-svelte`                                                                      |
+| Popup and options | Vitest + Chrome   | The built pages in headless Chrome: keyboard model, focus, copy, filter, loading and first run, saving, save failures                |
 
-Current suite: 150 tests over seven files, running in well under a second. The deliberate
-consequence of keeping all logic in pure functions is that the valuable tests need no DOM and no
-browser.
+The unit suite is 212 tests over the pure functions in `src/lib`, running in about a second. Keeping
+logic out of components is what makes those tests possible without a DOM or a browser.
 
-`npm run check` runs types, lint, format and tests — the same command CI runs.
+`npm run test:e2e` builds the extension and loads its real popup and options pages in the
+installed Google Chrome, with the extension APIs replaced by a stand-in
+([`scripts/harness.ts`](../scripts/harness.ts)) that serves a fixed tab and settings and records
+what the page does: tabs opened, settings written, text copied. The stand-in clones what it saves
+the way Firefox does, which is how it caught settings being saved as a Svelte proxy. It tests what
+ships rather than components in isolation, and adds no dependency beyond `playwright-core`. What it
+cannot cover is the browser itself: `activeTab`, real storage quotas and popup sizing still need
+the manual pass in Phase 4.
+
+`npm run check` runs types, lint, format and unit tests. CI runs it, the three builds, and the
+end-to-end tests as separate jobs.
 
 ## 10. Distribution strategy
 

@@ -12,6 +12,8 @@ and the patch number for fixes.
 
 ### Added
 
+- `npm run test:e2e`: the built popup and options pages tested in headless Chrome, in CI too.
+  `npm run screenshots` shares its harness
 - A privacy policy, `docs/privacy.md`, for the store listings. The README and architecture notes
   now list every stored setting and say that they sync through the browser's account
 - An options page, opened in a full tab, with two panels: every available tool, and your deck.
