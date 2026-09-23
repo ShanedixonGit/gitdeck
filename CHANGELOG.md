@@ -27,6 +27,10 @@ and the patch number for fixes.
 
 ### Changed
 
+- The README, docs and extension description now say plainly that GitDeck is a connector: the
+  linked tools are independent services, not affiliated with GitDeck, and their features,
+  accuracy, accounts and privacy policies are theirs. What GitDeck does itself is listed
+  separately
 - **The deck is the tools you chose.** The popup shows only your stack, as one list in the order
   you set, and 1–9 follow that order. Nothing you did not pick appears
 - Tool names say what the tool does ("Browse in VS Code"), with the brand ("GitHub.dev")

@@ -95,7 +95,10 @@ deck. The deck should be the tools you picked.
 - [ ] Edge Add-ons listing (same artefact)
 - [ ] Firefox Add-ons listing, including the sources archive AMO requires
 - [ ] Safari, if the Apple Developer account is worth it at that point
-- [ ] Privacy policy page that says, accurately, that no data is collected
+- [ ] Privacy policy page that says, accurately, that no data is collected, and that each linked
+      service's own policy applies once the user opens it
+- [ ] Store descriptions that present GitDeck as a connector to independent services, with no
+      claim of affiliation and no feature of a linked service described as GitDeck's
 
 ## Explicitly out of scope
 
