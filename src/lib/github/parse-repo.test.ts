@@ -54,7 +54,14 @@ describe('parseGitHubRepo — refs and paths', () => {
       repo: 'react',
       ref: 'v19.0.0',
       path: 'README.md',
+      file: 'README.md',
     });
+  });
+
+  it('marks a path as a file only on a blob URL', () => {
+    expect(parseGitHubRepo('https://github.com/o/r/blob/main/src/a.ts')?.file).toBe('src/a.ts');
+    expect(parseGitHubRepo('https://github.com/o/r/tree/main/src')?.file).toBeUndefined();
+    expect(parseGitHubRepo('https://github.com/o/r/blame/main/src/a.ts')?.file).toBe('src/a.ts');
   });
 
   it('decodes percent-encoded path segments', () => {
@@ -74,6 +81,7 @@ describe('parseGitHubRepo — refs and paths', () => {
       repo: 'r',
       ref: 'feature',
       path: 'x/src/a.ts',
+      file: 'x/src/a.ts',
     });
   });
 

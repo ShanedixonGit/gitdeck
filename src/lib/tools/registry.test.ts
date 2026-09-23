@@ -3,7 +3,13 @@ import { TOOLS } from './registry';
 import { CATEGORIES } from './categories';
 import { resolveTool, validateTool } from './resolve';
 
-const repo = { owner: 'facebook', repo: 'react', ref: 'main', path: 'packages/react/index.js' };
+const repo = {
+  owner: 'facebook',
+  repo: 'react',
+  ref: 'main',
+  path: 'packages/react/index.js',
+  file: 'packages/react/index.js',
+};
 
 describe('tool registry', () => {
   it('is not empty', () => {

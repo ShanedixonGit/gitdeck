@@ -51,6 +51,7 @@ and the patch number for fixes.
 
 ### Fixed
 
+- Git History is offered only on a file, not on a folder, where it has nothing to show
 - Settings are saved as a plain copy. Choosing the recommended deck in the popup handed storage a
   Svelte state proxy, which Chrome accepts but a structured-clone storage, as in Firefox, refuses
 - GitHub's own pages, such as `/copilot`, `/models` and `/readme`, are no longer mistaken for

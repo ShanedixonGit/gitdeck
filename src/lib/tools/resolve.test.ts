@@ -15,7 +15,14 @@ const base: ToolDefinition = {
 };
 
 const repo = { owner: 'facebook', repo: 'react' } as const;
-const file = { owner: 'facebook', repo: 'react', ref: 'main', path: 'packages/react/README.md' };
+const file = {
+  owner: 'facebook',
+  repo: 'react',
+  ref: 'main',
+  path: 'packages/react/README.md',
+  file: 'packages/react/README.md',
+};
+const directory = { owner: 'facebook', repo: 'react', ref: 'main', path: 'packages/react' };
 
 describe('resolveTool', () => {
   it('resolves a simple owner/repo template', () => {
@@ -67,6 +74,22 @@ describe('resolveTool', () => {
     const result = resolveTool(tool, repo);
     expect(result.ok).toBe(false);
     expect(result).toMatchObject({ reason: expect.stringContaining('ref') });
+  });
+
+  it('offers a file-only template on a file, and skips it on a directory', () => {
+    const tool: ToolDefinition = {
+      ...base,
+      urlTemplate: 'https://h.dev/{owner}/{repo}/blob/{ref}/{file|path}',
+      requires: ['ref', 'file'],
+    };
+    expect(resolveTool(tool, file)).toEqual({
+      ok: true,
+      url: 'https://h.dev/facebook/react/blob/main/packages/react/README.md',
+    });
+    expect(resolveTool(tool, directory)).toEqual({
+      ok: false,
+      reason: 'Needs a file — open a file first',
+    });
   });
 
   it('escapes values that would otherwise change the URL structure', () => {

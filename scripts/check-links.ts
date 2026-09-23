@@ -18,7 +18,13 @@ import { TOOLS } from '../src/lib/tools/registry.ts';
 import { renderTemplate } from '../src/lib/tools/template.ts';
 
 /** A large, stable, public repository that every tool should be able to handle. */
-const PROBE = { owner: 'facebook', repo: 'react', ref: 'main', path: 'README.md' };
+const PROBE = {
+  owner: 'facebook',
+  repo: 'react',
+  ref: 'main',
+  path: 'README.md',
+  file: 'README.md',
+};
 
 /**
  * Text each destination must contain, matched against the response's content
