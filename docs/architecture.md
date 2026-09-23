@@ -1,21 +1,21 @@
 # Architecture
 
-## 1. What GitDeck is
+## 1. What Repohopper is
 
 A browser extension that aggregates URL-addressable tools for GitHub repositories. It reads the
 repository from the current tab's URL, rewrites that URL for each tool in a curated registry, and
 presents the results as a keyboard-navigable deck.
 
-The value is **aggregation, discovery and UX**. GitDeck deliberately reimplements none of the
+The value is **aggregation, discovery and UX**. Repohopper deliberately reimplements none of the
 services it links to.
 
 ### Connector, not provider
 
-GitDeck is a connector between a GitHub repository and other services. Documentation, store
-listings and UI copy describe what GitDeck itself does, and credit everything else to the
+Repohopper is a connector between a GitHub repository and other services. Documentation, store
+listings and UI copy describe what Repohopper itself does, and credit everything else to the
 service that does it.
 
-| GitDeck's own                                                    | Belongs to the linked service                          |
+| Repohopper's own                                                 | Belongs to the linked service                          |
 | ---------------------------------------------------------------- | ------------------------------------------------------ |
 | Parsing the repository, ref and path from the tab's URL          | Everything the destination page shows or does          |
 | Rendering each tool's destination URL from the registry          | Accuracy of generated wikis, diagrams, digests, scores |
@@ -24,7 +24,7 @@ service that does it.
 | Curation: which tool per job, and the reasons in `docs/tools.md` | Terms of service and privacy policy after the click    |
 | Link checking (`scripts/check-links.ts`): up, and the right site | Uptime, and whether the page is right for the repo     |
 
-GitDeck is not affiliated with or endorsed by any linked service. Names are used only to say
+Repohopper is not affiliated with or endorsed by any linked service. Names are used only to say
 where a link goes, and each one's `brand` is shown on its card so the provider is never hidden.
 
 ### Stack, and why
@@ -47,7 +47,7 @@ access. No reimplementation of any linked service.
 ```
 User is on github.com/facebook/react
   │
-  ├─ clicks the GitDeck action
+  ├─ clicks the Repohopper action
   │     └─ browser grants activeTab for this tab only
   │
   ├─ popup reads tab.url
@@ -86,7 +86,7 @@ build step; the conversion path is documented in the roadmap so it is not a surp
 
 ## 4. Extension architecture
 
-GitDeck is a **popup plus options page** extension. There is no background service worker and no
+Repohopper is a **popup plus options page** extension. There is no background service worker and no
 content script, because nothing needs to run when the popup is closed.
 
 ```
@@ -276,7 +276,7 @@ the mechanism behind the "handle tools becoming unavailable without breaking" re
 action, and revoked on navigation; it is what allows `browser.tabs.update` to send that tab
 somewhere else. `storage` holds preferences and nothing else.
 
-**Data.** GitDeck reads one string — the active tab's URL — and holds it in popup memory until
+**Data.** Repohopper reads one string — the active tab's URL — and holds it in popup memory until
 the popup closes. The only thing ever written is the settings object: the stack of tool ids, an
 open target and one boolean. It lives in `storage.sync`, so the browser's own sync, when the user
 has turned it on, copies it between devices through their Google, Microsoft or Mozilla account.
@@ -301,7 +301,7 @@ app shows the right repository, which remains a manual check.
 drawn from path data in the bundle, never favicons, specifically so that opening the deck does not leak the repository name to every
 service in the registry via favicon fetches. The only third-party contact is the tab the user
 deliberately opens. From that point the repository name is in the destination URL, and the
-service's own privacy policy and terms apply; GitDeck has no part in what happens there.
+service's own privacy policy and terms apply; Repohopper has no part in what happens there.
 
 **Injection surface.** Owner and repository names are percent-encoded before substitution, so a
 crafted repository name cannot break out of its URL position. Every resolved URL is re-parsed and

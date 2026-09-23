@@ -4,7 +4,7 @@ The registry lives in [`src/lib/tools/registry.ts`](../src/lib/tools/registry.ts
 records how each entry was verified and — just as importantly — which candidates were rejected
 and why.
 
-Every tool here is an independent service run by its own provider. GitDeck links to them and is
+Every tool here is an independent service run by its own provider. Repohopper links to them and is
 not affiliated with any of them. Verification confirms that a link reaches a page for the right
 repository; it says nothing about the quality of what the service produces, which is the
 service's responsibility.
@@ -84,10 +84,10 @@ Kept here so that nobody re-adds them without new evidence.
 | **uithub**                                             | 2026-09-20 | `uithub.com/{owner}/{repo}` returns `401 Unauthorized. Authentication required.`                                                                                                                                                                                                     |
 | **zread.ai**                                           | 2026-09-20 | Connection failure; the host did not resolve.                                                                                                                                                                                                                                        |
 | **Libraries.io**                                       | 2026-09-20 | `libraries.io/github/{owner}/{repo}` now 301s to a nonsensical GitHub URL (`github.com/react/react`). Broken transformation.                                                                                                                                                         |
-| **download-directory.github.io**, **GitZip**           | 2026-09-20 | Both are live, but they operate on a _subdirectory_ URL rather than a repository root, so the repository-level transformation GitDeck performs produces a useless page. Candidates for a future file/directory-scoped section.                                                       |
+| **download-directory.github.io**, **GitZip**           | 2026-09-20 | Both are live, but they operate on a _subdirectory_ URL rather than a repository root, so the repository-level transformation Repohopper performs produces a useless page. Candidates for a future file/directory-scoped section.                                                    |
 | **emgithub**                                           | 2026-09-20 | Live, but produces an embeddable snippet for a single file — not a destination a user navigates to.                                                                                                                                                                                  |
 | **vscode.dev**                                         | 2026-09-20 | Live, but `github.dev/{owner}/{repo}` redirects to exactly this URL. Listing both would put two identical destinations in the deck.                                                                                                                                                  |
-| **Refined GitHub**, **Octotree**, **GitHub Hovercard** | 2026-09-23 | Good tools, but browser extensions that change GitHub's own pages rather than destinations a repository URL can point at. GitDeck rewrites URLs; install these alongside it.                                                                                                         |
+| **Refined GitHub**, **Octotree**, **GitHub Hovercard** | 2026-09-23 | Good tools, but browser extensions that change GitHub's own pages rather than destinations a repository URL can point at. Repohopper rewrites URLs; install these alongside it.                                                                                                      |
 
 ## Re-verification
 
