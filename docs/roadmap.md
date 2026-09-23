@@ -91,7 +91,7 @@ deck. The deck should be the tools you picked.
 
 - [ ] Release checklist: verification sweep, version bump, changelog
 - [ ] CI that builds and attaches store artefacts on a tag
-- [ ] Chrome Web Store listing and permission justification
+- [x] Chrome Web Store listing and permission justification, in `docs/store-listing.md`
 - [ ] Edge Add-ons listing (same artefact)
 - [ ] Firefox Add-ons listing, including the sources archive AMO requires
 - [ ] Safari, if the Apple Developer account is worth it at that point

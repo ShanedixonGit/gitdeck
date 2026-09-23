@@ -97,6 +97,7 @@ about five minutes.
 - **[Architecture](docs/architecture.md)** — how it's built and why
 - **[Tools](docs/tools.md)** — what's in the deck, how each was verified, what got rejected
 - **[Privacy policy](docs/privacy.md)** — what GitDeck reads, stores and sends
+- **[Store listing](docs/store-listing.md)** — the text and justifications given to each store
 - **[Roadmap](docs/roadmap.md)** — what's next
 - **[Contributing](CONTRIBUTING.md)** — dev setup and house rules
 
