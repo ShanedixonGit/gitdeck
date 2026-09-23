@@ -44,6 +44,12 @@ and the patch number for fixes.
   the same and was verified). 17 entries down to 13, all verified, and `docs/tools.md` records
   what lost and why so the same candidates are not re-added later
 
+### Fixed
+
+- Enter activates whatever has focus. Tabbing to **Change** or **Customise** and pressing Enter
+  used to open the selected tool instead, and a card reached with Tab opened the highlighted one
+  rather than itself. The arrow keys now carry focus along with the highlight
+
 ## [0.2.0] — 2026-09-21
 
 The first build that actually loads in a browser.
