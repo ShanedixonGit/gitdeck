@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { DEFAULT_SETTINGS, OPEN_TARGETS, loadSettings, saveSettings } from '../../lib/settings';
+  import {
+    DEFAULT_SETTINGS,
+    OPEN_TARGETS,
+    createWriteQueue,
+    loadSettings,
+    saveSettings,
+  } from '../../lib/settings';
   import type { OpenTarget, Settings } from '../../lib/settings';
   import {
     CATEGORIES,
@@ -16,6 +22,7 @@
 
   let settings = $state<Settings>(DEFAULT_SETTINGS);
   let ready = $state(false);
+  let saveFailed = $state(false);
   let dragging = $state<{ id: string; from: Panel } | null>(null);
   let over = $state<Panel | null>(null);
   /** Where a drop on the stack would land: before this id, or at the end for `null`. */
@@ -51,9 +58,15 @@
     ready = true;
   })();
 
+  const queue = createWriteQueue(saveSettings, 400, (ok) => (saveFailed = !ok));
+
   function update(next: Settings) {
     settings = next;
-    void saveSettings(next);
+    queue.push($state.snapshot(next));
+  }
+
+  function flushOnHide() {
+    if (document.visibilityState === 'hidden') void queue.flush();
   }
 
   function setStack(stack: string[]) {
@@ -114,6 +127,9 @@
   }
 </script>
 
+<svelte:document onvisibilitychange={flushOnHide} />
+<svelte:window onpagehide={() => void queue.flush()} />
+
 <main>
   <header>
     <h1>Your deck</h1>
@@ -122,6 +138,12 @@
       are on. Drag tools across to add or remove them, and drag within your deck to reorder.
     </p>
   </header>
+
+  {#if saveFailed}
+    <p class="save-error" role="alert">
+      The browser would not save your last change. It will be lost when this page closes.
+    </p>
+  {/if}
 
   {#if !ready}
     <p class="status">Loading…</p>
@@ -281,6 +303,14 @@
 </main>
 
 <style>
+  .save-error {
+    margin: 0 0 var(--space-4);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--warn);
+    border-radius: var(--radius-sm);
+    color: var(--warn);
+  }
+
   main {
     max-width: 960px;
     margin: 0 auto;
