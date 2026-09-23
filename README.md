@@ -9,7 +9,7 @@ repo you're on. One click takes you there.
 GitDeck is a connector. The editors, diagrams, wikis and reports are built and run by the
 services it links to, not by GitDeck.
 
-<!-- TODO: screenshot of the popup -->
+![The GitDeck popup on facebook/react, showing the recommended deck](docs/images/store/1-deck.jpg)
 
 ## Where it can take you
 
