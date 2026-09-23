@@ -12,6 +12,8 @@ and the patch number for fixes.
 
 ### Added
 
+- A privacy policy, `docs/privacy.md`, for the store listings. The README and architecture notes
+  now list every stored setting and say that they sync through the browser's account
 - An options page, opened in a full tab, with two panels: every available tool, and your deck.
   Drag tools across to add or remove them and within your deck to reorder. An empty deck is the
   first-run state, so the welcome and the picker are one screen
