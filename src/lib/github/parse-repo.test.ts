@@ -106,6 +106,10 @@ describe('parseGitHubRepo — invalid input', () => {
     'https://github.com/topics/javascript',
     'https://github.com/codespaces/new',
     'https://github.com/search?q=react',
+    'https://github.com/copilot/c/123',
+    'https://github.com/models/openai',
+    'https://github.com/resources/articles',
+    'https://github.com/readme/guides',
     'https://github.com/-bad/repo',
     'https://github.com/bad-/repo',
     'https://github.com/ba--d/repo',
@@ -117,6 +121,10 @@ describe('parseGitHubRepo — invalid input', () => {
 
   it.each(invalid)('rejects %s', (input) => {
     expect(parseGitHubRepo(input)).toBeNull();
+  });
+
+  it('still accepts an account whose name only resembles a site page', () => {
+    expect(parseGitHubRepo('https://github.com/enterprise-cloud/repo')).not.toBeNull();
   });
 
   it('rejects an owner longer than 39 characters', () => {

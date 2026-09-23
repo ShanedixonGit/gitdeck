@@ -49,6 +49,8 @@ and the patch number for fixes.
 
 ### Fixed
 
+- GitHub's own pages, such as `/copilot`, `/models` and `/readme`, are no longer mistaken for
+  repositories
 - The popup no longer flashes "None of your tools apply to this page" before your deck appears.
   It waits for your settings as well as the tab
 - Reordering quickly on the options page no longer loses the result. The browser caps sync writes
