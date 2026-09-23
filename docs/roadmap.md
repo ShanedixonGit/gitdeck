@@ -10,7 +10,7 @@ Phases 1–3.5 are done. What stands between the current state and a public rele
 - [x] ESLint flat config, Prettier, Vitest
 - [x] Minimal MV3 manifest: `activeTab` only, no background worker, no content scripts
 - [x] `parseGitHubRepo` covering HTTPS, scheme-less, SSH, `.git`, refs, paths and deep links
-- [x] Template engine with `enc` / `path` / `raw` modifiers
+- [x] Template engine with `enc` / `path` modifiers (`raw` removed before release)
 - [x] Resolver that never throws and reports why a tool was skipped
 - [x] Generated extension icons
 - [x] Chrome and Firefox builds

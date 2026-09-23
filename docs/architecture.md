@@ -246,11 +246,10 @@ doubled hyphens, 100-character repository names).
 
 Placeholders are `{name}` or `{name|modifier}`:
 
-| Modifier        | Behaviour                                            | Example use                   |
-| --------------- | ---------------------------------------------------- | ----------------------------- |
-| `enc` (default) | `encodeURIComponent`                                 | `{owner}`, `{repo}`           |
-| `path`          | encodes each `/`-separated segment, keeps separators | `{path\|path}`                |
-| `raw`           | verbatim                                             | branch names in path position |
+| Modifier        | Behaviour                                            | Example use         |
+| --------------- | ---------------------------------------------------- | ------------------- |
+| `enc` (default) | `encodeURIComponent`                                 | `{owner}`, `{repo}` |
+| `path`          | encodes each `/`-separated segment, keeps separators | `{path\|path}`      |
 
 Everything else in the template is literal, so a tool needing an encoded separator writes
 `{owner}%2F{repo}` (deps.dev) and one needing a fragment writes `#{owner}/{repo}`
@@ -317,7 +316,7 @@ Svelte-compiled output reaches the published bundle.
 | Layer             | Tool              | What is covered                                                                                                                      |
 | ----------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | URL parsing       | Vitest            | Supported formats, refs and paths, invalid and hostile input, GitHub name rules                                                      |
-| Template engine   | Vitest            | Substitution, all three modifiers, repeated placeholders, error cases                                                                |
+| Template engine   | Vitest            | Substitution, both modifiers, repeated placeholders, error cases                                                                     |
 | Resolution        | Vitest            | Each URL shape (path, query, fragment, encoded separator), `requires` gating, HTTPS enforcement, status filtering, graceful skipping |
 | Registry          | Vitest            | Unique ids and names, known categories, `validateTool` over every entry, every entry resolves, unverified entries carry notes        |
 | Types             | `svelte-check`    | Strict TypeScript across `.ts` and `.svelte`                                                                                         |

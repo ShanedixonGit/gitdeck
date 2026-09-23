@@ -13,7 +13,6 @@ const PLACEHOLDER = /\{([a-z][a-zA-Z0-9]*)(?:\|([a-z]+))?\}/g;
 
 const MODIFIERS = {
   enc: (value: string) => encodeURIComponent(value),
-  raw: (value: string) => value,
   path: (value: string) =>
     value
       .split('/')
@@ -31,8 +30,7 @@ function isModifier(name: string): name is ModifierName {
  * Renders a URL template.
  *
  * Placeholders take the form `{name}` or `{name|modifier}`. Values are
- * percent-encoded by default (`enc`); `raw` inserts the value verbatim and
- * `path` encodes each `/`-separated segment while keeping the separators.
+ * percent-encoded by default (`enc`); `path` encodes each `/`-separated segment while keeping the separators.
  *
  * Throws {@link TemplateError} when a placeholder has no value or names an
  * unknown modifier, so that a bad registry entry fails loudly in tests rather
