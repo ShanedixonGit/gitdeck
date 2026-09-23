@@ -3,7 +3,7 @@
   import RepoPrompt from '../../components/RepoPrompt.svelte';
   import ToolDeck from '../../components/ToolDeck.svelte';
   import { getActiveTabUrl, openOptions, openUrl } from '../../lib/browser/active-tab';
-  import { parseGitHubRepo } from '../../lib/github/parse-repo';
+  import { formatRepoRef, parseGitHubRepo } from '../../lib/github/parse-repo';
   import type { RepoRef } from '../../lib/github/types';
   import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../../lib/settings';
   import type { Settings } from '../../lib/settings';
@@ -28,6 +28,8 @@
   let notice = $state<string | null>(null);
   let settingsReady = $state(false);
   let filterInput = $state<HTMLInputElement | null>(null);
+  /** The repository the tab is on, so "Change" can be undone. */
+  let detected = $state<RepoRef | null>(null);
 
   const statuses = $derived<readonly ToolStatus[]>(
     settings.includeUnverified ? ['verified', 'unverified'] : ['verified'],
@@ -59,6 +61,7 @@
   void (async () => {
     const url = await getActiveTabUrl();
     const repo = url === null ? null : parseGitHubRepo(url);
+    detected = repo;
     view =
       repo === null
         ? {
@@ -71,6 +74,10 @@
   function useInput(input: string) {
     const repo = parseGitHubRepo(input);
     if (repo !== null) view = { kind: 'repo', repo };
+  }
+
+  function goBack() {
+    if (detected !== null) view = { kind: 'repo', repo: detected };
   }
 
   function useRecommended() {
@@ -193,7 +200,11 @@
   {#if view.kind === 'loading' || (view.kind === 'repo' && !settingsReady)}
     <p class="status">Detecting repository…</p>
   {:else if view.kind === 'prompt'}
-    <RepoPrompt message={view.message} onresolve={useInput} />
+    <RepoPrompt
+      message={view.message}
+      onresolve={useInput}
+      back={detected === null ? undefined : { label: formatRepoRef(detected), onback: goBack }}
+    />
   {:else}
     <RepoHeader
       repo={view.repo}

@@ -4,9 +4,11 @@
   interface Props {
     message: string;
     onresolve: (input: string) => void;
+    /** Offered after "Change", to return to the repository the tab is on. */
+    back?: { label: string; onback: () => void } | undefined;
   }
 
-  let { message, onresolve }: Props = $props();
+  let { message, onresolve, back }: Props = $props();
 
   let value = $state('');
   const parsed = $derived(value.trim() === '' ? null : parseGitHubRepo(value));
@@ -36,6 +38,9 @@
   </form>
   {#if !valid}
     <p class="error">That is not a GitHub repository URL.</p>
+  {/if}
+  {#if back}
+    <button type="button" class="back" onclick={back.onback}>← Back to {back.label}</button>
   {/if}
 </div>
 
@@ -70,7 +75,7 @@
     border-color: var(--warn);
   }
 
-  button {
+  form button {
     flex: none;
     padding: 6px 12px;
     border: 1px solid transparent;
@@ -82,10 +87,26 @@
     cursor: pointer;
   }
 
-  button:disabled {
+  form button:disabled {
     background: var(--bg-hover);
     color: var(--text-faint);
     cursor: default;
+  }
+
+  .back {
+    margin-top: var(--space-3);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .back:hover {
+    color: var(--text);
+    text-decoration: underline;
   }
 
   .error {

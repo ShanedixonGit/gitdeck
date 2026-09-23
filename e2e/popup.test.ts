@@ -79,6 +79,13 @@ describe('the deck', () => {
     expect((await activityOf(page)).opened).toEqual([]);
   });
 
+  it("goes back to the tab's repository after Change", async () => {
+    await popup();
+    await page.getByRole('button', { name: 'Change' }).click();
+    await page.getByRole('button', { name: '← Back to facebook/react' }).click();
+    await expect.poll(cardIds).toEqual(STACK);
+  });
+
   it('copies a clone command and says so', async () => {
     await popup();
     await page.locator('[data-tool-id="clone-https"]').click();
