@@ -7,6 +7,7 @@ function context(overrides: Partial<KeyContext> = {}): KeyContext {
     key: 'a',
     modified: false,
     typing: false,
+    onControl: false,
     filterEmpty: true,
     hasResults: true,
     ...overrides,
@@ -24,6 +25,19 @@ describe('keyAction', () => {
         type: 'none',
       });
     }
+  });
+
+  describe('a focused button or link', () => {
+    it('keeps Enter, so it activates what has focus', () => {
+      expect(keyAction(context({ key: 'Enter', onControl: true }))).toEqual({ type: 'none' });
+    });
+
+    it('still moves the selection with the arrow keys', () => {
+      expect(keyAction(context({ key: 'ArrowDown', onControl: true }))).toEqual({
+        type: 'move',
+        delta: 1,
+      });
+    });
   });
 
   describe('filter', () => {

@@ -128,12 +128,25 @@
     );
   }
 
+  /**
+   * Keeps focus with the selection. If the user has tabbed onto a card, the
+   * arrow keys carry focus along, so Enter always opens the card they can see
+   * highlighted.
+   */
   function scrollSelectedIntoView() {
     const id = ordered[selectedIndex]?.tool.id;
     if (id === undefined) return;
+    const cardFocused = Boolean(document.activeElement?.closest('[data-tool-id]'));
     queueMicrotask(() => {
-      document.querySelector(`[data-tool-id="${id}"]`)?.scrollIntoView({ block: 'nearest' });
+      const card = document.querySelector<HTMLElement>(`[data-tool-id="${id}"]`);
+      if (cardFocused) card?.focus();
+      card?.scrollIntoView({ block: 'nearest' });
     });
+  }
+
+  function select(entry: ResolvedTool) {
+    const index = ordered.findIndex((each) => each.tool.id === entry.tool.id);
+    if (index !== -1) selectedIndex = index;
   }
 
   function onkeydown(event: KeyboardEvent) {
@@ -143,6 +156,7 @@
       key: event.key,
       modified: event.ctrlKey || event.metaKey || event.altKey,
       typing: document.activeElement === filterInput,
+      onControl: Boolean(document.activeElement?.closest('button, a')),
       filterEmpty: filter === '',
       hasResults: ordered.length > 0,
     });
@@ -224,7 +238,12 @@
             <button type="button" onclick={() => (filter = '')}>Clear filter</button>
           </div>
         {:else}
-          <ToolDeck entries={ordered} selectedId={selected?.tool.id} onopen={open} />
+          <ToolDeck
+            entries={ordered}
+            selectedId={selected?.tool.id}
+            onopen={open}
+            onselect={select}
+          />
         {/if}
       </div>
     {/if}
