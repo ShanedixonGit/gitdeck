@@ -44,8 +44,7 @@
 
   const selected = $derived(ordered[Math.min(selectedIndex, ordered.length - 1)]);
   const unavailable = $derived(settings.stack.length - chosen.length);
-  /** Held back until settings load, so it cannot flash for a returning user. */
-  const firstRun = $derived(settingsReady && settings.stack.length === 0);
+  const firstRun = $derived(settings.stack.length === 0);
 
   $effect(() => {
     void filter;
@@ -189,7 +188,9 @@
 <svelte:window {onkeydown} />
 
 <main>
-  {#if view.kind === 'loading'}
+  <!-- Waits for settings too: an empty default stack would otherwise flash the
+       first-run or "none apply" state at a returning user. -->
+  {#if view.kind === 'loading' || (view.kind === 'repo' && !settingsReady)}
     <p class="status">Detecting repository…</p>
   {:else if view.kind === 'prompt'}
     <RepoPrompt message={view.message} onresolve={useInput} />

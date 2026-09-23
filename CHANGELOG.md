@@ -49,6 +49,8 @@ and the patch number for fixes.
 
 ### Fixed
 
+- The popup no longer flashes "None of your tools apply to this page" before your deck appears.
+  It waits for your settings as well as the tab
 - Reordering quickly on the options page no longer loses the result. The browser caps sync writes
   at about two a second and dropped the rest silently; a burst of changes is now saved once it
   settles, and a write the browser refuses is reported on the page
