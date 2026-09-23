@@ -109,6 +109,11 @@ describe('the deck', () => {
     await popup({ url: `${REPO}/blob/main/README.md`, stack: ['githistory'] });
     await expect.poll(cardIds).toEqual(['githistory']);
   });
+
+  it('does not offer a file-only tool on a folder page', async () => {
+    await popup({ url: `${REPO}/tree/main/packages`, stack: ['githistory', 'deepwiki'] });
+    await expect.poll(cardIds).toEqual(['deepwiki']);
+  });
 });
 
 describe('loading and first run', () => {

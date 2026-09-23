@@ -10,6 +10,8 @@ export interface RepoRef {
   readonly repo: string;
   readonly ref?: string;
   readonly path?: string;
+  /** `path`, when the URL shows a file rather than a directory. */
+  readonly file?: string;
 }
 
 /** The fields a tool can require from a {@link RepoRef}. */

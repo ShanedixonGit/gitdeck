@@ -70,6 +70,9 @@ const RESERVED_OWNERS = new Set([
 /** Path segments that introduce a `ref` followed by an optional `path`. */
 const REF_SEGMENTS = new Set(['tree', 'blob', 'blame', 'raw', 'edit']);
 
+/** Of those, the ones whose path names a file. `tree` is the one that shows a directory. */
+const FILE_SEGMENTS = new Set(['blob', 'blame', 'raw', 'edit']);
+
 const SSH_PATTERN = /^(?:git\+)?ssh:\/\/git@github\.com\/(.+)$|^git@github\.com:(.+)$/;
 
 function normaliseRepoName(segment: string): string {
@@ -137,12 +140,13 @@ export function parseGitHubRepo(input: string): RepoRef | null {
 
   const ref = extractRef(rest);
   const path = ref === undefined ? undefined : extractPath(rest);
+  const isFile = FILE_SEGMENTS.has(rest[0] ?? '');
 
   return {
     owner,
     repo,
     ...(ref === undefined ? {} : { ref }),
-    ...(path === undefined || path === '' ? {} : { path }),
+    ...(path === undefined || path === '' ? {} : { path, ...(isFile && { file: path }) }),
   };
 }
 

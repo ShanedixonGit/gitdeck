@@ -70,15 +70,16 @@ a branch or file path. There is deliberately no way to insert a value unencoded.
 
 ## 4. File-scoped tools
 
-If the template uses `{ref}` or `{path}`, declare them:
+If the template uses `{ref}`, `{path}` or `{file}`, declare them:
 
 ```ts
-urlTemplate: 'https://x.dev/{owner}/{repo}/blob/{ref}/{path|path}',
-requires: ['ref', 'path'],
+urlTemplate: 'https://x.dev/{owner}/{repo}/blob/{ref}/{file|path}',
+requires: ['ref', 'file'],
 ```
 
-The tool is then offered only when the user is viewing a file, and skipped with an explanation
-otherwise. The registry test fails if `requires` and the template disagree in either direction.
+`{path}` is whatever follows the branch, file or folder. `{file}` is the same path, present only
+when the page shows a file, so a tool that needs a file is never offered on a folder. The tool is
+offered only when its fields are available, and skipped with an explanation otherwise. The registry test fails if `requires` and the template disagree in either direction.
 
 ## 5. Choose a category
 

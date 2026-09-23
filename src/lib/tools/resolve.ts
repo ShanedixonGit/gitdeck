@@ -1,4 +1,4 @@
-import type { RepoRef } from '../github/types';
+import type { RepoField, RepoRef } from '../github/types';
 import { renderTemplate, templatePlaceholders, TemplateError } from './template';
 import type { ToolDefinition, ToolStatus } from './types';
 
@@ -30,8 +30,14 @@ export interface ResolveOptions {
 const DEFAULT_STATUSES: readonly ToolStatus[] = ['verified'];
 
 function templateValues(repo: RepoRef): Record<string, string | undefined> {
-  return { owner: repo.owner, repo: repo.repo, ref: repo.ref, path: repo.path };
+  return { owner: repo.owner, repo: repo.repo, ref: repo.ref, path: repo.path, file: repo.file };
 }
+
+const WHERE: Readonly<Record<string, string>> = {
+  ref: 'open a branch, tag or file first',
+  path: 'open a file or folder first',
+  file: 'open a file first',
+};
 
 /**
  * Computes the destination URL for a single tool.
@@ -48,7 +54,7 @@ export function resolveTool(
 
   for (const field of required) {
     if (values[field] === undefined) {
-      return { ok: false, reason: `Needs a ${field} — open a file or branch first` };
+      return { ok: false, reason: `Needs a ${field} — ${WHERE[field] ?? 'open a file first'}` };
     }
   }
 
@@ -125,7 +131,7 @@ export function validateTool(tool: ToolDefinition): string[] {
   }
 
   const placeholders = templatePlaceholders(tool.urlTemplate);
-  const known = new Set(['owner', 'repo', 'ref', 'path']);
+  const known = new Set(['owner', 'repo', 'ref', 'path', 'file']);
   for (const name of placeholders) {
     if (!known.has(name)) problems.push(`unknown placeholder "{${name}}"`);
   }
@@ -146,7 +152,7 @@ export function validateTool(tool: ToolDefinition): string[] {
   }
   for (const name of placeholders) {
     if (name === 'owner' || name === 'repo') continue;
-    if (!(tool.requires ?? []).includes(name as 'ref' | 'path')) {
+    if (!(tool.requires ?? []).includes(name as RepoField)) {
       problems.push(`template uses "{${name}}" but does not declare it in requires`);
     }
   }

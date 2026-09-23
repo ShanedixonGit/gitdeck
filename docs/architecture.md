@@ -63,9 +63,10 @@ User is on github.com/facebook/react
   └─ browser.tabs.create({ url }) opens the destination
 ```
 
-If the user is on a file (`/blob/main/src/index.ts`), the parsed reference also carries `ref` and
-`path`, and file-scoped tools such as Git History become available. On a repository root they are
-skipped with a reason rather than shown broken.
+If the user is on a file (`/blob/main/src/index.ts`), the parsed reference also carries `ref`,
+`path` and `file`, and file-scoped tools such as Git History become available. On a folder
+(`/tree/main/src`) it carries `ref` and `path` but no `file`. Where a tool's fields are missing it
+is skipped with a reason rather than shown broken.
 
 ## 3. Supported browsers
 
