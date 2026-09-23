@@ -12,6 +12,7 @@ and the patch number for fixes.
 
 ### Added
 
+- After **Change**, a link back to the repository the tab is on
 - `npm run test:e2e`: the built popup and options pages tested in headless Chrome, in CI too.
   `npm run screenshots` shares its harness
 - A privacy policy, `docs/privacy.md`, for the store listings. The README and architecture notes
