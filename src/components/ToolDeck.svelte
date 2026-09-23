@@ -6,9 +6,10 @@
     entries: readonly ResolvedTool[];
     selectedId: string | undefined;
     onopen: (entry: ResolvedTool) => void;
+    onselect: (entry: ResolvedTool) => void;
   }
 
-  let { entries, selectedId, onopen }: Props = $props();
+  let { entries, selectedId, onopen, onselect }: Props = $props();
 </script>
 
 <ul>
@@ -19,6 +20,7 @@
         selected={entry.tool.id === selectedId}
         shortcut={index < 9 ? index + 1 : undefined}
         {onopen}
+        {onselect}
       />
     </li>
   {/each}

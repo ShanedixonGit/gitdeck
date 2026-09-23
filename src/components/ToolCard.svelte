@@ -7,9 +7,10 @@
     selected: boolean;
     shortcut?: number | undefined;
     onopen: (entry: ResolvedTool) => void;
+    onselect: (entry: ResolvedTool) => void;
   }
 
-  let { entry, selected, shortcut, onopen }: Props = $props();
+  let { entry, selected, shortcut, onopen, onselect }: Props = $props();
 
   const copies = $derived(entry.tool.action === 'copy');
 </script>
@@ -21,6 +22,7 @@
   data-tool-id={entry.tool.id}
   title={copies ? `Copy: ${entry.url}` : entry.url}
   onclick={() => onopen(entry)}
+  onfocus={() => onselect(entry)}
 >
   <CategoryIcon id={entry.tool.category} />
   <span class="body">

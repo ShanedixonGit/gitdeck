@@ -13,6 +13,8 @@ export interface KeyContext {
   readonly modified: boolean;
   /** The filter box currently has focus, so the user is typing. */
   readonly typing: boolean;
+  /** A button or link has focus, so Enter belongs to it rather than to the deck. */
+  readonly onControl: boolean;
   readonly filterEmpty: boolean;
   readonly hasResults: boolean;
 }
@@ -35,7 +37,9 @@ export function keyAction(context: KeyContext): KeyAction {
 
   if (context.key === 'ArrowDown') return context.hasResults ? { type: 'move', delta: 1 } : NONE;
   if (context.key === 'ArrowUp') return context.hasResults ? { type: 'move', delta: -1 } : NONE;
-  if (context.key === 'Enter') return context.hasResults ? { type: 'open-selected' } : NONE;
+  if (context.key === 'Enter') {
+    return context.hasResults && !context.onControl ? { type: 'open-selected' } : NONE;
+  }
 
   if (!context.typing && /^[1-9]$/.test(context.key)) {
     return { type: 'open-index', index: Number(context.key) - 1 };
