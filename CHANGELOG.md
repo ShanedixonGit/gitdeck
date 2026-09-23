@@ -12,6 +12,8 @@ and the patch number for fixes.
 
 ### Added
 
+- **Undo** after resetting or emptying your deck on the options page
+- The options page follows changes made in the popup or another tab while it is open
 - After **Change**, a link back to the repository the tab is on
 - `npm run test:e2e`: the built popup and options pages tested in headless Chrome, in CI too.
   `npm run screenshots` shares its harness

@@ -82,6 +82,15 @@ describe('options page', () => {
     await expect.poll(async () => (await deck()).length).toBe(8);
   });
 
+  it('undoes emptying the deck', async () => {
+    await options();
+    await page.getByRole('button', { name: 'Empty your deck' }).click();
+    await expect.poll(deck).toEqual([]);
+    await page.getByRole('button', { name: 'Undo' }).click();
+    await expect.poll(deck).toEqual(STACK);
+    await expect.poll(lastWrite).toEqual(STACK);
+  });
+
   it('follows a change made in another page', async () => {
     await options();
     await writeElsewhere(page, { stack: ['gitingest'] });

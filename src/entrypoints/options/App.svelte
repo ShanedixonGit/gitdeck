@@ -70,6 +70,9 @@
     if (document.visibilityState === 'hidden') void queue.flush();
   }
 
+  /** The deck before "Reset" or "Empty", which replace it wholesale. */
+  let undo = $state<{ message: string; stack: readonly string[] } | null>(null);
+
   /**
    * Follows changes made elsewhere, such as the popup's recommended deck. A
    * change of this page's own still waiting to be written wins, since it is
@@ -79,11 +82,23 @@
     watchSettings((next) => {
       if (queue.pending) return;
       settings = { ...next, stack: reconcileStack(next.stack, knownIds) };
+      undo = null;
     }),
   );
 
   function setStack(stack: string[]) {
+    undo = null;
     update({ ...settings, stack });
+  }
+
+  function replaceStack(stack: string[], message: string) {
+    const previous = settings.stack;
+    setStack(stack);
+    undo = { message, stack: previous };
+  }
+
+  function restore() {
+    if (undo !== null) setStack([...undo.stack]);
   }
 
   function startDrag(event: DragEvent, id: string, from: Panel) {
@@ -304,12 +319,25 @@
       {/if}
     </section>
 
-    {#if stackTools.length > 0}
+    {#if stackTools.length > 0 || undo !== null}
       <footer>
-        <button type="button" onclick={() => setStack(recommendedStack(TOOLS))}>
-          Reset to the recommended deck
-        </button>
-        <button type="button" onclick={() => setStack([])}>Empty your deck</button>
+        {#if stackTools.length > 0}
+          <button
+            type="button"
+            onclick={() => replaceStack(recommendedStack(TOOLS), 'Reset to the recommended deck.')}
+          >
+            Reset to the recommended deck
+          </button>
+          <button type="button" onclick={() => replaceStack([], 'Your deck is empty.')}>
+            Empty your deck
+          </button>
+        {/if}
+        {#if undo !== null}
+          <p class="undo" role="status">
+            {undo.message}
+            <button type="button" onclick={restore}>Undo</button>
+          </p>
+        {/if}
       </footer>
     {/if}
   {/if}
@@ -666,5 +694,14 @@
   footer button:hover {
     background: var(--bg-hover);
     color: var(--text);
+  }
+
+  .undo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0 0 0 auto;
+    color: var(--text-muted);
+    font-size: 12px;
   }
 </style>
