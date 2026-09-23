@@ -1,0 +1,8 @@
+# Actions are pinned to commit SHAs, which never move on their own. This keeps
+# them current. npm dependencies are updated by hand, with the changelog read.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
