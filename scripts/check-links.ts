@@ -20,6 +20,30 @@ import { renderTemplate } from '../src/lib/tools/template.ts';
 /** A large, stable, public repository that every tool should be able to handle. */
 const PROBE = { owner: 'facebook', repo: 'react', ref: 'main', path: 'README.md' };
 
+/**
+ * Text each destination must contain, matched against the response's content
+ * type and body. A 200 alone would pass a parked or squatted domain, so every
+ * destination names something only the real service serves: the repository
+ * where the page renders it on the server, otherwise the service's own name,
+ * because client-rendered apps fill in the repository later.
+ */
+const EXPECT: Readonly<Record<string, string>> = {
+  'github-dev': 'Visual Studio Code',
+  stackblitz: 'Facebook - React - StackBlitz',
+  'github-codespaces': 'Sign in to GitHub',
+  'download-zip': 'application/zip',
+  deepwiki: 'facebook/react | DeepWiki',
+  gitdiagram: 'facebook/react Diagram',
+  githistory: '<title>Git History</title>',
+  gitingest: 'facebook/react',
+  gitmcp: '<title>GitMCP</title>',
+  ossinsight: 'Analyze facebook/react',
+  'star-history': 'Star History',
+  'deps-dev': '<title>Open Source Insights</title>',
+  'openssf-scorecard': 'OpenSSF scorecard report',
+  'github-code-search': 'repo%3Afacebook%2Freact',
+};
+
 const TIMEOUT_MS = 15_000;
 const USER_AGENT =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36';
@@ -35,7 +59,7 @@ interface Result {
   detail: string;
 }
 
-async function probe(url: string): Promise<{ ok: boolean; detail: string }> {
+async function probe(url: string, expect?: string): Promise<{ ok: boolean; detail: string }> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
@@ -44,10 +68,16 @@ async function probe(url: string): Promise<{ ok: boolean; detail: string }> {
       headers: { 'user-agent': USER_AGENT, accept: 'text/html,*/*' },
       signal: controller.signal,
     });
-    await response.body?.cancel();
+    const type = response.headers.get('content-type') ?? '';
+    const body = expect !== undefined && type.startsWith('text/') ? await response.text() : '';
+    if (body === '') await response.body?.cancel();
     // 401/403/429 mean the service is up but guarded — a human decides whether
     // that is a dead tool or a bot wall, so it is reported, not judged here.
-    return { ok: response.ok, detail: `HTTP ${response.status}` };
+    if (!response.ok) return { ok: false, detail: `HTTP ${response.status}` };
+    if (expect !== undefined && !`${type}\n${body}`.includes(expect)) {
+      return { ok: false, detail: 'wrong page' };
+    }
+    return { ok: true, detail: `HTTP ${response.status}` };
   } catch (error) {
     const reason = error instanceof Error ? error.name : 'unknown error';
     return { ok: false, detail: reason === 'AbortError' ? 'timed out' : reason };
@@ -56,25 +86,42 @@ async function probe(url: string): Promise<{ ok: boolean; detail: string }> {
   }
 }
 
+const unchecked = TOOLS.filter((tool) => tool.action !== 'copy' && !(tool.id in EXPECT));
+if (unchecked.length > 0) {
+  console.error(
+    `No expected text for ${unchecked.map((tool) => tool.id).join(', ')}. Add an entry to ` +
+      `EXPECT in scripts/check-links.ts: something only the real page contains.`,
+  );
+  process.exit(1);
+}
+
 const links = TOOLS.flatMap((tool) => {
-  const each: Array<{ tool: (typeof TOOLS)[number]; link: Result['link']; url: string }> = [
-    { tool, link: 'website', url: tool.website },
-  ];
+  const each: Array<{
+    tool: (typeof TOOLS)[number];
+    link: Result['link'];
+    url: string;
+    expect?: string;
+  }> = [{ tool, link: 'website', url: tool.website }];
   if (tool.action !== 'copy') {
-    each.unshift({ tool, link: 'destination', url: renderTemplate(tool.urlTemplate, PROBE) });
+    each.unshift({
+      tool,
+      link: 'destination',
+      url: renderTemplate(tool.urlTemplate, PROBE),
+      expect: EXPECT[tool.id],
+    });
   }
   if (tool.docsUrl !== undefined) each.push({ tool, link: 'docs', url: tool.docsUrl });
   return each;
 });
 
 const results: Result[] = await Promise.all(
-  links.map(async ({ tool, link, url }) => ({
+  links.map(async ({ tool, link, url, expect }) => ({
     id: tool.id,
     brand: tool.brand,
     link,
     status: tool.status,
     url,
-    ...(await probe(url)),
+    ...(await probe(url, expect)),
   })),
 );
 

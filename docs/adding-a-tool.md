@@ -90,10 +90,16 @@ and one member to the `ToolCategory` union — nothing else.
 
 ```bash
 npm run check
+npm run check:links
 ```
 
-This types, lints, format-checks and runs the tests, including the registry invariants and a
+The first types, lints, format-checks and runs the tests, including the registry invariants and a
 resolution of your entry against a full repository reference.
+
+The second fails until your tool has an entry in `EXPECT` in
+[`scripts/check-links.ts`](../scripts/check-links.ts): text its page for `facebook/react` always
+contains. Use the repository name if the page renders it on the server, or the service's own title
+if it is a client-side app. The point is to tell the real service from a parked domain.
 
 ## 7. Document it
 

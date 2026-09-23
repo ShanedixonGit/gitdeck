@@ -22,7 +22,7 @@ service that does it.
 | Composing clone commands and copying them to the clipboard       | Cloning itself (`git`, `gh`) and the ZIP (GitHub)      |
 | The deck: choosing, ordering, keyboard access, the options page  | Accounts, sign-in, pricing and usage limits            |
 | Curation: which tool per job, and the reasons in `docs/tools.md` | Terms of service and privacy policy after the click    |
-| Link checking (`scripts/check-links.ts`), which confirms a 200   | Uptime, and whether the page is right for the repo     |
+| Link checking (`scripts/check-links.ts`): up, and the right site | Uptime, and whether the page is right for the repo     |
 
 GitDeck is not affiliated with or endorsed by any linked service. Names are used only to say
 where a link goes, and each one's `brand` is shown on its card so the provider is never hidden.
@@ -290,6 +290,12 @@ registry on open — which is exactly the thing the inline section icons and the
 permissions exist to prevent, and it would tell a dozen third parties which repository you are
 looking at for the sake of greying out a card. The script reports; a human sets `status` in the
 registry; the popup shows only what the registry vouches for.
+
+A success status is not enough on its own: a lapsed domain that someone else registers still
+answers 200. So each destination must also contain an expected piece of text, listed in `EXPECT`
+in the script: the repository name where the service renders it on the server, otherwise the
+service's own name. That catches a parked or squatted domain. It cannot prove a client-rendered
+app shows the right repository, which remains a manual check.
 
 **Third parties.** The popup issues no requests to the listed services. Card icons are inline SVG
 drawn from path data in the bundle, never favicons, specifically so that opening the deck does not leak the repository name to every
