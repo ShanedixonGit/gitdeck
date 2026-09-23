@@ -1,6 +1,13 @@
 import type { Browser, Page } from 'playwright-core';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { activityOf, failWrites, launch, openPage, serve } from '../scripts/harness.ts';
+import {
+  activityOf,
+  failWrites,
+  launch,
+  openPage,
+  serve,
+  writeElsewhere,
+} from '../scripts/harness.ts';
 
 const STACK = ['github-dev', 'deepwiki', 'gitdiagram'];
 
@@ -73,5 +80,19 @@ describe('options page', () => {
     await options([]);
     await page.getByRole('button', { name: 'Use the recommended deck' }).click();
     await expect.poll(async () => (await deck()).length).toBe(8);
+  });
+
+  it('follows a change made in another page', async () => {
+    await options();
+    await writeElsewhere(page, { stack: ['gitingest'] });
+    await expect.poll(deck).toEqual(['gitingest']);
+  });
+
+  it('keeps its own unsaved change over one made elsewhere', async () => {
+    await options();
+    await page.getByRole('button', { name: 'Remove Browse in VS Code from your deck' }).click();
+    await writeElsewhere(page, { stack: ['gitingest'] });
+    expect(await deck()).toEqual(['deepwiki', 'gitdiagram']);
+    await expect.poll(lastWrite).toEqual(['deepwiki', 'gitdiagram']);
   });
 });

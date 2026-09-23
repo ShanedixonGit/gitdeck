@@ -14,6 +14,14 @@ export async function loadSettings(): Promise<Settings> {
 }
 
 /**
+ * Calls back with the settings whenever another page — the popup, or a second
+ * options tab — changes them. Returns a function that stops watching.
+ */
+export function watchSettings(onchange: (settings: Settings) => void): () => void {
+  return ITEM.watch((value) => onchange(normaliseSettings(value)));
+}
+
+/**
  * A structured-clone-safe copy. Callers hold settings in Svelte state, which
  * wraps them in proxies; Chrome's storage reads through a proxy, but Firefox
  * structured-clones the value and throws on one.

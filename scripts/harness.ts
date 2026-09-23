@@ -55,9 +55,30 @@ function stubExtension(scene: Scene) {
     },
   };
   const event = { addListener() {}, removeListener() {}, hasListener: () => false };
+  type Changes = { [key: string]: { newValue?: unknown; oldValue?: unknown } };
+  const listeners = new Set<(changes: Changes, area: string) => void>();
+  const changed = {
+    addListener: (listener: (changes: Changes, area: string) => void) => listeners.add(listener),
+    removeListener: (listener: (changes: Changes, area: string) => void) =>
+      listeners.delete(listener),
+    hasListener: (listener: (changes: Changes, area: string) => void) => listeners.has(listener),
+  };
+  const put = (items: { [key: string]: unknown }) => {
+    const changes: Changes = {};
+    for (const [key, value] of Object.entries(items)) {
+      changes[key] = { newValue: structuredClone(value), oldValue: store[key] };
+      store[key] = structuredClone(value);
+    }
+    for (const listener of listeners) listener(changes, 'sync');
+  };
   const later = <T>(value: T) =>
     new Promise<T>((done) => setTimeout(() => done(value), scene.settingsDelay ?? 0));
-  const harness = { activity, failWrites: false };
+  const harness = {
+    activity,
+    failWrites: false,
+    /** Another page of the extension saving settings. */
+    writeElsewhere: (settings: unknown) => put({ settings }),
+  };
   Object.assign(window, {
     __harness: harness,
     chrome: {
@@ -74,7 +95,7 @@ function stubExtension(scene: Scene) {
       storage: {
         onChanged: event,
         sync: {
-          onChanged: event,
+          onChanged: changed,
           get: (keys?: string | string[]) =>
             later(
               Object.fromEntries(
@@ -84,7 +105,7 @@ function stubExtension(scene: Scene) {
           set: async (items: { [key: string]: unknown }) => {
             if (harness.failWrites) throw new Error('QUOTA_BYTES_PER_ITEM quota exceeded');
             activity.writes.push(structuredClone(items.settings));
-            Object.assign(store, items);
+            put(items);
           },
           remove: async () => {},
         },
@@ -148,4 +169,12 @@ export function failWrites(page: Page, fail: boolean): Promise<void> {
   return page.evaluate((value) => {
     (window as unknown as { __harness: { failWrites: boolean } }).__harness.failWrites = value;
   }, fail);
+}
+
+export function writeElsewhere(page: Page, settings: { stack: string[] }): Promise<void> {
+  return page.evaluate((value) => {
+    (
+      window as unknown as { __harness: { writeElsewhere: (settings: unknown) => void } }
+    ).__harness.writeElsewhere({ openTarget: 'new-tab', includeUnverified: false, ...value });
+  }, settings);
 }
