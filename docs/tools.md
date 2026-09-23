@@ -10,7 +10,8 @@ repository; it says nothing about the quality of what the service produces, whic
 service's responsibility.
 
 **Last verification sweep: 2026-09-23** — all 17 entries, and every website and docs link the
-extension shows, reachable. Checked by `npm run check:links`.
+extension shows, reachable, and every destination serving its expected text. Checked by
+`npm run check:links`, which CI also runs every Monday.
 
 ## Verification method
 
@@ -90,10 +91,11 @@ Kept here so that nobody re-adds them without new evidence.
 
 ## Re-verification
 
-The registry is a perishable asset. Until the checker in Phase 6 is automated, run a sweep before
-each release:
+The registry is a perishable asset. The weekly link check opens an issue labelled `link-check`
+when a destination fails. Before each release, run `npm run check:links` as well, then:
 
-1. For each entry, request the transformed URL for a well-known repository.
+1. For any failure, open the link by hand: a changed page title is a one-line fix to `EXPECT` in
+   `scripts/check-links.ts`, a changed URL scheme is a registry fix.
 2. Update `verifiedAt` on entries that still pass.
 3. Demote failures to `unverified`, or to `deprecated` if the service is gone, and record the
    reason in `notes` and in this document.
