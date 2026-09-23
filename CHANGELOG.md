@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to GitDeck are recorded here. The format follows
+All notable changes to Repohopper are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
@@ -34,12 +34,16 @@ and the patch number for fixes.
 
 ### Changed
 
+- **GitDeck is now Repohopper.** Git's trademark policy does not allow "Git" as part of another
+  product's name, and an active project in the same space already uses GitDeck. The Firefox
+  add-on ID changes with it, to `repohopper@shanedixon.dev`. Nothing was published under the old
+  name, so there is nothing installed to migrate
 - Firefox 140 or newer is required (142 on Android), the first releases that read the manifest's
-  declaration that GitDeck collects no data. The Firefox-only manifest keys are no longer in the
+  declaration that Repohopper collects no data. The Firefox-only manifest keys are no longer in the
   Chrome and Edge builds, which warned about them
-- The README, docs and extension description now say plainly that GitDeck is a connector: the
-  linked tools are independent services, not affiliated with GitDeck, and their features,
-  accuracy, accounts and privacy policies are theirs. What GitDeck does itself is listed
+- The README, docs and extension description now say plainly that Repohopper is a connector: the
+  linked tools are independent services, not affiliated with Repohopper, and their features,
+  accuracy, accounts and privacy policies are theirs. What Repohopper does itself is listed
   separately
 - **The deck is the tools you chose.** The popup shows only your stack, as one list in the order
   you set, and 1–9 follow that order. Nothing you did not pick appears

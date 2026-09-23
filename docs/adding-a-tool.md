@@ -1,6 +1,6 @@
 # Adding a tool
 
-Adding a tool to GitDeck is one object in one array. If you find yourself editing anything in
+Adding a tool to Repohopper is one object in one array. If you find yourself editing anything in
 `components/` or writing a conditional on a tool `id`, the registry is missing an abstraction —
 open an issue instead.
 
@@ -46,8 +46,8 @@ Rules the tests enforce:
   gets — not what the service is.
 
 Copy anywhere else — the README, `docs/`, the changelog, store listings — must not present the
-service's work as GitDeck's. GitDeck opens the tool; the tool does the job. Write "opens the
-repository in GitDiagram", not "GitDeck diagrams your repository".
+service's work as Repohopper's. Repohopper opens the tool; the tool does the job. Write "opens the
+repository in GitDiagram", not "Repohopper diagrams your repository".
 
 - `urlTemplate` and `website` are HTTPS.
 - `verifiedAt` is the ISO date you ran the check above.

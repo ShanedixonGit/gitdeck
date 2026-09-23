@@ -55,8 +55,8 @@ record the verification in [docs/tools.md](docs/tools.md).
 - **No network requests from the extension.** Not for icons, not for availability checks, not for
   metrics.
 - **Test the logic, not the framework.** New behaviour in `lib/` arrives with tests.
-- **Credit the service.** GitDeck is a connector. Docs, listings and UI copy never present a linked
-  tool's features as GitDeck's, and never imply an affiliation.
+- **Credit the service.** Repohopper is a connector. Docs, listings and UI copy never present a linked
+  tool's features as Repohopper's, and never imply an affiliation.
 
 ## Branches and commits
 
@@ -94,7 +94,7 @@ To cut a release:
 3. `npm run check && npm run test:e2e && npm run check:links`
 4. `npm run screenshots`, and commit them if they changed
 5. Load `.output/chrome-mv3` once by hand and confirm the popup opens
-6. Merge, then tag `main`: `git tag -a v0.3.0 -m "GitDeck 0.3.0" && git push origin v0.3.0`
+6. Merge, then tag `main`: `git tag -a v0.3.0 -m "Repohopper 0.3.0" && git push origin v0.3.0`
 
 The tag starts the release workflow. It checks the tag matches `package.json`, runs the checks,
 builds the Chrome, Edge and Firefox packages and the Firefox source archive, and attaches them to

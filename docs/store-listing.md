@@ -1,17 +1,17 @@
 # Store listing
 
 The text submitted to each store, kept here so every listing says the same thing and changes go
-through review like code. GitDeck is described as a connector throughout: the linked tools are
-independent services, and nothing here presents their features as GitDeck's.
+through review like code. Repohopper is described as a connector throughout: the linked tools are
+independent services, and nothing here presents their features as Repohopper's.
 
 Privacy policy URL, for every store:
-`https://github.com/ShanedixonGit/gitdeck/blob/main/docs/privacy.md`
+`https://github.com/ShanedixonGit/repohopper/blob/main/docs/privacy.md`
 
-Homepage and support URL: `https://github.com/ShanedixonGit/gitdeck`
+Homepage and support URL: `https://github.com/ShanedixonGit/repohopper`
 
 ## Name
 
-GitDeck
+Repohopper
 
 ## Short description
 
@@ -21,12 +21,12 @@ The manifest `description`, 132 characters at most. Chrome shows it on the listi
 
 ## Long description
 
-> GitDeck connects the GitHub repository you are looking at to other tools that can open it.
+> Repohopper connects the GitHub repository you are looking at to other tools that can open it.
 >
-> Click the GitDeck icon on any repository and you get your deck: links to the services you
+> Click the Repohopper icon on any repository and you get your deck: links to the services you
 > chose, each already pointed at that repository. One click, or one number key, takes you there.
 >
-> What GitDeck does itself:
+> What Repohopper does itself:
 >
 > - works out the repository, branch and file from the address of the tab you are on
 > - builds the right link for each tool, and the clone commands it copies for you
@@ -38,9 +38,9 @@ The manifest `description`, 132 characters at most. Chrome shows it on the listi
 > OpenSSF Scorecard) and GitHub code search. You can also copy a clone command or download a ZIP.
 >
 > Each of these is a separate service, run by its own provider under its own terms and privacy
-> policy. GitDeck is not affiliated with any of them and does not reproduce what they do.
+> policy. Repohopper is not affiliated with any of them and does not reproduce what they do.
 >
-> Privacy: GitDeck reads the address of the current tab only when you click its icon, stores
+> Privacy: Repohopper reads the address of the current tab only when you click its icon, stores
 > nothing but your settings, and makes no network requests of its own. No tracking, no
 > analytics, no accounts.
 >
@@ -61,8 +61,8 @@ The manifest `description`, 132 characters at most. Chrome shows it on the listi
 
 **activeTab**
 
-> Read the address of the current tab when the user clicks the GitDeck icon, to find the GitHub
-> repository they are viewing and build links for it. It is also what lets GitDeck open a chosen
+> Read the address of the current tab when the user clicks the Repohopper icon, to find the GitHub
+> repository they are viewing and build links for it. It is also what lets Repohopper open a chosen
 > tool in the current tab. No page content is read, and no access is kept after the popup closes.
 
 **storage**
@@ -86,7 +86,7 @@ Firefox: the manifest declares `data_collection_permissions: { required: ['none'
 ## Firefox source code submission
 
 AMO requires the source for bundled code. Upload the archive from `npm run zip:firefox`
-(`.output/gitdeck-<version>-sources.zip`) with these reviewer notes:
+(`.output/repohopper-<version>-sources.zip`) with these reviewer notes:
 
 > Built with WXT and Svelte. To reproduce the submitted package, with Node 22 or newer:
 >

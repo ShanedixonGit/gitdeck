@@ -1,15 +1,15 @@
-# GitDeck
+# Repohopper
 
-**You're looking at a GitHub repo. GitDeck connects it to other tools that can open it.**
+**You're looking at a GitHub repo. Repohopper connects it to other tools that can open it.**
 
 Click the icon on any repository and get a deck of links to other services — browser IDEs,
 architecture diagrams, dependency graphs, AI context exporters — each already pointed at the
 repo you're on. One click takes you there.
 
-GitDeck is a connector. The editors, diagrams, wikis and reports are built and run by the
-services it links to, not by GitDeck.
+Repohopper is a connector. The editors, diagrams, wikis and reports are built and run by the
+services it links to, not by Repohopper.
 
-![The GitDeck popup on facebook/react, showing the recommended deck](docs/images/store/1-deck.jpg)
+![The Repohopper popup on facebook/react, showing the recommended deck](docs/images/store/1-deck.jpg)
 
 ## Where it can take you
 
@@ -24,11 +24,11 @@ services it links to, not by GitDeck.
 | **Security & dependencies** | deps.dev, OpenSSF Scorecard                   |
 | **Search**                  | GitHub Code Search                            |
 
-Each of these is a separate service, run by its own provider. GitDeck isn't affiliated with any
+Each of these is a separate service, run by its own provider. Repohopper isn't affiliated with any
 of them and doesn't rebuild what they do. It knows how to point each one at the repo you're
 looking at.
 
-## What GitDeck does itself
+## What Repohopper does itself
 
 - Works out which repo (and file) you're on from the address bar
 - Builds the right link for each tool, and the clone commands it copies for you
@@ -52,7 +52,7 @@ That opens Chrome with the extension loaded. For Firefox, `npm run dev:firefox`.
 
 ## Using it
 
-Click the GitDeck icon on any GitHub repo. Then:
+Click the Repohopper icon on any GitHub repo. Then:
 
 | Key     | Does                         |
 | ------- | ---------------------------- |
@@ -72,7 +72,7 @@ on, or a background tab so you can fire off several at once. All of it is rememb
 
 ## Privacy
 
-GitDeck asks for two permissions. `activeTab` reads the address of the tab you're on
+Repohopper asks for two permissions. `activeTab` reads the address of the tab you're on
 when you click the icon. `storage` remembers your settings. That's it.
 
 - No tracking, no analytics, no accounts
@@ -96,7 +96,7 @@ about five minutes.
 
 - **[Architecture](docs/architecture.md)** — how it's built and why
 - **[Tools](docs/tools.md)** — what's in the deck, how each was verified, what got rejected
-- **[Privacy policy](docs/privacy.md)** — what GitDeck reads, stores and sends
+- **[Privacy policy](docs/privacy.md)** — what Repohopper reads, stores and sends
 - **[Store listing](docs/store-listing.md)** — the text and justifications given to each store
 - **[Roadmap](docs/roadmap.md)** — what's next
 - **[Contributing](CONTRIBUTING.md)** — dev setup and house rules
