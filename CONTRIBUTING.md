@@ -21,6 +21,7 @@ Node 20 or newer.
 | `npm run build:edge`    | → `.output/edge-mv3`                    |
 | `npm run zip`           | Store-ready archive                     |
 | `npm test`              | Unit tests                              |
+| `npm run test:e2e`      | Build, then test the pages in Chrome    |
 | `npm run test:watch`    | Unit tests in watch mode                |
 | `npm run compile`       | Type-check `.ts` and `.svelte`          |
 | `npm run lint`          | ESLint                                  |

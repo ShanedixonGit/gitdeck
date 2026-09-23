@@ -23,6 +23,7 @@
     "compile": "svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "npm run build && vitest run --config vitest.e2e.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

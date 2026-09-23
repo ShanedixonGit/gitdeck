@@ -32,3 +32,15 @@ jobs:
       - run: npm run build
       - run: npm run build:firefox
       - run: npm run build:edge
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Drives the runner's preinstalled Google Chrome; nothing is downloaded.
+      - run: npm run test:e2e
