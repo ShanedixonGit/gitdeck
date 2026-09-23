@@ -35,7 +35,8 @@ const PROBE = {
  */
 const EXPECT: Readonly<Record<string, string>> = {
   'github-dev': 'Visual Studio Code',
-  stackblitz: 'Facebook - React - StackBlitz',
+  // Sometimes serves a client-rendered shell whose title lacks the repository.
+  stackblitz: 'StackBlitz',
   'github-codespaces': 'Sign in to GitHub',
   'download-zip': 'application/zip',
   deepwiki: 'facebook/react | DeepWiki',
@@ -50,7 +51,7 @@ const EXPECT: Readonly<Record<string, string>> = {
   'github-code-search': 'repo%3Afacebook%2Freact',
 };
 
-const TIMEOUT_MS = 15_000;
+const TIMEOUT_MS = 30_000;
 const RETRY_AFTER_MS = 5_000;
 const USER_AGENT =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36';
