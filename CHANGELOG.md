@@ -58,6 +58,10 @@ and the patch number for fixes.
 
 ### Fixed
 
+- Secondary text meets WCAG AA contrast (4.5:1) in both themes. Section headings, the tool count,
+  brand links and hints were as low as 2.9:1
+- In high-contrast modes, the selected card is outlined and the drop line on the options page
+  stays visible; both relied on background colours those modes remove
 - Git History is offered only on a file, not on a folder, where it has nothing to show
 - Settings are saved as a plain copy. Choosing the recommended deck in the popup handed storage a
   Svelte state proxy, which Chrome accepts but a structured-clone storage, as in Firefox, refuses
@@ -90,6 +94,10 @@ The first build that actually loads in a browser.
 
 ### Fixed
 
+- Secondary text meets WCAG AA contrast (4.5:1) in both themes. Section headings, the tool count,
+  brand links and hints were as low as 2.9:1
+- In high-contrast modes, the selected card is outlined and the drop line on the options page
+  stays visible; both relied on background colours those modes remove
 - **The extension could not be loaded at all.** `publicDir` resolves against the project root
   rather than `srcDir`, so the icons were never copied into the build while the manifest went on
   declaring them. Chrome rejected the result with `Could not load icon 'icon/16.png'`, and

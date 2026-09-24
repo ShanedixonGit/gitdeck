@@ -70,6 +70,14 @@
     color: var(--accent);
   }
 
+  /* High-contrast modes drop backgrounds, so the selection needs a line of its own. */
+  @media (forced-colors: active) {
+    .card.selected {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+  }
+
   .body {
     min-width: 0;
     flex: 1;
