@@ -5,6 +5,14 @@
   "type": "module",
   "description": "A connector that opens GitHub repositories in independent, URL-based tools.",
   "license": "MIT",
+  "homepage": "https://github.com/ShanedixonGit/repohopper#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShanedixonGit/repohopper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ShanedixonGit/repohopper/issues"
+  },
   "engines": {
     "node": ">=20"
   },

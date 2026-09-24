@@ -12,6 +12,7 @@ export default defineConfig({
     short_name: 'Repohopper',
     description:
       'Opens the GitHub repository you are looking at in other tools, each run by its own provider.',
+    homepage_url: 'https://github.com/ShanedixonGit/repohopper',
     permissions: ['activeTab', 'storage'],
     // Firefox only: Chrome and Edge warn about keys they do not know. 140 and
     // 142 are the first releases that read data_collection_permissions, which
