@@ -35,6 +35,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "npm run build && npm run build:firefox && vitest run --config vitest.e2e.config.ts",
+    "test:browsers": "npm run build && npm run build:edge && npm run build:firefox && vitest run --config vitest.real.config.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

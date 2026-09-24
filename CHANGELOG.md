@@ -14,6 +14,12 @@ and the patch number for fixes.
 
 - The icon is red
 
+### Added
+
+- `npm run test:browsers`: the packaged extension in the installed Chrome, Edge and Firefox,
+  through first run, storage, opening tools, copying, the options page and the open target, failing
+  on any error from its own pages
+
 ### Fixed
 
 - The **Open tools in** choices on the options page work from the keyboard and with screen readers.

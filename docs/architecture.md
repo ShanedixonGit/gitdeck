@@ -356,9 +356,11 @@ ships rather than components in isolation, and adds no dependency beyond `playwr
 cannot cover is the browser itself. For that, `e2e/extension.test.ts` loads the packaged Chrome
 build into Playwright's Chromium (branded Chrome no longer loads extensions from the command line)
 and checks that the manifest loads, a deck persists in real `storage.sync` across the popup and
-options page, a tool opens a real tab, and a clone command reaches the real clipboard. Still manual,
-in each real browser (Phase 4): clicking the toolbar button, so `activeTab` on a GitHub tab, and
-the popup window's size and zoom.
+options page, a tool opens a real tab, and a clone command reaches the real clipboard. `npm run test:browsers` goes further, locally: it installs the packaged extension in the real
+Chrome and Edge (over the DevTools protocol) and Firefox (over WebDriver BiDi) installed on the
+machine, runs the main flows in each, and fails on any error from the extension's pages. Still
+manual in each: clicking the toolbar button, so `activeTab` on a GitHub tab, and the popup
+window's size and zoom.
 
 CI runs the unit tests with a coverage floor on the pure code in `src/lib`: 90% of lines and 85%
 of branches, a little under where it stands. `npm run check` runs types, lint, format and unit

@@ -17,24 +17,25 @@ npx playwright-core install chromium firefox webkit
 
 ## Commands
 
-| Command                 | Purpose                                 |
-| ----------------------- | --------------------------------------- |
-| `npm run dev`           | Chrome, hot reload                      |
-| `npm run dev:firefox`   | Firefox, hot reload                     |
-| `npm run build`         | Production build → `.output/chrome-mv3` |
-| `npm run build:firefox` | → `.output/firefox-mv3`                 |
-| `npm run build:edge`    | → `.output/edge-mv3`                    |
-| `npm run zip:all`       | Store archives for all three, + sources |
-| `npm test`              | Unit tests                              |
-| `npm run test:e2e`      | Build, then test the pages in 3 engines |
-| `npm run test:coverage` | Unit tests with the coverage floor      |
-| `npm run test:watch`    | Unit tests in watch mode                |
-| `npm run compile`       | Type-check `.ts` and `.svelte`          |
-| `npm run lint`          | ESLint                                  |
-| `npm run format`        | Prettier, writing changes               |
-| `npm run icons`         | Regenerate `src/public/icon/*.png`      |
-| `npm run screenshots`   | Store screenshots → `docs/images/store` |
-| `npm run check`         | Everything CI runs                      |
+| Command                 | Purpose                                     |
+| ----------------------- | ------------------------------------------- |
+| `npm run dev`           | Chrome, hot reload                          |
+| `npm run dev:firefox`   | Firefox, hot reload                         |
+| `npm run build`         | Production build → `.output/chrome-mv3`     |
+| `npm run build:firefox` | → `.output/firefox-mv3`                     |
+| `npm run build:edge`    | → `.output/edge-mv3`                        |
+| `npm run zip:all`       | Store archives for all three, + sources     |
+| `npm test`              | Unit tests                                  |
+| `npm run test:e2e`      | Build, then test the pages in 3 engines     |
+| `npm run test:browsers` | The extension in real Chrome, Edge, Firefox |
+| `npm run test:coverage` | Unit tests with the coverage floor          |
+| `npm run test:watch`    | Unit tests in watch mode                    |
+| `npm run compile`       | Type-check `.ts` and `.svelte`              |
+| `npm run lint`          | ESLint                                      |
+| `npm run format`        | Prettier, writing changes                   |
+| `npm run icons`         | Regenerate `src/public/icon/*.png`          |
+| `npm run screenshots`   | Store screenshots → `docs/images/store`     |
+| `npm run check`         | Everything CI runs                          |
 
 ## Loading a build by hand
 
@@ -47,10 +48,16 @@ npx playwright-core install chromium firefox webkit
 
 ## Checking it in a real browser
 
-The end-to-end tests run the pages with the extension APIs stood in for. These need a real
-browser, and are worth running in each one before a release:
+`npm run test:browsers` installs the packaged extension in the Chrome, Edge and Firefox installed
+on this machine (macOS paths; set `CHROME_PATH`, `EDGE_PATH` or `FIREFOX_PATH` elsewhere, and a
+missing browser is skipped) and runs it through first run, storage, opening tools, copying, the
+options page and the open target, failing on any error from the extension's own pages. Run it
+before every release.
 
-1. On `github.com/facebook/react`, the popup shows the repository. On a file page it also shows
+What no automation can do is click a browser's toolbar button, so these still need a person, in
+each browser:
+
+1. On `github.com/facebook/react`, clicking the toolbar button shows the repository. On a file page it also shows
    the branch and path
 2. First run: _Use the recommended deck_ fills the deck, and it is still there after reopening
 3. A click, `1`–`9`, `↑`/`↓` with `Enter`, and `Tab` with `Enter` all open the tool you expect
