@@ -128,7 +128,7 @@ const links = TOOLS.flatMap((tool) => {
     tool: (typeof TOOLS)[number];
     link: Result['link'];
     url: string;
-    expect?: string;
+    expect?: string | undefined;
   }> = [{ tool, link: 'website', url: tool.website }];
   if (tool.action !== 'copy') {
     each.unshift({
