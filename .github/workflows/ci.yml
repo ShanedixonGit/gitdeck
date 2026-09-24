@@ -45,7 +45,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # Chrome is preinstalled on the runner. Firefox and WebKit are Playwright's
-      # builds of Gecko and of Safari's engine, with the system libraries they need.
-      - run: npx playwright-core install --with-deps firefox webkit
+      # Chrome is preinstalled on the runner. Chromium loads the packaged extension,
+      # which branded Chrome no longer allows; Firefox and WebKit are Playwright's
+      # builds of Gecko and Safari's engine. --with-deps adds their system libraries.
+      - run: npx playwright-core install --with-deps chromium firefox webkit
       - run: npm run test:e2e
