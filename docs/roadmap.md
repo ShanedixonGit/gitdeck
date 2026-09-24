@@ -77,8 +77,9 @@ deck. The deck should be the tools you picked.
 - [x] Popup and options pages tested as built, in headless Chrome with the extension APIs
       stubbed (`npm run test:e2e`): filtering, keyboard, focus, empty and loading states, saving.
       Chosen over `vitest-browser-svelte` to test what ships without new dependencies
-- [ ] Load the packed extension itself in CI, for what the stub cannot show: `activeTab` and real
-      storage
+- [x] Load the packaged extension itself in CI (Chromium): manifest, real storage, tabs and
+      clipboard
+- [ ] `activeTab` on a real toolbar click, which no automation can press
 - [x] Coverage reporting on `src/lib`, with a floor in CI (90% lines, 85% branches)
 - [x] A scripted registry link-check, run on demand and weekly in CI, reported rather than
       auto-committed, and checking each destination's content as well as its status

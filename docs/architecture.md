@@ -353,8 +353,12 @@ build) and WebKit (Safari), each with the extension APIs replaced by a stand-in
 what the page does: tabs opened, settings written, text copied. The stand-in clones what it saves
 the way Firefox does, which is how it caught settings being saved as a Svelte proxy. It tests what
 ships rather than components in isolation, and adds no dependency beyond `playwright-core`. What it
-cannot cover is the browser itself: `activeTab`, real storage and its quotas, the clipboard
-permission model, and the popup window still need the manual pass in each real browser (Phase 4).
+cannot cover is the browser itself. For that, `e2e/extension.test.ts` loads the packaged Chrome
+build into Playwright's Chromium (branded Chrome no longer loads extensions from the command line)
+and checks that the manifest loads, a deck persists in real `storage.sync` across the popup and
+options page, a tool opens a real tab, and a clone command reaches the real clipboard. Still manual,
+in each real browser (Phase 4): clicking the toolbar button, so `activeTab` on a GitHub tab, and
+the popup window's size and zoom.
 
 CI runs the unit tests with a coverage floor on the pure code in `src/lib`: 90% of lines and 85%
 of branches, a little under where it stands. `npm run check` runs types, lint, format and unit

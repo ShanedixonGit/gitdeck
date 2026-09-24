@@ -9,10 +9,10 @@ npm run dev:firefox  # Firefox
 ```
 
 Node 20 or newer. The end-to-end tests also need Google Chrome installed, and a one-time download
-of Playwright's Firefox and WebKit engines (about 200 MB, into Playwright's cache):
+of Playwright's Chromium, Firefox and WebKit builds (about 300 MB, into Playwright's cache):
 
 ```bash
-npx playwright-core install firefox webkit
+npx playwright-core install chromium firefox webkit
 ```
 
 ## Commands
