@@ -111,3 +111,13 @@ so the listing matches what ships. Chrome takes up to five, Edge up to ten, Fire
 4. `4-options.jpg` — the options page with both panels
 
 It drives the installed Google Chrome through `playwright-core`, so it downloads no browser.
+
+## Store images
+
+| File                  | Store                                                             | Made by               |
+| --------------------- | ----------------------------------------------------------------- | --------------------- |
+| `icon-128-chrome.png` | Chrome: store icon, 96 px artwork in 16 px of transparent padding | `npm run icons`       |
+| `icon-300-edge.png`   | Edge: extension logo                                              | `npm run icons`       |
+| `promo-440x280.jpg`   | Chrome: small promo tile                                          | `npm run screenshots` |
+
+All in `docs/images/store/`. Firefox takes its icon from the manifest.

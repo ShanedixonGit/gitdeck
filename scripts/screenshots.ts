@@ -7,7 +7,7 @@
  *
  * Usage: npm run screenshots (builds first). Output: docs/images/store/.
  */
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import type { Browser, Page } from 'playwright-core';
 import { CATEGORIES } from '../src/lib/tools/categories.ts';
@@ -75,6 +75,27 @@ async function captureOptions(browser: Browser, origin: string): Promise<Buffer>
   return shot;
 }
 
+/** Chrome's 440×280 small promo tile: the icon, the name and what it does. */
+async function promoTile(browser: Browser): Promise<Buffer> {
+  const icon = await readFile(resolve(import.meta.dirname, '../src/public/icon/128.png'));
+  const page = await browser.newPage({ viewport: { width: 440, height: 280 } });
+  await page.setContent(`<!doctype html>
+    <style>
+      body { margin: 0; height: 280px; display: flex; align-items: center; gap: 22px;
+        padding: 0 32px; box-sizing: border-box; background: #eef1f5; color: #16181d;
+        font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+      img { width: 96px; height: 96px; flex: none; }
+      h1 { margin: 0 0 8px; font-size: 34px; font-weight: 650; letter-spacing: -0.01em; }
+      p { margin: 0; font-size: 16px; line-height: 1.4; color: #4b525c; }
+    </style>
+    <img src="data:image/png;base64,${icon.toString('base64')}">
+    <div><h1>Repohopper</h1><p>Open the GitHub repo you are on in the tools you choose.</p></div>`);
+  await page.locator('img').evaluate((img: HTMLImageElement) => img.decode());
+  const shot = await page.screenshot({ type: 'jpeg', quality: 92 });
+  await page.close();
+  return shot;
+}
+
 await mkdir(OUT, { recursive: true });
 const server = await serve();
 const browser = await launch();
@@ -117,6 +138,7 @@ try {
       ),
     ],
     ['4-options.jpg', await captureOptions(browser, server.origin)],
+    ['promo-440x280.jpg', await promoTile(browser)],
   ];
   for (const [name, shot] of shots) {
     await writeFile(join(OUT, name), shot);
