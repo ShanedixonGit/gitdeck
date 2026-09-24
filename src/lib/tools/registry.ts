@@ -1,7 +1,7 @@
 import type { ToolDefinition } from './types';
 
-const VERIFIED_ON = '2026-09-20';
-const VERIFIED_ON_CLONE = '2026-09-23';
+/** The last sweep in which every entry passed `npm run check:links`. */
+const VERIFIED_ON = '2026-09-24';
 
 /**
  * The Repohopper tool registry.
@@ -65,7 +65,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     urlTemplate: 'git clone https://github.com/{owner}/{repo}.git',
     website: 'https://docs.github.com/en/get-started/git-basics/about-remote-repositories',
     status: 'verified',
-    verifiedAt: VERIFIED_ON_CLONE,
+    verifiedAt: VERIFIED_ON,
     recommended: true,
   },
   {
@@ -78,7 +78,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     urlTemplate: 'git clone git@github.com:{owner}/{repo}.git',
     website: 'https://docs.github.com/en/authentication/connecting-to-github-with-ssh',
     status: 'verified',
-    verifiedAt: VERIFIED_ON_CLONE,
+    verifiedAt: VERIFIED_ON,
   },
   {
     id: 'clone-gh',
@@ -91,7 +91,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     website: 'https://cli.github.com',
     docsUrl: 'https://cli.github.com/manual/gh_repo_clone',
     status: 'verified',
-    verifiedAt: VERIFIED_ON_CLONE,
+    verifiedAt: VERIFIED_ON,
   },
   {
     id: 'download-zip',
@@ -103,7 +103,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     website:
       'https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives',
     status: 'verified',
-    verifiedAt: VERIFIED_ON_CLONE,
+    verifiedAt: VERIFIED_ON,
   },
   {
     id: 'deepwiki',
