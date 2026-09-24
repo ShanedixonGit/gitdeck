@@ -10,31 +10,18 @@ and the patch number for fixes.
 
 ## [Unreleased]
 
-### Changed
-
-- The icon is red
-
-### Added
-
-- `npm run test:browsers`: the packaged extension in the installed Chrome, Edge and Firefox,
-  through first run, storage, opening tools, copying, the options page and the open target, failing
-  on any error from its own pages
-
-### Fixed
-
-- The **Open tools in** choices on the options page work from the keyboard and with screen readers.
-  They were hidden in a way that removed them from both
-
 ## [0.3.0] — 2026-09-24
 
 First release as Repohopper, and the first meant for the stores.
 
 ### Added
 
+- `npm run test:browsers`: the packaged extension in the installed Chrome, Edge and Firefox,
+  through first run, storage, opening tools, copying, the options page and the open target, failing
+  on any error from its own pages. `npm run dev:edge` opens Edge with the extension loaded
 - **Undo** after resetting or emptying your deck on the options page
 - The options page follows changes made in the popup or another tab while it is open
 - After **Change**, a link back to the repository the tab is on
-- A new icon: a card dealt from a deck, with an arrow onward
 - `npm run test:e2e`: the built popup and options pages tested in Chrome, Gecko and WebKit, with an
   automated WCAG 2.2 AA audit of every screen in light and dark, in CI too
 - The packaged extension is loaded into Chromium in CI, checking the manifest, real storage, tabs
@@ -61,6 +48,7 @@ First release as Repohopper, and the first meant for the stores.
 
 ### Changed
 
+- A new, red icon: a card dealt from a deck, with an arrow onward
 - **GitDeck is now Repohopper.** Git's trademark policy does not allow "Git" as part of another
   product's name, and an active project in the same space already uses GitDeck. The Firefox
   add-on ID changes with it, to `repohopper@shanedixon.dev`. Nothing was published under the old
@@ -86,6 +74,8 @@ First release as Repohopper, and the first meant for the stores.
 
 ### Fixed
 
+- The **Open tools in** choices on the options page work from the keyboard and with screen readers.
+  They were hidden in a way that removed them from both
 - Secondary text meets WCAG AA contrast (4.5:1) in both themes. Section headings, the tool count,
   brand links and hints were as low as 2.9:1
 - In high-contrast modes, the selected card is outlined and the drop line on the options page
