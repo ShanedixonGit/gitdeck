@@ -38,10 +38,29 @@ npx playwright-core install firefox webkit
 
 ## Loading a build by hand
 
-- **Chrome / Edge** — `chrome://extensions` → Developer mode → _Load unpacked_ →
-  `.output/chrome-mv3`
+- **Chrome** — `chrome://extensions` → Developer mode → _Load unpacked_ → `.output/chrome-mv3`
+- **Edge** — `edge://extensions` → Developer mode → _Load unpacked_ → `.output/edge-mv3`
+  (`npm run build:edge`)
 - **Firefox** — `about:debugging#/runtime/this-firefox` → _Load Temporary Add-on_ →
-  `.output/firefox-mv3/manifest.json`
+  `.output/firefox-mv3/manifest.json` (`npm run build:firefox`), or `npm run dev:firefox`
+- **Safari** — see [docs/safari.md](docs/safari.md)
+
+## Checking it in a real browser
+
+The end-to-end tests run the pages with the extension APIs stood in for. These need a real
+browser, and are worth running in each one before a release:
+
+1. On `github.com/facebook/react`, the popup shows the repository. On a file page it also shows
+   the branch and path
+2. First run: _Use the recommended deck_ fills the deck, and it is still there after reopening
+3. A click, `1`–`9`, `↑`/`↓` with `Enter`, and `Tab` with `Enter` all open the tool you expect
+4. Each _Open tools in_ choice on the options page does what it says; with _A background tab_ the
+   popup stays open
+5. Copying the HTTPS clone command puts it on the clipboard: paste it somewhere
+6. Options page: drag a tool in and out, reorder by dragging and with the grip and arrow keys,
+   reload, and the order is kept
+7. On a page that is not a repository, the popup asks for one and accepts a pasted URL
+8. The popup at 125% and 150% zoom: nothing is cut off, and a long deck scrolls
 
 ## Adding a tool
 

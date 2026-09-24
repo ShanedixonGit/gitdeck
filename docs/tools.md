@@ -9,7 +9,7 @@ not affiliated with any of them. Verification confirms that a link reaches a pag
 repository; it says nothing about the quality of what the service produces, which is the
 service's responsibility.
 
-**Last verification sweep: 2026-09-23** — all 17 entries, and every website and docs link the
+**Last verification sweep: 2026-09-24** — all 17 entries, and every website and docs link the
 extension shows, reachable, and every destination serving its expected text. Checked by
 `npm run check:links`, which CI also runs every Monday.
 
