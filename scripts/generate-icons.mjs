@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const OUT_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'public', 'icon');
 const SIZES = [16, 32, 48, 96, 128];
+const STORE_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'images', 'store');
 const SUPERSAMPLE = 4;
 
 const BACKGROUND = [47, 111, 235];
@@ -141,9 +142,27 @@ function encodePng(size, pixels) {
   ]);
 }
 
-mkdirSync(OUT_DIR, { recursive: true });
-for (const size of SIZES) {
-  const file = join(OUT_DIR, `${size}.png`);
-  writeFileSync(file, encodePng(size, renderPixels(size)));
+/** Centres a rendered icon in a larger transparent square. */
+function padded(size, artwork) {
+  const pixels = Buffer.alloc(size * size * 4);
+  const inner = Math.sqrt(artwork.length / 4);
+  const offset = (size - inner) / 2;
+  for (let y = 0; y < inner; y += 1) {
+    artwork.copy(pixels, ((y + offset) * size + offset) * 4, y * inner * 4, (y + 1) * inner * 4);
+  }
+  return pixels;
+}
+
+function write(file, size, pixels) {
+  writeFileSync(file, encodePng(size, pixels));
   console.log(`wrote ${file}`);
 }
+
+mkdirSync(OUT_DIR, { recursive: true });
+for (const size of SIZES) write(join(OUT_DIR, `${size}.png`), size, renderPixels(size));
+
+// Store listing art. Chrome asks for 96 px of artwork inside 16 px of transparent
+// padding at 128; Edge for a 300 px logo.
+mkdirSync(STORE_DIR, { recursive: true });
+write(join(STORE_DIR, 'icon-128-chrome.png'), 128, padded(128, renderPixels(96)));
+write(join(STORE_DIR, 'icon-300-edge.png'), 300, renderPixels(300));
