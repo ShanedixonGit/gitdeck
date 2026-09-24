@@ -8,7 +8,7 @@ const SIZES = [16, 32, 48, 96, 128];
 const STORE_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'images', 'store');
 const SUPERSAMPLE = 4;
 
-const BACKGROUND = [47, 111, 235];
+const BACKGROUND = [220, 38, 38];
 const FOREGROUND = [255, 255, 255];
 
 /**

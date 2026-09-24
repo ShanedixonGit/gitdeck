@@ -10,6 +10,10 @@ and the patch number for fixes.
 
 ## [Unreleased]
 
+### Changed
+
+- The icon is red
+
 ## [0.3.0] — 2026-09-24
 
 First release as Repohopper, and the first meant for the stores.
