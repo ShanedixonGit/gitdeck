@@ -101,5 +101,6 @@ about five minutes.
 - **[Safari](docs/safari.md)** — how to build it for Safari; not yet tested
 - **[Roadmap](docs/roadmap.md)** — what's next
 - **[Contributing](CONTRIBUTING.md)** — dev setup and house rules
+- **[Security](SECURITY.md)** — how to report a vulnerability privately
 
 MIT licensed.
