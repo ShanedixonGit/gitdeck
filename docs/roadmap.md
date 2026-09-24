@@ -1,8 +1,9 @@
 # Roadmap
 
 Seven phases. Each one ends with something that works; none of them is a rewrite of the last.
-Phases 1–3.5 are done. What stands between the current state and a public release is Phase 4
-(proving it in Firefox and Edge) and Phase 7 (the store submissions).
+Phases 1–3.5 and 5 are done, and 0.3.0 is ready to tag. What stands between it and a public
+release is the manual half of Phase 4 (running it in real Firefox and Edge) and the store
+submissions in Phase 7, whose text, images and packages are prepared.
 
 ## Phase 1 — Foundation _(done)_
 
