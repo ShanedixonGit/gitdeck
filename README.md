@@ -98,6 +98,7 @@ about five minutes.
 - **[Tools](docs/tools.md)** — what's in the deck, how each was verified, what got rejected
 - **[Privacy policy](docs/privacy.md)** — what Repohopper reads, stores and sends
 - **[Store listing](docs/store-listing.md)** — the text and justifications given to each store
+- **[Safari](docs/safari.md)** — how to build it for Safari; not yet tested
 - **[Roadmap](docs/roadmap.md)** — what's next
 - **[Contributing](CONTRIBUTING.md)** — dev setup and house rules
 

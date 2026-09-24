@@ -70,19 +70,19 @@ is skipped with a reason rather than shown broken.
 
 ## 3. Supported browsers
 
-| Browser | Target                                                         | Status                                                                  |
-| ------- | -------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Chrome  | `chrome-mv3`                                                   | Supported, primary development target                                   |
-| Edge    | `edge-mv3`                                                     | Supported, same build as Chrome                                         |
-| Firefox | `firefox-mv3`                                                  | Separate build: Firefox 140+, Android 142+, declares no data collection |
-| Safari  | via `xcrun safari-web-extension-converter` on the Chrome build | Planned, Phase 4                                                        |
+| Browser | Target                                                         | Status                                                                                                                                            |
+| ------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chrome  | `chrome-mv3`                                                   | Primary target. Run by hand in Chrome, and its pages tested in CI                                                                                 |
+| Edge    | `edge-mv3`                                                     | Built in CI, same code as Chrome; not yet run in Edge                                                                                             |
+| Firefox | `firefox-mv3`                                                  | Firefox 140+, Android 142+, declares no data collection. Built, linted with `web-ext` and its pages tested in Gecko in CI; not yet run in Firefox |
+| Safari  | via `xcrun safari-web-extension-converter` on the Chrome build | Not built; pages tested in WebKit in CI. Steps in [safari.md](safari.md)                                                                          |
 
 WXT produces each target from one `wxt.config.ts`. The application code uses the promise-based
 `browser.*` API from `wxt/browser`, which is polyfilled for Chrome, so no per-browser branching
 exists in the source.
 
-Safari is not in the first release because it requires an Apple Developer account and an Xcode
-build step; the conversion path is documented in the roadmap so it is not a surprise later.
+Safari is not in the first release because it needs an Xcode build and, to distribute, an Apple
+Developer Program membership. [safari.md](safari.md) has the conversion steps and what to check.
 
 ## 4. Extension architecture
 
