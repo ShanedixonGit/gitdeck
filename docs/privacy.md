@@ -28,7 +28,8 @@ turned on your browser's sync, the browser copies these settings between your de
 your browser account with Google, Microsoft or Mozilla, under that company's privacy policy.
 Repohopper never sees that copy. No repository names, addresses or history are stored.
 
-Removing the extension deletes its settings.
+Removing the extension removes its settings from the browser. If sync is on, your browser's sync
+service handles any copy it holds under its own rules.
 
 ## What Repohopper sends
 

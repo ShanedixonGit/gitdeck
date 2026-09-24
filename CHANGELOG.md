@@ -15,8 +15,12 @@ and the patch number for fixes.
 - **Undo** after resetting or emptying your deck on the options page
 - The options page follows changes made in the popup or another tab while it is open
 - After **Change**, a link back to the repository the tab is on
-- `npm run test:e2e`: the built popup and options pages tested in headless Chrome, in CI too.
-  `npm run screenshots` shares its harness
+- A new icon: a card dealt from a deck, with an arrow onward
+- `npm run test:e2e`: the built popup and options pages tested in Chrome, Gecko and WebKit, with an
+  automated WCAG 2.2 AA audit of every screen in light and dark, in CI too
+- A release workflow: pushing a version tag builds the Chrome, Edge and Firefox packages and the
+  Firefox source archive and attaches them to a GitHub release. The store text, screenshots, icons
+  and promo tile are generated and kept in `docs/`
 - A privacy policy, `docs/privacy.md`, for the store listings. The README and architecture notes
   now list every stored setting and say that they sync through the browser's account
 - An options page, opened in a full tab, with two panels: every available tool, and your deck.
@@ -53,8 +57,9 @@ and the patch number for fixes.
 - "Open tools in" moved from the popup's settings panel to the options page, and the panel is gone
 - **One tool per job.** Dropped GitHub1s (GitHub.dev does the same and can commit), Bolt and
   CodeSandbox (StackBlitz does the same without an account) and grep.app (GitHub code search does
-  the same and was verified). 17 entries down to 13, all verified, and `docs/tools.md` records
-  what lost and why so the same candidates are not re-added later
+  the same and was verified), taking the registry from 17 entries to 13; with **Get the code** it
+  holds 17 again, all verified. `docs/tools.md` records what lost and why so the same candidates
+  are not re-added later
 
 ### Fixed
 
