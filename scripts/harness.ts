@@ -10,10 +10,19 @@ import { readFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { extname, join, normalize, resolve } from 'node:path';
-import { chromium } from 'playwright-core';
+import { chromium, firefox, webkit } from 'playwright-core';
 import type { Browser, Page } from 'playwright-core';
 
-export const BUILD = resolve(import.meta.dirname, '../.output/chrome-mv3');
+/**
+ * The build each engine loads. Firefox gets its own; WebKit gets Chrome's, which
+ * is what Safari's converter starts from.
+ */
+export function buildFor(engine: Engine = engineFromEnv()): string {
+  return resolve(
+    import.meta.dirname,
+    `../.output/${engine === 'firefox' ? 'firefox' : 'chrome'}-mv3`,
+  );
+}
 
 const TYPES: Record<string, string> = {
   '.html': 'text/html',
@@ -119,7 +128,10 @@ function stubExtension(scene: Scene) {
 }
 
 /** Serves the built extension over HTTP, since module scripts will not load from file://. */
-export function serve(): Promise<{ origin: string; close: () => void }> {
+export function serve(
+  engine: Engine = engineFromEnv(),
+): Promise<{ origin: string; close: () => void }> {
+  const BUILD = buildFor(engine);
   const server = createServer((request, response) => {
     const path = normalize(new URL(request.url ?? '/', 'http://x').pathname);
     const file = join(BUILD, path);
@@ -140,9 +152,27 @@ export function serve(): Promise<{ origin: string; close: () => void }> {
   );
 }
 
-/** The locally installed Google Chrome, driven headless. Nothing is downloaded. */
-export function launch(): Promise<Browser> {
+export type Engine = 'chrome' | 'firefox' | 'webkit';
+
+/**
+ * A headless browser for the engine named in `E2E_BROWSER`, Chrome by default.
+ *
+ * Chrome is the installed Google Chrome, so nothing is downloaded. Firefox and
+ * WebKit are Playwright's builds of Gecko and of Safari's engine, fetched once
+ * with `npx playwright-core install firefox webkit`. They load the pages as web
+ * pages, not as an extension, which is all the stand-in needs: this checks
+ * layout, keyboard and clipboard behaviour in each engine, not the extension
+ * APIs, which stay a manual check in the real browsers.
+ */
+export function launch(engine: Engine = engineFromEnv()): Promise<Browser> {
+  if (engine === 'firefox') return firefox.launch({ headless: true });
+  if (engine === 'webkit') return webkit.launch({ headless: true });
   return chromium.launch({ channel: 'chrome', headless: true });
+}
+
+function engineFromEnv(): Engine {
+  const value = process.env.E2E_BROWSER;
+  return value === 'firefox' || value === 'webkit' ? value : 'chrome';
 }
 
 /** Opens one of the extension's pages (`popup.html`, `options.html`) in the given scene. */

@@ -8,7 +8,12 @@ npm run dev          # Chrome with hot reload
 npm run dev:firefox  # Firefox
 ```
 
-Node 20 or newer.
+Node 20 or newer. The end-to-end tests also need Google Chrome installed, and a one-time download
+of Playwright's Firefox and WebKit engines (about 200 MB, into Playwright's cache):
+
+```bash
+npx playwright-core install firefox webkit
+```
 
 ## Commands
 
@@ -21,7 +26,7 @@ Node 20 or newer.
 | `npm run build:edge`    | → `.output/edge-mv3`                    |
 | `npm run zip:all`       | Store archives for all three, + sources |
 | `npm test`              | Unit tests                              |
-| `npm run test:e2e`      | Build, then test the pages in Chrome    |
+| `npm run test:e2e`      | Build, then test the pages in 3 engines |
 | `npm run test:coverage` | Unit tests with the coverage floor      |
 | `npm run test:watch`    | Unit tests in watch mode                |
 | `npm run compile`       | Type-check `.ts` and `.svelte`          |
