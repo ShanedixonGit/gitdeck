@@ -29,13 +29,13 @@ where a link goes, and each one's `brand` is shown on its card so the provider i
 
 ### Stack, and why
 
-| Choice                               | Reason                                                                                                                                                                                                                                                                                                     |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **[WXT](https://wxt.dev)**           | Generates a correct MV3 manifest per browser from one config, and ships dev-mode hot reload. The alternative is hand-maintaining divergent Chrome and Firefox manifests, which is exactly the kind of busywork that kills small extension projects.                                                        |
-| **Svelte 5**                         | The popup is a list that reacts to one piece of state. Svelte compiles to direct DOM updates with no runtime framework shipped, which keeps the whole extension around 72 KB and opening instantly. React would add roughly 45 KB of runtime for a UI this small; the choice is about weight, not fashion. |
-| **TypeScript (strict)**              | The registry is the product. Strict types plus `validateTool` mean a malformed tool entry fails CI rather than the popup. Pinned to 5.9 because `typescript-eslint` does not yet support TypeScript 7.                                                                                                     |
-| **Vitest**                           | The URL logic is pure functions with no DOM. Vitest runs them in milliseconds and shares Vite's config with the build.                                                                                                                                                                                     |
-| **No backend, storage or analytics** | Every feature in scope is a string transformation. Adding infrastructure would add privacy obligations and maintenance cost for no user benefit.                                                                                                                                                           |
+| Choice                               | Reason                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **[WXT](https://wxt.dev)**           | Generates a correct MV3 manifest per browser from one config, and ships dev-mode hot reload. The alternative is hand-maintaining divergent Chrome and Firefox manifests, which is exactly the kind of busywork that kills small extension projects.                                                                                           |
+| **Svelte 5**                         | The popup is a list that reacts to one piece of state. Svelte compiles to direct DOM updates with a small runtime, which keeps all the code at about 97 KB (33 KB gzipped, a 41 KB store package) and the popup opening instantly. React's runtime alone would add around 45 KB for a UI this small; the choice is about weight, not fashion. |
+| **TypeScript (strict)**              | The registry is the product. Strict types plus `validateTool` mean a malformed tool entry fails CI rather than the popup. Pinned to 5.9 because `typescript-eslint` does not yet support TypeScript 7.                                                                                                                                        |
+| **Vitest**                           | The URL logic is pure functions with no DOM. Vitest runs them in milliseconds and shares Vite's config with the build.                                                                                                                                                                                                                        |
+| **No backend, storage or analytics** | Every feature in scope is a string transformation. Adding infrastructure would add privacy obligations and maintenance cost for no user benefit.                                                                                                                                                                                              |
 
 ### Non-goals
 
@@ -101,19 +101,21 @@ src/
 │       ├── main.ts             mounts the Svelte app
 │       └── App.svelte          available ↔ your deck, dragged across; open target
 ├── components/
+│   ├── CategoryIcon.svelte     a section's icon in its colour
 │   ├── RepoHeader.svelte       owner/repo, ref/path, "Change"
 │   ├── RepoPrompt.svelte       manual URL entry fallback
 │   ├── ToolDeck.svelte         the chosen tools, in stack order
 │   └── ToolCard.svelte         one tool, one action
 ├── lib/
-│   ├── browser/active-tab.ts   the only place that touches browser.*
+│   ├── browser/active-tab.ts   the tab and runtime APIs: read the URL, open, options
 │   ├── github/
 │   │   ├── types.ts            RepoRef
 │   │   └── parse-repo.ts       URL → RepoRef
 │   ├── settings/
 │   │   ├── types.ts            Settings, OpenTarget
 │   │   ├── settings.ts         defaults and normalisation, pure
-│   │   ├── store.ts            read and write browser.storage.sync
+│   │   ├── store.ts            read, write and watch browser.storage.sync
+│   │   ├── queue.ts            coalesces bursts of writes, pure
 │   │   └── index.ts            public surface of the settings module
 │   └── tools/
 │       ├── types.ts            ToolDefinition, ToolCategory, ToolStatus
@@ -129,13 +131,16 @@ src/
 └── public/icon/                generated PNGs
 ```
 
+Outside `src/`: `e2e/` holds the end-to-end and accessibility tests, and `scripts/` the link
+checker, the page harness those tests share with the screenshot script, and the icon generator.
+
 Dependency direction is one-way: `components` → `lib`, never the reverse. `lib/github` and
 `lib/tools` import nothing from the extension or the DOM, which is why they are testable in a
 plain Node environment.
 
 ## 5. UI architecture
 
-A single stateful component (`App.svelte`) and four presentational ones. State is Svelte 5 runes;
+One stateful component per page (`App.svelte`) and five presentational ones. State is Svelte 5 runes;
 there is no store layer because there is one screen and no cross-component state to share.
 
 ```
@@ -143,12 +148,14 @@ App.svelte
   view          { loading } | { repo } | { prompt }
   filter        string
   selectedIndex number
-  settings      Settings          loaded from storage, defaults until it arrives
+  settings      Settings          loaded from storage; the deck waits for it
+  detected      RepoRef | null    the tab's repository, for "Back" after "Change"
        │
        ├─ RepoHeader    (repo, onchange)
-       ├─ RepoPrompt    (message, onresolve)
-       └─ ToolDeck      (entries, selectedId, onopen)
-             └─ ToolCard (entry, selected, shortcut, onopen)
+       ├─ RepoPrompt    (message, onresolve, back)
+       └─ ToolDeck      (entries, selectedId, onopen, onselect)
+             └─ ToolCard (entry, selected, shortcut, onopen, onselect)
+                   └─ CategoryIcon (id)
 ```
 
 Props flow down, callbacks flow up. No component imports the registry directly except through the
@@ -162,8 +169,10 @@ header and footer stay fixed. All colour is CSS custom properties in `styles/the
 open a card directly, `Enter` opens the selection, `Escape` clears the filter. The mapping lives
 in `lib/tools/keyboard.ts` as a pure function so the whole model is tested without a DOM. Keys
 with a modifier are never intercepted, and while the filter has focus the number keys yield to
-plain typing. The selected card scrolls into view. Every card is a real `<button>`, so tab order and
-screen readers work without ARIA patching.
+plain typing. `Enter` is left alone when a button or link has focus, so it presses what the user
+tabbed to, and focus follows the selection when the arrows move it from a focused card, so the
+highlighted card and the focused one never differ. The selected card scrolls into view. Every
+card is a real `<button>`, so tab order and screen readers work without ARIA patching.
 
 **The stack.** The registry is the source; the stack is the selection. `Settings.stack` is one
 list of tool ids in the order the user dragged them, and the popup shows exactly those tools that
@@ -189,7 +198,14 @@ design exists for: you are on a repository, and you want to be looking at the sa
 somewhere else. A background tab is the only target that leaves the popup open, so several tools
 can be opened in a row. Storage is treated as untrusted input: `normaliseSettings` falls back
 field by field, so a value written by an older version cannot reset the others or crash the
-popup.
+popup. Writes go through `saveSettings`, which stores a plain copy, since Svelte state is a proxy
+that Firefox's structured-clone storage refuses.
+
+The options page coalesces writes (`lib/settings/queue.ts`): `storage.sync` refuses more than about
+two writes a second, so a burst of drags and nudges is saved once it settles, and a refused write
+is reported on the page rather than lost. It also follows changes made elsewhere — the popup's
+recommended deck, a second options tab — unless a change of its own is still waiting to be
+written. Resetting or emptying the deck can be undone.
 
 ## 6. Tool registry architecture
 
@@ -208,12 +224,12 @@ A tool is a plain data object. `ToolDefinition` (`src/lib/tools/types.ts`):
 | `website`     | yes      | Provenance                                                    |
 | `status`      | yes      | `verified` \| `unverified` \| `deprecated`                    |
 | `verifiedAt`  | yes      | ISO date the template was last checked                        |
-| `requires`    | no       | Repository fields beyond owner/repo (`ref`, `path`)           |
+| `requires`    | no       | Repository fields beyond owner/repo (`ref`, `path`, `file`)   |
 | `docsUrl`     | no       | Documentation or source for the tool itself                   |
 | `notes`       | no       | Caveats surfaced on the card                                  |
 
 The registry is a frozen array in one file. There is no per-tool module and no plugin system:
-sixteen data objects do not need either, and a flat array is the form a contributor can edit
+seventeen data objects do not need either, and a flat array is the form a contributor can edit
 without reading any documentation first.
 
 **Why `status` exists.** Third-party services disappear. Rather than deleting an entry the moment
@@ -222,19 +238,22 @@ checkbox; `deprecated` is never shown. This gives a graceful path between "worki
 and keeps the reason in version control.
 
 **Registry invariants are tested, not documented.** `validateTool` checks id casing, HTTPS-only
-URLs for tools that open, ISO dates, placeholder names, and agreement between `requires` and the template.
+URLs for tools that open, ISO dates, placeholder names, agreement between `requires` and the
+template, and that a copy template uses only `{owner}` and `{repo}`: its text ends up in a shell,
+and only those two are restricted to a safe alphabet.
 `registry.test.ts` runs it over every entry and resolves every entry against a full reference. A
 malformed tool fails CI.
 
 ## 7. URL transformation architecture
 
-Two pure functions, no per-tool code.
+Three pure functions, no per-tool code.
 
 ### Parsing — `parseGitHubRepo(input): RepoRef | null`
 
 Accepts full HTTPS URLs, scheme-less URLs, `http://`, `www.`, `.git` suffixes, SSH remotes
 (`git@github.com:owner/repo.git`), query strings, fragments, and deep links
-(`/tree/<ref>/<path>`, `/blob/<ref>/<path>`).
+(`/tree/<ref>/<path>`, `/blob/<ref>/<path>`). A path under `blob`, `blame`, `raw` or `edit` is
+also returned as `file`; one under `tree` is a folder and is not.
 
 Rejection is as important as acceptance. The parser returns `null` for non-GitHub hosts,
 lookalike hosts (`github.com.evil.com`), gists, and GitHub's own site pages — `/settings`,
@@ -250,7 +269,7 @@ Placeholders are `{name}` or `{name|modifier}`:
 | Modifier        | Behaviour                                            | Example use         |
 | --------------- | ---------------------------------------------------- | ------------------- |
 | `enc` (default) | `encodeURIComponent`                                 | `{owner}`, `{repo}` |
-| `path`          | encodes each `/`-separated segment, keeps separators | `{path\|path}`      |
+| `path`          | encodes each `/`-separated segment, keeps separators | `{file\|path}`      |
 
 Everything else in the template is literal, so a tool needing an encoded separator writes
 `{owner}%2F{repo}` (deps.dev) and one needing a fragment writes `#{owner}/{repo}`
@@ -324,7 +343,7 @@ Svelte-compiled output reaches the published bundle.
 | Style             | ESLint + Prettier | Flat config with `typescript-eslint` and `eslint-plugin-svelte`                                                                      |
 | Popup and options | Vitest + browsers | The built pages in Chrome, Gecko and WebKit: keyboard model, focus, copy, filter, loading and first run, saving, save failures       |
 
-The unit suite is 212 tests over the pure functions in `src/lib`, running in about a second. Keeping
+The unit suite covers the pure functions in `src/lib` and runs in about a second. Keeping
 logic out of components is what makes those tests possible without a DOM or a browser.
 
 `npm run test:e2e` builds the extension and loads its real popup and options pages in three
@@ -337,19 +356,22 @@ ships rather than components in isolation, and adds no dependency beyond `playwr
 cannot cover is the browser itself: `activeTab`, real storage and its quotas, the clipboard
 permission model, and the popup window still need the manual pass in each real browser (Phase 4).
 
-CI runs the unit tests with a coverage floor on the pure code in `src/lib`: 90% of lines and 85% of
-branches, a little under where it stands. `npm run check` runs types, lint, format and unit tests. CI runs it, the three builds, and the
-end-to-end tests as separate jobs.
+CI runs the unit tests with a coverage floor on the pure code in `src/lib`: 90% of lines and 85%
+of branches, a little under where it stands. `npm run check` runs types, lint, format and unit
+tests; CI runs it, the three builds with a `web-ext` lint of the Firefox one, and the end-to-end
+tests, as separate jobs.
 
 ## 10. Distribution strategy
 
-| Store            | Package                                                   | Notes                                                                                 |
-| ---------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Chrome Web Store | `npm run zip` → `.output/*-chrome.zip`                    | One-off developer registration fee                                                    |
-| Edge Add-ons     | same artefact as Chrome                                   | Free registration                                                                     |
-| Firefox Add-ons  | `npm run zip:firefox` (produces an extra sources zip)     | Free; AMO requires reproducible sources, which is why the build has no bundler tricks |
-| Safari           | `xcrun safari-web-extension-converter .output/chrome-mv3` | Requires macOS, Xcode and a paid Apple Developer account; deferred                    |
+| Store            | Package                                               | Notes                                                                         |
+| ---------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Chrome Web Store | `repohopper-<version>-chrome.zip`                     | One-off developer registration fee                                            |
+| Edge Add-ons     | `repohopper-<version>-edge.zip`                       | Free registration; the same code as Chrome                                    |
+| Firefox Add-ons  | `repohopper-<version>-firefox.zip` and `-sources.zip` | Free; AMO rebuilds from the sources archive, so the build has no hidden steps |
+| Safari           | converted from the Chrome build in Xcode              | Needs Xcode and a paid Apple Developer membership; see [safari.md](safari.md) |
 
-Releases will be tagged, built in CI from the tag, and published from the artefacts, so a
-published build is always reproducible from a commit. Store listings will carry the same
-permission justification as this document.
+`npm run zip:all` builds all four archives. Pushing a version tag runs the release workflow, which
+checks the tag matches `package.json`, runs the checks, builds the archives and attaches them to a
+GitHub release, so a published build is always reproducible from a commit. Submitting to each
+store is manual, with the text, justifications and images in
+[store-listing.md](store-listing.md).
