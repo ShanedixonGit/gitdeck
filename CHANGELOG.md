@@ -14,6 +14,11 @@ and the patch number for fixes.
 
 - The icon is red
 
+### Fixed
+
+- The **Open tools in** choices on the options page work from the keyboard and with screen readers.
+  They were hidden in a way that removed them from both
+
 ## [0.3.0] — 2026-09-24
 
 First release as Repohopper, and the first meant for the stores.

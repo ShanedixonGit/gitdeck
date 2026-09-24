@@ -76,6 +76,17 @@ describe('options page', () => {
     expect(await lastWrite()).toEqual(['gitdiagram']);
   });
 
+  it('lets the keyboard choose where tools open', async () => {
+    await options();
+    const radios = page.locator('input[name="open-target"]');
+    await radios.nth(0).focus();
+    await page.keyboard.press('ArrowRight');
+    await expect.poll(() => radios.nth(1).isChecked()).toBe(true);
+    await expect
+      .poll(async () => (await activityOf(page)).writes.at(-1)?.openTarget)
+      .toBe('current-tab');
+  });
+
   it('fills an empty deck with the recommended one', async () => {
     await options([]);
     await page.getByRole('button', { name: 'Use the recommended deck' }).click();

@@ -633,6 +633,7 @@
   }
 
   .target {
+    position: relative;
     display: grid;
     gap: 2px;
     padding: var(--space-2) var(--space-3);
@@ -646,8 +647,18 @@
     background: color-mix(in srgb, var(--accent) 7%, transparent);
   }
 
+  /* Hidden from sight but not from the keyboard or screen readers: the card is the control. */
   .target input {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+  }
+
+  .target:has(input:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
   }
 
   .target-label {
