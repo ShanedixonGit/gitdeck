@@ -1,6 +1,6 @@
 # Privacy policy
 
-_Effective 2026-09-23. Applies to the Repohopper browser extension for Chrome, Edge and Firefox._
+_Effective 2026-09-24. Applies to the Repohopper browser extension for Chrome, Edge and Firefox._
 
 Repohopper collects no personal data. It has no servers, no accounts, no analytics and no tracking.
 It sends nothing to its developer or to anyone else.

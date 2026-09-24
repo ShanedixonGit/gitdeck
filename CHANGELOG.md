@@ -18,6 +18,10 @@ and the patch number for fixes.
 - A new icon: a card dealt from a deck, with an arrow onward
 - `npm run test:e2e`: the built popup and options pages tested in Chrome, Gecko and WebKit, with an
   automated WCAG 2.2 AA audit of every screen in light and dark, in CI too
+- The packaged extension is loaded into Chromium in CI, checking the manifest, real storage, tabs
+  and the clipboard
+- A security policy with private reporting, a bug report template, and Dependabot for security
+  fixes and for the GitHub Actions the workflows use
 - A release workflow: pushing a version tag builds the Chrome, Edge and Firefox packages and the
   Firefox source archive and attaches them to a GitHub release. The store text, screenshots, icons
   and promo tile are generated and kept in `docs/`
