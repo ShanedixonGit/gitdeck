@@ -41,14 +41,21 @@ from GitHub, and the clone commands run with your own `git` or `gh`.
 
 ## Install
 
-Not in the stores yet. To run it now:
+Repohopper works in **Chrome**, **Edge** and **Firefox** (140 or newer). Version 0.3.0 is on its
+way to the Chrome Web Store, Edge Add-ons and Firefox Add-ons; the links will be here once each
+store has approved it.
+
+To run it from source now:
 
 ```bash
 npm install
-npm run dev
+npm run dev          # Chrome
+npm run dev:edge     # Edge
+npm run dev:firefox  # Firefox
 ```
 
-That opens Chrome with the extension loaded. For Firefox, `npm run dev:firefox`.
+Each opens that browser with the extension loaded. Safari is not supported: it needs a paid Apple
+developer membership to distribute.
 
 ## Using it
 
@@ -98,7 +105,7 @@ about five minutes.
 - **[Tools](docs/tools.md)** — what's in the deck, how each was verified, what got rejected
 - **[Privacy policy](docs/privacy.md)** — what Repohopper reads, stores and sends
 - **[Store listing](docs/store-listing.md)** — the text and justifications given to each store
-- **[Safari](docs/safari.md)** — how to build it for Safari; not yet tested
+- **[Safari](docs/safari.md)** — not supported; notes for building it yourself
 - **[Roadmap](docs/roadmap.md)** — what's next
 - **[Contributing](CONTRIBUTING.md)** — dev setup and house rules
 - **[Security](SECURITY.md)** — how to report a vulnerability privately

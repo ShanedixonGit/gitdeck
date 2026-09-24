@@ -1,6 +1,8 @@
 # Safari
 
-**Status: not built or tested.** Nothing here has been run yet. The end-to-end suite does load the
+**Status: not planned.** Distributing a Safari extension needs a paid Apple Developer Program
+membership, which this project does not justify, so Repohopper ships for Chrome, Edge and Firefox
+only. These notes stay for anyone who wants to build it for their own Mac; none of it has been run. The end-to-end suite does load the
 popup and options pages in WebKit, Safari's engine, so layout and keyboard handling are covered;
 the extension APIs in Safari are not.
 

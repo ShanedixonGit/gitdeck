@@ -1,9 +1,10 @@
 # Roadmap
 
 Seven phases. Each one ends with something that works; none of them is a rewrite of the last.
-Phases 1–3.5 and 5 are done, and 0.3.0 is ready to tag. What stands between it and a public
-release is the manual half of Phase 4 (running it in real Firefox and Edge) and the store
-submissions in Phase 7, whose text, images and packages are prepared.
+Phases 1–3.5 and 5 are done, and the extension passes in the real Chrome, Edge and Firefox. What
+stands between it and a public release is a short hand check of the toolbar button in each
+browser (Phase 4) and the store submissions (Phase 7), whose text, images and packages are ready.
+Safari is not planned.
 
 ## Phase 1 — Foundation _(done)_
 
@@ -62,16 +63,17 @@ deck. The deck should be the tools you picked.
 - [x] "Open tools in" lives in exactly one place. It is currently in both the popup settings
       panel and the options page
 
-## Phase 4 — Browser compatibility
+## Phase 4 — Browser compatibility _(automated part done)_
 
 - [x] The popup and options pages pass the end-to-end suite in Gecko and WebKit as well as Chrome.
       This covers the pages, not the extension APIs, so the items below still need the real browsers
-- [ ] Verify the Firefox build end to end in a real profile
-- [ ] Verify the Edge build
+- [x] Verify the Firefox build end to end in a real profile (`npm run test:browsers`)
+- [x] Verify the Edge build (`npm run test:browsers`)
 - [x] Safari: converter steps and what to check documented in `docs/safari.md`
-- [ ] Safari: build with Xcode and run the checklist
-- [ ] Popup sizing checked across browsers and OS zoom levels
-- [ ] Confirm `activeTab` behaves identically on all three engines
+- [x] ~~Safari: build with Xcode and run the checklist~~ — not planned; a paid Apple membership is
+      not worth it for this project
+- [ ] Popup sizing checked across browsers and zoom levels — by hand, before submitting
+- [ ] Confirm `activeTab` from a toolbar click in all three browsers — by hand, before submitting
 
 ## Phase 5 — Testing
 
@@ -104,7 +106,7 @@ deck. The deck should be the tools you picked.
 - [x] Chrome Web Store listing and permission justification, in `docs/store-listing.md`
 - [ ] Edge Add-ons listing (same artefact)
 - [ ] Firefox Add-ons listing, including the sources archive AMO requires
-- [ ] Safari, if the Apple Developer account is worth it at that point
+- [x] ~~Safari~~ — not planned, as above
 - [x] Privacy policy page that says, accurately, that no data is collected, and that each linked
       service's own policy applies once the user opens it
 - [x] Store descriptions that present Repohopper as a connector to independent services, with no

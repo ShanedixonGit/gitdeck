@@ -70,19 +70,20 @@ is skipped with a reason rather than shown broken.
 
 ## 3. Supported browsers
 
-| Browser | Target                                                         | Status                                                                                                                                            |
-| ------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Chrome  | `chrome-mv3`                                                   | Primary target. Run by hand in Chrome, and its pages tested in CI                                                                                 |
-| Edge    | `edge-mv3`                                                     | Built in CI, same code as Chrome; not yet run in Edge                                                                                             |
-| Firefox | `firefox-mv3`                                                  | Firefox 140+, Android 142+, declares no data collection. Built, linted with `web-ext` and its pages tested in Gecko in CI; not yet run in Firefox |
-| Safari  | via `xcrun safari-web-extension-converter` on the Chrome build | Not built; pages tested in WebKit in CI. Steps in [safari.md](safari.md)                                                                          |
+| Browser | Target                                                         | Status                                                                                                                                     |
+| ------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Chrome  | `chrome-mv3`                                                   | Supported. Tested in the real browser with `npm run test:browsers`, and in CI                                                              |
+| Edge    | `edge-mv3`                                                     | Supported. Same code as Chrome; tested in the real browser with `npm run test:browsers`                                                    |
+| Firefox | `firefox-mv3`                                                  | Supported: 140+, Android 142+, declares no data collection. Linted with `web-ext`, tested in the real browser with `npm run test:browsers` |
+| Safari  | via `xcrun safari-web-extension-converter` on the Chrome build | Not planned. Its pages pass in WebKit in CI; steps in [safari.md](safari.md)                                                               |
 
 WXT produces each target from one `wxt.config.ts`. The application code uses the promise-based
 `browser.*` API from `wxt/browser`, which is polyfilled for Chrome, so no per-browser branching
 exists in the source.
 
-Safari is not in the first release because it needs an Xcode build and, to distribute, an Apple
-Developer Program membership. [safari.md](safari.md) has the conversion steps and what to check.
+Safari is not planned: distributing it needs a paid Apple Developer Program membership, which the
+project does not justify. [safari.md](safari.md) keeps the conversion steps for anyone who wants
+to build it for themselves.
 
 ## 4. Extension architecture
 
@@ -369,12 +370,12 @@ tests, as separate jobs.
 
 ## 10. Distribution strategy
 
-| Store            | Package                                               | Notes                                                                         |
-| ---------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Chrome Web Store | `repohopper-<version>-chrome.zip`                     | One-off developer registration fee                                            |
-| Edge Add-ons     | `repohopper-<version>-edge.zip`                       | Free registration; the same code as Chrome                                    |
-| Firefox Add-ons  | `repohopper-<version>-firefox.zip` and `-sources.zip` | Free; AMO rebuilds from the sources archive, so the build has no hidden steps |
-| Safari           | converted from the Chrome build in Xcode              | Needs Xcode and a paid Apple Developer membership; see [safari.md](safari.md) |
+| Store            | Package                                               | Notes                                                                              |
+| ---------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Chrome Web Store | `repohopper-<version>-chrome.zip`                     | One-off developer registration fee                                                 |
+| Edge Add-ons     | `repohopper-<version>-edge.zip`                       | Free registration; the same code as Chrome                                         |
+| Firefox Add-ons  | `repohopper-<version>-firefox.zip` and `-sources.zip` | Free; AMO rebuilds from the sources archive, so the build has no hidden steps      |
+| Safari           | not planned                                           | Would need Xcode and a paid Apple Developer membership; see [safari.md](safari.md) |
 
 `npm run zip:all` builds all four archives. Pushing a version tag runs the release workflow, which
 checks the tag matches `package.json`, runs the checks, builds the archives and attaches them to a
