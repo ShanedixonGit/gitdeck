@@ -8,5 +8,5 @@
     "verbatimModuleSyntax": true,
     "types": ["vitest/globals"]
   },
-  "include": ["src/**/*", "*.config.ts", ".wxt/wxt.d.ts"]
+  "include": ["src/**/*", "scripts/**/*.ts", "e2e/**/*.ts", "*.config.ts", ".wxt/wxt.d.ts"]
 }
