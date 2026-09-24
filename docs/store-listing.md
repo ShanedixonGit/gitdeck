@@ -121,3 +121,51 @@ It drives the installed Google Chrome through `playwright-core`, so it downloads
 | `promo-440x280.jpg`   | Chrome: small promo tile                                          | `npm run screenshots` |
 
 All in `docs/images/store/`. Firefox takes its icon from the manifest.
+
+## Publishing a release
+
+Upload the packages the release workflow attaches to the GitHub release for the tag, not local
+builds: they are built from the tagged commit, so what the stores get is reproducible.
+
+```bash
+gh release download v<version> -D ~/Downloads/repohopper-<version>
+```
+
+### Chrome Web Store
+
+1. Developer dashboard: <https://chrome.google.com/webstore/devconsole>. The first time, register
+   with a Google account (one-off fee), turn on 2-step verification, and declare trader or
+   non-trader status in the account settings
+2. **New item**, then upload `repohopper-<version>-chrome.zip`
+3. **Store listing**: the long description and category above; the store icon
+   `icon-128-chrome.png`; screenshots `1-deck.jpg` to `4-options.jpg`; small promo tile
+   `promo-440x280.jpg`; homepage and support URLs
+4. **Privacy**: the single purpose, both permission justifications, _no_ remote code, no data
+   collected, the three certifications, and the privacy policy URL
+5. **Distribution**: public, all regions. Submit for review
+
+### Microsoft Edge Add-ons
+
+1. Partner Center: <https://partner.microsoft.com/dashboard/microsoftedge>. The first time, enrol
+   in the Microsoft Edge program with a Microsoft account (free)
+2. **Create new extension**, then upload `repohopper-<version>-edge.zip`
+3. **Availability**: public, all markets
+4. **Properties**: category, privacy policy URL, website and support URLs
+5. **Store listing**: the descriptions above, the logo `icon-300-edge.png`, the screenshots and,
+   optionally, the promo tile. Submit
+
+### Firefox Add-ons
+
+1. Developer hub: <https://addons.mozilla.org/developers/>. Sign in with a Mozilla account (free)
+2. **Submit a New Add-on**, choose _On this site_, and upload
+   `repohopper-<version>-firefox.zip`. Tick Firefox for desktop only: Android is untested
+3. When asked about source code, answer yes and upload `repohopper-<version>-sources.zip`, with
+   the reviewer notes above
+4. Listing: summary (the short description), the long description, category, support site, MIT
+   licence, the privacy policy, and the screenshots. The icon comes from the manifest. Submit
+
+### Later releases
+
+Bump the version, date the changelog, merge, tag and let the workflow build. Then upload the new
+package to the existing item in each store: Chrome's **Package** tab, Edge's **Update**, and
+Firefox's **Upload new version**, with a new sources archive.
