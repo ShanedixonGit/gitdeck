@@ -1,4 +1,9 @@
+import { existsSync } from 'node:fs';
 import { defineConfig } from 'wxt';
+
+// Where `npm run dev:edge` finds Edge. Set EDGE_PATH on other systems.
+const EDGE =
+  process.env.EDGE_PATH ?? '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge';
 
 export default defineConfig({
   srcDir: 'src',
@@ -6,6 +11,7 @@ export default defineConfig({
   // be spelled out or the icons never reach the build and the manifest is invalid.
   publicDir: 'src/public',
   modules: ['@wxt-dev/module-svelte'],
+  webExt: { binaries: existsSync(EDGE) ? { edge: EDGE } : {} },
   manifestVersion: 3,
   manifest: ({ browser }) => ({
     name: 'Repohopper',
