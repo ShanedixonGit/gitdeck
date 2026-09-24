@@ -8,8 +8,8 @@
   --border: #e3e6ea;
   --border-strong: #d0d5dc;
   --text: #16181d;
-  --text-muted: #646b76;
-  --text-faint: #8b929c;
+  --text-muted: #565d68;
+  --text-faint: #676e79;
   --accent: #2f6feb;
   --accent-contrast: #ffffff;
   --warn: #9a6700;
@@ -46,7 +46,7 @@
     --border-strong: #3a414d;
     --text: #e6edf3;
     --text-muted: #9aa4b2;
-    --text-faint: #6e7681;
+    --text-faint: #848d97;
     --accent: #5b8cff;
     --accent-contrast: #0d1117;
     --warn: #d29922;

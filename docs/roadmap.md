@@ -26,8 +26,10 @@ Phases 1–3.5 are done. What stands between the current state and a public rele
 - [x] Loading, empty and error states given the same care as the happy path
 - [x] Reduced-motion handling
 - [x] Where tools open, and the unverified toggle, both remembered (now on the options page)
-- [ ] High-contrast handling
-- [ ] Accessibility pass with a screen reader
+- [x] High-contrast handling: selection and drop lines survive forced colours, tested
+- [x] Automated accessibility audit (axe-core, WCAG 2.2 AA) of every screen, light and dark, in
+      the end-to-end suite
+- [ ] Accessibility pass with a real screen reader (VoiceOver, NVDA)
 
 ## Phase 3 — Tool registry _(done for now)_
 

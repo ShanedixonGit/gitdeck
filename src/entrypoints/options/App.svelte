@@ -482,6 +482,15 @@
     right: 0;
   }
 
+  /* The drop line is a background, which high-contrast modes would remove. */
+  @media (forced-colors: active) {
+    li.drop-before::before,
+    ol.drop-end::after {
+      forced-color-adjust: none;
+      background: Highlight;
+    }
+  }
+
   .body {
     flex: 1;
     min-width: 0;

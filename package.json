@@ -39,6 +39,7 @@
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
     "@vitest/coverage-v8": "^5.0.1",
     "@wxt-dev/module-svelte": "^2.0.5",
+    "axe-core": "^4.13.0",
     "eslint": "^10.11.0",
     "eslint-plugin-svelte": "^3.23.0",
     "globals": "^17.12.0",
