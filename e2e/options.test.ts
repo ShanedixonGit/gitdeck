@@ -20,12 +20,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await browser.close();
-  server.close();
+  await browser?.close();
+  server?.close();
 });
 
 afterEach(async () => {
-  await page.close();
+  await page?.close();
 });
 
 async function options(stack: readonly string[] = STACK) {

@@ -45,5 +45,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # Drives the runner's preinstalled Google Chrome; nothing is downloaded.
+      # Chrome is preinstalled on the runner. Firefox and WebKit are Playwright's
+      # builds of Gecko and of Safari's engine, with the system libraries they need.
+      - run: npx playwright-core install --with-deps firefox webkit
       - run: npm run test:e2e

@@ -322,19 +322,20 @@ Svelte-compiled output reaches the published bundle.
 | Registry          | Vitest            | Unique ids and names, known categories, `validateTool` over every entry, every entry resolves, unverified entries carry notes        |
 | Types             | `svelte-check`    | Strict TypeScript across `.ts` and `.svelte`                                                                                         |
 | Style             | ESLint + Prettier | Flat config with `typescript-eslint` and `eslint-plugin-svelte`                                                                      |
-| Popup and options | Vitest + Chrome   | The built pages in headless Chrome: keyboard model, focus, copy, filter, loading and first run, saving, save failures                |
+| Popup and options | Vitest + browsers | The built pages in Chrome, Gecko and WebKit: keyboard model, focus, copy, filter, loading and first run, saving, save failures       |
 
 The unit suite is 212 tests over the pure functions in `src/lib`, running in about a second. Keeping
 logic out of components is what makes those tests possible without a DOM or a browser.
 
-`npm run test:e2e` builds the extension and loads its real popup and options pages in the
-installed Google Chrome, with the extension APIs replaced by a stand-in
+`npm run test:e2e` builds the extension and loads its real popup and options pages in three
+engines: the installed Google Chrome, and Playwright's builds of Gecko (Firefox, given the Firefox
+build) and WebKit (Safari), each with the extension APIs replaced by a stand-in
 ([`scripts/harness.ts`](../scripts/harness.ts)) that serves a fixed tab and settings and records
 what the page does: tabs opened, settings written, text copied. The stand-in clones what it saves
 the way Firefox does, which is how it caught settings being saved as a Svelte proxy. It tests what
 ships rather than components in isolation, and adds no dependency beyond `playwright-core`. What it
-cannot cover is the browser itself: `activeTab`, real storage quotas and popup sizing still need
-the manual pass in Phase 4.
+cannot cover is the browser itself: `activeTab`, real storage and its quotas, the clipboard
+permission model, and the popup window still need the manual pass in each real browser (Phase 4).
 
 CI runs the unit tests with a coverage floor on the pure code in `src/lib`: 90% of lines and 85% of
 branches, a little under where it stands. `npm run check` runs types, lint, format and unit tests. CI runs it, the three builds, and the

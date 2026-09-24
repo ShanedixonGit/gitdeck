@@ -61,6 +61,8 @@ deck. The deck should be the tools you picked.
 
 ## Phase 4 — Browser compatibility
 
+- [x] The popup and options pages pass the end-to-end suite in Gecko and WebKit as well as Chrome.
+      This covers the pages, not the extension APIs, so the items below still need the real browsers
 - [ ] Verify the Firefox build end to end in a real profile
 - [ ] Verify the Edge build
 - [ ] Safari: `xcrun safari-web-extension-converter`, document the Xcode steps and limits
